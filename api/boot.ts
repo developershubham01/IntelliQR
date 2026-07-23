@@ -5,14 +5,11 @@ import { fetchRequestHandler } from "@trpc/server/adapters/fetch";
 import { appRouter } from "./router.js";
 import { createContext } from "./context.js";
 import { env } from "./lib/env.js";
-import { createOAuthCallbackHandler } from "./kimi/auth.js";
-import { Paths } from "../contracts/constants.js";
 import { handleRedirection } from "./redirect-handler.js";
 
 export const app = new Hono<{ Bindings: HttpBindings }>();
 
 app.use(bodyLimit({ maxSize: 50 * 1024 * 1024 }));
-app.get(Paths.oauthCallback, createOAuthCallbackHandler());
 app.get("/r/:shortId", handleRedirection);
 app.use("/api/trpc/*", async (c) => {
   return fetchRequestHandler({

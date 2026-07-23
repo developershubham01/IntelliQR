@@ -1,11 +1,19 @@
 import * as jose from "jose";
-import { env } from "../lib/env.js";
-import type { SessionPayload } from "./types.js";
+import * as cookie from "cookie";
+import { env } from "./env.js";
+import { Session } from "../../contracts/constants.js";
+import { Errors } from "../../contracts/errors.js";
+import { findUserByUnionId } from "../queries/users.js";
 
 const JWT_ALG = "HS256";
 
+export type SessionPayload = {
+  unionId: string;
+  clientId: string;
+};
+
 export async function signSessionToken(
-  payload: SessionPayload,
+  payload: SessionPayload
 ): Promise<string> {
   const secret = new TextEncoder().encode(env.appSecret);
   return new jose.SignJWT(payload)
@@ -16,7 +24,7 @@ export async function signSessionToken(
 }
 
 export async function verifySessionToken(
-  token: string,
+  token: string
 ): Promise<SessionPayload | null> {
   if (!token) {
     console.warn("[session] No token provided for verification.");
@@ -37,4 +45,22 @@ export async function verifySessionToken(
     console.warn("[session] JWT verification failed:", error);
     return null;
   }
+}
+
+export async function authenticateRequest(headers: Headers) {
+  const cookies = cookie.parse(headers.get("cookie") || "");
+  const token = cookies[Session.cookieName];
+  if (!token) {
+    console.warn("[auth] No session cookie found in request.");
+    throw Errors.forbidden("Invalid authentication token.");
+  }
+  const claim = await verifySessionToken(token);
+  if (!claim) {
+    throw Errors.forbidden("Invalid authentication token.");
+  }
+  const user = await findUserByUnionId(claim.unionId);
+  if (!user) {
+    throw Errors.forbidden("User not found. Please re-login.");
+  }
+  return user;
 }

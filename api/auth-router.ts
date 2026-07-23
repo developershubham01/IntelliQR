@@ -5,7 +5,7 @@ import { Session } from "../contracts/constants.js";
 import { getSessionCookieOptions } from "./lib/cookies.js";
 import { createRouter, authedQuery, publicQuery } from "./middleware.js";
 import { upsertUser, findUserByUnionId } from "./queries/users.js";
-import { signSessionToken } from "./kimi/session.js";
+import { signSessionToken } from "./lib/auth.js";
 import { env } from "./lib/env.js";
 import { hashPassword, verifyPassword } from "./lib/hash.js";
 
