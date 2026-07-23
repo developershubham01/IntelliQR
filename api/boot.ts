@@ -9,7 +9,7 @@ import { createOAuthCallbackHandler } from "./kimi/auth.js";
 import { Paths } from "../contracts/constants.js";
 import { handleRedirection } from "./redirect-handler.js";
 
-const app = new Hono<{ Bindings: HttpBindings }>();
+export const app = new Hono<{ Bindings: HttpBindings }>();
 
 app.use(bodyLimit({ maxSize: 50 * 1024 * 1024 }));
 app.get(Paths.oauthCallback, createOAuthCallbackHandler());
