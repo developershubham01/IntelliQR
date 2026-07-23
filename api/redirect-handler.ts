@@ -1,6 +1,6 @@
 import type { Context } from "hono";
-import { getDb } from "./queries/connection";
-import { qrCodes, qrScans } from "@db/schema";
+import { getDb } from "./queries/connection.js";
+import { qrCodes, qrScans } from "../db/schema.js";
 import { eq } from "drizzle-orm";
 
 // Very basic device/os extraction from user agent

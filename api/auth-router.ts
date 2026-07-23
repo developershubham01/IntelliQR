@@ -1,12 +1,12 @@
 import * as cookie from "cookie";
 import { z } from "zod";
 import * as jose from "jose";
-import { Session } from "@contracts/constants";
-import { getSessionCookieOptions } from "./lib/cookies";
-import { createRouter, authedQuery, publicQuery } from "./middleware";
-import { upsertUser, findUserByUnionId } from "./queries/users";
-import { signSessionToken } from "./kimi/session";
-import { env } from "./lib/env";
+import { Session } from "../contracts/constants.js";
+import { getSessionCookieOptions } from "./lib/cookies.js";
+import { createRouter, authedQuery, publicQuery } from "./middleware.js";
+import { upsertUser, findUserByUnionId } from "./queries/users.js";
+import { signSessionToken } from "./kimi/session.js";
+import { env } from "./lib/env.js";
 
 export const authRouter = createRouter({
   me: publicQuery.query((opts) => opts.ctx.user ?? null),

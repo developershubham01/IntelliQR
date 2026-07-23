@@ -1,8 +1,8 @@
 import { z } from "zod";
-import { createRouter, authedQuery } from "./middleware";
-import { qrCodes } from "@db/schema";
-import type { QRStyleConfig } from "@db/schema";
-import { getDb } from "./queries/connection";
+import { createRouter, authedQuery } from "./middleware.js";
+import { qrCodes } from "../db/schema.js";
+import type { QRStyleConfig } from "../db/schema.js";
+import { getDb } from "./queries/connection.js";
 import { eq, desc, and } from "drizzle-orm";
 
 export const qrRouter = createRouter({
