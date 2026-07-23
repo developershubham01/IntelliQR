@@ -3,14 +3,17 @@
   "rewrites": [
     {
       "source": "/api/:path*",
-      "destination": "/api/boot"
+      "destination": "/api"
     },
     {
       "source": "/r/:path*",
-      "destination": "/api/boot"
+      "destination": "/api"
     },
     {
-      "source": "/((?!api|r|assets|favicon|robots.txt|sitemap.xml).*)",
+      "handle": "filesystem"
+    },
+    {
+      "source": "/:path*",
       "destination": "/index.html"
     }
   ]
