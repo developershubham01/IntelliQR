@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Link, useNavigate } from "react-router";
 import { motion } from "framer-motion";
 import { QrCode, Lock, Mail, ArrowRight } from "lucide-react";
@@ -24,6 +24,38 @@ export default function Login() {
     },
   });
 
+  const googleLoginMutation = trpc.auth.googleLogin.useMutation({
+    onSuccess: async () => {
+      toast.success("Welcome back to IntelliQR!");
+      await utils.auth.me.invalidate();
+      navigate("/");
+    },
+    onError: (err) => {
+      toast.error(err.message || "Failed to sign in with Google.");
+    },
+  });
+
+  const handleGoogleCallback = (response: any) => {
+    const credential = response.credential;
+    if (credential) {
+      googleLoginMutation.mutate({ credential });
+    }
+  };
+
+  useEffect(() => {
+    const google = (window as any).google;
+    if (google) {
+      google.accounts.id.initialize({
+        client_id: "109467875222-v0vgjm6ot9kb85411tvk3veohms4ur4p.apps.googleusercontent.com",
+        callback: handleGoogleCallback,
+      });
+      google.accounts.id.renderButton(
+        document.getElementById("google-signin-btn"),
+        { theme: "outline", size: "large", width: 356, shape: "pill" }
+      );
+    }
+  }, []);
+
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     if (!email || !password) {
@@ -31,14 +63,6 @@ export default function Login() {
       return;
     }
     loginMutation.mutate({ email, password });
-  };
-
-  const handleGoogleLogin = () => {
-    // Simulate sign in with Google by logging in with a default Google email
-    loginMutation.mutate({
-      email: "google_user@gmail.com",
-      password: "googleoauthpassword123",
-    });
   };
 
   return (
@@ -67,23 +91,7 @@ export default function Login() {
             </div>
 
             {/* Google Sign In */}
-            <button
-              type="button"
-              onClick={handleGoogleLogin}
-              disabled={loginMutation.isPending}
-              className="w-full py-3.5 px-4 rounded-full border border-slate-200/80 hover:border-slate-300 bg-white hover:bg-slate-50 text-slate-700 font-bold text-xs tracking-wider uppercase transition-all flex items-center justify-center gap-3 shadow-sm disabled:opacity-50"
-            >
-              {/* Google SVG Icon */}
-              <svg className="w-4 h-4" viewBox="0 0 24 24" width="24" height="24" xmlns="http://www.w3.org/2000/svg">
-                <g transform="matrix(1, 0, 0, 1, 0, 0)">
-                  <path d="M21.35,11.1H12v2.7h5.38c-0.24,1.28 -0.96,2.37 -2.04,3.1v2.58h3.3c1.93,-1.78 3.04,-4.4 3.04,-7.4C21.68,11.83 21.57,11.45 21.35,11.1z" fill="#4285F4" />
-                  <path d="M12,20.8c2.43,0 4.47,-0.8 5.96,-2.2l-2.92,-2.28c-0.8,0.54 -1.84,0.87 -3.04,0.87 -2.34,0 -4.33,-1.58 -5.04,-3.7H3.54v2.36C5.03,18.73 8.27,20.8 12,20.8z" fill="#34A853" />
-                  <path d="M6.96,13.5c-0.18,-0.54 -0.29,-1.11 -0.29,-1.7c0,-0.59 0.11,-1.16 0.29,-1.7V7.74H3.54C2.93,8.96 2.58,10.37 2.58,12c0,1.63 0.35,3.04 0.96,4.26L6.96,13.5z" fill="#FBBC05" />
-                  <path d="M12,6.5c1.32,0 2.5,0.45 3.44,1.35l2.58,-2.58C16.46,3.84 14.43,3.2 12,3.2c-3.73,0 -6.97,2.07 -8.46,5.06l3.42,2.66C7.67,8.08 9.66,6.5 12,6.5z" fill="#EA4335" />
-                </g>
-              </svg>
-              Sign in with Google
-            </button>
+            <div id="google-signin-btn" className="w-full flex justify-center h-[44px]" />
 
             {/* Separator */}
             <div className="flex items-center my-6">

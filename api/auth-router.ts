@@ -1,5 +1,6 @@
 import * as cookie from "cookie";
 import { z } from "zod";
+import * as jose from "jose";
 import { Session } from "@contracts/constants";
 import { getSessionCookieOptions } from "./lib/cookies";
 import { createRouter, authedQuery, publicQuery } from "./middleware";
@@ -9,6 +10,70 @@ import { env } from "./lib/env";
 
 export const authRouter = createRouter({
   me: publicQuery.query((opts) => opts.ctx.user ?? null),
+
+  googleLogin: publicQuery
+    .input(
+      z.object({
+        credential: z.string(),
+      })
+    )
+    .mutation(async ({ ctx, input }) => {
+      const { credential } = input;
+
+      const jwks = jose.createRemoteJWKSet(
+        new URL("https://www.googleapis.com/oauth2/v3/certs")
+      );
+
+      const { payload } = await jose.jwtVerify(credential, jwks, {
+        audience: "109467875222-v0vgjm6ot9kb85411tvk3veohms4ur4p.apps.googleusercontent.com",
+        issuer: ["https://accounts.google.com", "accounts.google.com"],
+      });
+
+      const email = payload.email as string;
+      const name = payload.name as string;
+      const avatar = payload.picture as string;
+      const unionId = `google_${payload.sub}`;
+
+      let user = await findUserByUnionId(unionId);
+      if (!user) {
+        await upsertUser({
+          unionId,
+          name,
+          email,
+          avatar,
+          lastSignInAt: new Date(),
+        });
+        user = await findUserByUnionId(unionId);
+      } else {
+        await upsertUser({
+          ...user,
+          lastSignInAt: new Date(),
+        });
+      }
+
+      if (!user) {
+        throw new Error("Failed to authenticate with Google.");
+      }
+
+      const token = await signSessionToken({
+        unionId: user.unionId,
+        clientId: env.appId,
+      });
+
+      const opts = getSessionCookieOptions(ctx.req.headers);
+      ctx.resHeaders.append(
+        "set-cookie",
+        cookie.serialize(Session.cookieName, token, {
+          httpOnly: opts.httpOnly,
+          path: opts.path,
+          sameSite: opts.sameSite?.toLowerCase() as "lax" | "none" | "strict",
+          secure: opts.secure,
+          maxAge: Session.maxAgeMs / 1000,
+        })
+      );
+
+      return { success: true, user };
+    }),
   
   login: publicQuery
     .input(
