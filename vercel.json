@@ -11,7 +11,7 @@
       "destination": "/api/boot"
     },
     {
-      "source": "/:path*",
+      "source": "/((?!api|r|assets|favicon|robots.txt|sitemap.xml).*)",
       "destination": "/index.html"
     }
   ]
