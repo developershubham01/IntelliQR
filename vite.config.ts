@@ -25,5 +25,23 @@ export default defineConfig({
   build: {
     outDir: path.resolve(__dirname, "dist/public"),
     emptyOutDir: true,
+    rollupOptions: {
+      output: {
+        manualChunks(id) {
+          if (id.includes("node_modules")) {
+            if (
+              id.includes("three") || 
+              id.includes("@react-three")
+            ) {
+              return "vendor-three";
+            }
+            if (id.includes("framer-motion")) {
+              return "vendor-framer-motion";
+            }
+            return "vendor";
+          }
+        }
+      }
+    }
   },
 });
