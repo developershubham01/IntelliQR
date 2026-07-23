@@ -2,10 +2,10 @@ import { Hono } from "hono";
 import { bodyLimit } from "hono/body-limit";
 import type { HttpBindings } from "@hono/node-server";
 import { fetchRequestHandler } from "@trpc/server/adapters/fetch";
-import { appRouter } from "./router.js";
-import { createContext } from "./context.js";
-import { env } from "./lib/env.js";
-import { handleRedirection } from "./redirect-handler.js";
+import { appRouter } from "../server/router.js";
+import { createContext } from "../server/context.js";
+import { env } from "../server/lib/env.js";
+import { handleRedirection } from "../server/redirect-handler.js";
 
 export const app = new Hono<{ Bindings: HttpBindings }>();
 
@@ -30,7 +30,7 @@ export default handler;
 
 if (env.isProduction && !process.env.VERCEL) {
   const { serve } = await import("@hono/node-server");
-  const { serveStaticFiles } = await import("./lib/vite.js");
+  const { serveStaticFiles } = await import("../server/lib/vite.js");
   serveStaticFiles(app);
 
   const port = parseInt(process.env.PORT || "3000");
