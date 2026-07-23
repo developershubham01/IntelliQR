@@ -7,6 +7,7 @@ import { createRouter, authedQuery, publicQuery } from "./middleware.js";
 import { upsertUser, findUserByUnionId } from "./queries/users.js";
 import { signSessionToken } from "./kimi/session.js";
 import { env } from "./lib/env.js";
+import { hashPassword, verifyPassword } from "./lib/hash.js";
 
 export const authRouter = createRouter({
   me: publicQuery.query((opts) => opts.ctx.user ?? null),
@@ -86,22 +87,14 @@ export const authRouter = createRouter({
       const email = input.email.toLowerCase();
       const unionId = `email_${email}`;
       
-      let user = await findUserByUnionId(unionId);
-      
-      // If user doesn't exist, we auto-create them for this demo (or throw error, but auto-create is friendlier)
-      if (!user) {
-        const name = email.split("@")[0];
-        await upsertUser({
-          unionId,
-          name: name.charAt(0).toUpperCase() + name.slice(1),
-          email,
-          lastSignInAt: new Date(),
-        });
-        user = await findUserByUnionId(unionId);
+      const user = await findUserByUnionId(unionId);
+      if (!user || !user.password) {
+        throw new Error("Invalid email or password.");
       }
 
-      if (!user) {
-        throw new Error("Failed to retrieve or create user.");
+      const isPasswordValid = await verifyPassword(input.password, user.password);
+      if (!isPasswordValid) {
+        throw new Error("Invalid email or password.");
       }
 
       const token = await signSessionToken({
@@ -141,10 +134,13 @@ export const authRouter = createRouter({
         throw new Error("A user with this email already exists.");
       }
 
+      const hashedPassword = await hashPassword(input.password);
+
       await upsertUser({
         unionId,
         name: input.name,
         email,
+        password: hashedPassword,
         lastSignInAt: new Date(),
       });
 
@@ -171,6 +167,37 @@ export const authRouter = createRouter({
       );
 
       return { success: true, user };
+    }),
+
+  updateProfile: authedQuery
+    .input(
+      z.object({
+        name: z.string().min(2),
+        phone: z.string().max(50).optional().nullable(),
+        company: z.string().max(255).optional().nullable(),
+        website: z.string().max(255).optional().nullable(),
+        bio: z.string().optional().nullable(),
+      })
+    )
+    .mutation(async ({ ctx, input }) => {
+      const user = ctx.user;
+
+      await upsertUser({
+        ...user,
+        name: input.name,
+        phone: input.phone,
+        company: input.company,
+        website: input.website,
+        bio: input.bio,
+        lastSignInAt: new Date(),
+      });
+
+      const updatedUser = await findUserByUnionId(user.unionId);
+      if (!updatedUser) {
+        throw new Error("Failed to update profile.");
+      }
+
+      return { success: true, user: updatedUser };
     }),
 
   logout: authedQuery.mutation(async ({ ctx }) => {

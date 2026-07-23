@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { Link, useLocation } from "react-router";
-import { QrCode, Menu, X, LogOut, LayoutDashboard } from "lucide-react";
+import { QrCode, Menu, X, LogOut, LayoutDashboard, User } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import { useAuth } from "@/hooks/useAuth";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
@@ -93,6 +93,12 @@ export default function Header() {
                         My Dashboard
                       </Link>
                     </DropdownMenuItem>
+                    <DropdownMenuItem asChild className="rounded-xl px-3 py-2 cursor-pointer focus:bg-slate-50 transition-colors">
+                      <Link to="/profile" className="flex items-center text-slate-700 hover:text-slate-900 text-xs font-medium">
+                        <User className="mr-2 h-4 w-4 text-slate-400" />
+                        My Profile
+                      </Link>
+                    </DropdownMenuItem>
                     <DropdownMenuItem
                       onClick={logout}
                       className="rounded-xl px-3 py-2 cursor-pointer text-destructive focus:text-destructive focus:bg-rose-50/50 transition-colors flex items-center text-xs font-medium"
@@ -178,6 +184,9 @@ export default function Header() {
                   </div>
                   <Link to="/generator" onClick={() => setMobileOpen(false)} className="btn-primary text-center py-2.5">
                     My Dashboard
+                  </Link>
+                  <Link to="/profile" onClick={() => setMobileOpen(false)} className="w-full py-2.5 rounded-full border border-slate-200/80 text-slate-700 hover:bg-slate-50 text-center font-bold text-xs tracking-wider uppercase transition-all">
+                    My Profile
                   </Link>
                   <button
                     onClick={() => {
