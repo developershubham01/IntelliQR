@@ -1,0 +1,13 @@
+{
+  "version": 2,
+  "rewrites": [
+    {
+      "source": "/api/(.*)",
+      "destination": "/api/boot"
+    },
+    {
+      "source": "/r/(.*)",
+      "destination": "/api/boot"
+    }
+  ]
+}
