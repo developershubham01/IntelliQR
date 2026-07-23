@@ -3,15 +3,15 @@
   "outputDirectory": "dist/public",
   "rewrites": [
     {
-      "source": "/api/(.*)",
+      "source": "/api/:path*",
       "destination": "/api/boot"
     },
     {
-      "source": "/r/(.*)",
+      "source": "/r/:path*",
       "destination": "/api/boot"
     },
     {
-      "source": "/((?!api/|r/).*)",
+      "source": "/:path*",
       "destination": "/index.html"
     }
   ]
