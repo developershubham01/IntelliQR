@@ -1,5 +1,5 @@
 import { useQRStore } from "@/store/qrStore";
-import { PRESETS } from "@/types/qr";
+import { PRESETS, DEFAULT_QR_STYLE } from "@/types/qr";
 import { Palette, Circle, Square, Dot, Hexagon, ImagePlus, X } from "lucide-react";
 import { useRef } from "react";
 
@@ -27,6 +27,31 @@ const errorLevels = [
 export default function QRDesignPanel() {
   const { style, updateStyle, generateQR } = useQRStore();
   const fileInputRef = useRef<HTMLInputElement>(null);
+
+  // Robust deep fallbacks for legacy/corrupted localStorage stores
+  const foregroundColor = style?.foregroundColor || DEFAULT_QR_STYLE.foregroundColor;
+  const backgroundColor = style?.backgroundColor || DEFAULT_QR_STYLE.backgroundColor;
+  const dotStyle = style?.dotStyle || DEFAULT_QR_STYLE.dotStyle;
+  const eyeStyle = style?.eyeStyle || DEFAULT_QR_STYLE.eyeStyle;
+  const cornerRadius = style?.cornerRadius ?? DEFAULT_QR_STYLE.cornerRadius;
+  const padding = style?.padding ?? DEFAULT_QR_STYLE.padding;
+  const transparentBackground = style?.transparentBackground ?? DEFAULT_QR_STYLE.transparentBackground;
+  const logoUrl = style?.logoUrl;
+
+  const gradient = {
+    enabled: style?.gradient?.enabled ?? DEFAULT_QR_STYLE.gradient?.enabled ?? false,
+    type: style?.gradient?.type || DEFAULT_QR_STYLE.gradient?.type || "linear",
+    color1: style?.gradient?.color1 || DEFAULT_QR_STYLE.gradient?.color1 || "#00F0FF",
+    color2: style?.gradient?.color2 || DEFAULT_QR_STYLE.gradient?.color2 || "#FF2BD6",
+    rotation: style?.gradient?.rotation ?? DEFAULT_QR_STYLE.gradient?.rotation ?? 0,
+  };
+
+  const frame = {
+    enabled: style?.frame?.enabled ?? DEFAULT_QR_STYLE.frame?.enabled ?? false,
+    style: style?.frame?.style || DEFAULT_QR_STYLE.frame?.style || "simple",
+    text: style?.frame?.text || DEFAULT_QR_STYLE.frame?.text || "SCAN ME",
+    color: style?.frame?.color || DEFAULT_QR_STYLE.frame?.color || "#00F0FF",
+  };
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
@@ -78,14 +103,14 @@ export default function QRDesignPanel() {
             <div className="flex items-center gap-2">
               <input
                 type="color"
-                value={style.foregroundColor}
+                value={foregroundColor}
                 onChange={(e) => {
                   updateStyle({ foregroundColor: e.target.value });
                   setTimeout(() => generateQR(), 200);
                 }}
                 className="w-10 h-10 rounded-xl cursor-pointer border border-slate-200/50 bg-white p-1"
               />
-              <span className="text-xs text-slate-600 font-mono font-bold uppercase">{style.foregroundColor}</span>
+              <span className="text-xs text-slate-600 font-mono font-bold uppercase">{foregroundColor}</span>
             </div>
           </div>
           <div>
@@ -93,14 +118,14 @@ export default function QRDesignPanel() {
             <div className="flex items-center gap-2">
               <input
                 type="color"
-                value={style.backgroundColor}
+                value={backgroundColor}
                 onChange={(e) => {
                   updateStyle({ backgroundColor: e.target.value });
                   setTimeout(() => generateQR(), 200);
                 }}
                 className="w-10 h-10 rounded-xl cursor-pointer border border-slate-200/50 bg-white p-1"
               />
-              <span className="text-xs text-slate-600 font-mono font-bold uppercase">{style.backgroundColor}</span>
+              <span className="text-xs text-slate-600 font-mono font-bold uppercase">{backgroundColor}</span>
             </div>
           </div>
         </div>
@@ -113,33 +138,33 @@ export default function QRDesignPanel() {
           <button
             onClick={() => {
               updateStyle({
-                gradient: { ...style.gradient!, enabled: !style.gradient?.enabled },
+                gradient: { ...gradient, enabled: !gradient.enabled },
               });
               setTimeout(() => generateQR(), 100);
             }}
             className={`w-11 h-6 rounded-full transition-colors relative focus:outline-none ${
-              style.gradient?.enabled ? "bg-slate-900" : "bg-slate-200"
+              gradient.enabled ? "bg-slate-900" : "bg-slate-200"
             }`}
           >
             <div
               className={`w-5 h-5 rounded-full bg-white absolute top-0.5 transition-transform shadow-sm ${
-                style.gradient?.enabled ? "translate-x-5.5" : "translate-x-0.5"
+                gradient.enabled ? "translate-x-5.5" : "translate-x-0.5"
               }`}
             />
           </button>
         </div>
 
-        {style.gradient?.enabled && (
+        {gradient.enabled && (
           <div className="space-y-3 animate-fade-in pt-2">
             <div className="grid grid-cols-2 gap-3">
               <div>
                 <label className="text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-1 block">Color 1</label>
                 <input
                   type="color"
-                  value={style.gradient?.color1}
+                  value={gradient.color1}
                   onChange={(e) => {
                     updateStyle({
-                      gradient: { ...style.gradient!, color1: e.target.value },
+                      gradient: { ...gradient, color1: e.target.value },
                     });
                     setTimeout(() => generateQR(), 200);
                   }}
@@ -150,10 +175,10 @@ export default function QRDesignPanel() {
                 <label className="text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-1 block">Color 2</label>
                 <input
                   type="color"
-                  value={style.gradient?.color2}
+                  value={gradient.color2}
                   onChange={(e) => {
                     updateStyle({
-                      gradient: { ...style.gradient!, color2: e.target.value },
+                      gradient: { ...gradient, color2: e.target.value },
                     });
                     setTimeout(() => generateQR(), 200);
                   }}
@@ -164,11 +189,11 @@ export default function QRDesignPanel() {
             <div>
               <label className="text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-1.5 block">Type</label>
               <select
-                value={style.gradient?.type}
+                value={gradient.type}
                 onChange={(e) => {
                   updateStyle({
                     gradient: {
-                      ...style.gradient!,
+                      ...gradient,
                       type: e.target.value as "linear" | "radial",
                     },
                   });
@@ -189,7 +214,7 @@ export default function QRDesignPanel() {
         <label className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">Dot Style</label>
         <div className="grid grid-cols-5 gap-1.5">
           {dotStyles.map((ds) => {
-            const isActive = style.dotStyle === ds.value;
+            const isActive = dotStyle === ds.value;
             return (
               <button
                 key={ds.value}
@@ -216,7 +241,7 @@ export default function QRDesignPanel() {
         <label className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">Eye Style</label>
         <div className="grid grid-cols-3 gap-1.5">
           {eyeStyles.map((es) => {
-            const isActive = style.eyeStyle === es.value;
+            const isActive = eyeStyle === es.value;
             return (
               <button
                 key={es.value}
@@ -242,7 +267,7 @@ export default function QRDesignPanel() {
       <div className="space-y-3">
         <label className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">Error Correction</label>
         <select
-          value={style.errorCorrectionLevel}
+          value={style?.errorCorrectionLevel || "M"}
           onChange={(e) => {
             updateStyle({ errorCorrectionLevel: e.target.value as "L" | "M" | "Q" | "H" });
             setTimeout(() => generateQR(), 100);
@@ -261,13 +286,13 @@ export default function QRDesignPanel() {
       <div className="space-y-3 bg-white/40 backdrop-blur-sm p-4 rounded-2xl border border-slate-200/30">
         <div className="flex items-center justify-between">
           <label className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">Corner Radius</label>
-          <span className="text-xs text-indigo-600 font-mono font-bold">{style.cornerRadius}px</span>
+          <span className="text-xs text-indigo-600 font-mono font-bold">{cornerRadius}px</span>
         </div>
         <input
           type="range"
           min={0}
           max={12}
-          value={style.cornerRadius}
+          value={cornerRadius}
           onChange={(e) => {
             updateStyle({ cornerRadius: parseInt(e.target.value) });
             setTimeout(() => generateQR(), 200);
@@ -280,13 +305,13 @@ export default function QRDesignPanel() {
       <div className="space-y-3 bg-white/40 backdrop-blur-sm p-4 rounded-2xl border border-slate-200/30">
         <div className="flex items-center justify-between">
           <label className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">Padding</label>
-          <span className="text-xs text-indigo-600 font-mono font-bold">{style.padding}</span>
+          <span className="text-xs text-indigo-600 font-mono font-bold">{padding}</span>
         </div>
         <input
           type="range"
           min={0}
           max={10}
-          value={style.padding}
+          value={padding}
           onChange={(e) => {
             updateStyle({ padding: parseInt(e.target.value) });
             setTimeout(() => generateQR(), 200);
@@ -300,16 +325,16 @@ export default function QRDesignPanel() {
         <label className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">Transparent BG</label>
         <button
           onClick={() => {
-            updateStyle({ transparentBackground: !style.transparentBackground });
+            updateStyle({ transparentBackground: !transparentBackground });
             setTimeout(() => generateQR(), 100);
           }}
           className={`w-11 h-6 rounded-full transition-colors relative focus:outline-none ${
-            style.transparentBackground ? "bg-slate-900" : "bg-slate-200"
+            transparentBackground ? "bg-slate-900" : "bg-slate-200"
           }`}
         >
           <div
             className={`w-5 h-5 rounded-full bg-white absolute top-0.5 transition-transform shadow-sm ${
-              style.transparentBackground ? "translate-x-5.5" : "translate-x-0.5"
+              transparentBackground ? "translate-x-5.5" : "translate-x-0.5"
             }`}
           />
         </button>
@@ -321,10 +346,10 @@ export default function QRDesignPanel() {
           <ImagePlus className="w-4 h-4 text-slate-400" />
           Logo
         </label>
-        {style.logoUrl ? (
+        {logoUrl ? (
           <div className="flex items-center gap-3">
             <img
-              src={style.logoUrl}
+              src={logoUrl}
               alt="Logo"
               className="w-12 h-12 rounded-xl object-contain bg-white/90 border border-slate-200/40 p-1 shadow-sm"
             />
@@ -362,30 +387,30 @@ export default function QRDesignPanel() {
           <button
             onClick={() => {
               updateStyle({
-                frame: { ...style.frame!, enabled: !style.frame?.enabled },
+                frame: { ...frame, enabled: !frame.enabled },
               });
               setTimeout(() => generateQR(), 100);
             }}
             className={`w-11 h-6 rounded-full transition-colors relative focus:outline-none ${
-              style.frame?.enabled ? "bg-slate-900" : "bg-slate-200"
+              frame.enabled ? "bg-slate-900" : "bg-slate-200"
             }`}
           >
             <div
               className={`w-5 h-5 rounded-full bg-white absolute top-0.5 transition-transform shadow-sm ${
-                style.frame?.enabled ? "translate-x-5.5" : "translate-x-0.5"
+                frame.enabled ? "translate-x-5.5" : "translate-x-0.5"
               }`}
             />
           </button>
         </div>
 
-        {style.frame?.enabled && (
+        {frame.enabled && (
           <div className="space-y-3 animate-fade-in pt-2">
             <input
               type="text"
-              value={style.frame.text}
+              value={frame.text}
               onChange={(e) => {
                 updateStyle({
-                  frame: { ...style.frame!, text: e.target.value },
+                  frame: { ...frame, text: e.target.value },
                 });
               }}
               placeholder="Frame text..."
@@ -395,10 +420,10 @@ export default function QRDesignPanel() {
               <label className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">Color:</label>
               <input
                 type="color"
-                value={style.frame.color}
+                value={frame.color}
                 onChange={(e) => {
                   updateStyle({
-                    frame: { ...style.frame!, color: e.target.value },
+                    frame: { ...frame, color: e.target.value },
                   });
                 }}
                 className="w-8 h-8 rounded-xl cursor-pointer border border-slate-200/50 bg-white p-1"

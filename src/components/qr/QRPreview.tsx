@@ -4,6 +4,7 @@ import { useState } from "react";
 import { copyQRToClipboard, printQR } from "@/lib/qr-generator";
 import { toast } from "sonner";
 import { memo } from "react";
+import { motion } from "framer-motion";
 
 const QRPreview = memo(function QRPreview() {
   const { currentQR, isGenerating, generateQR } = useQRStore();
@@ -25,6 +26,12 @@ const QRPreview = memo(function QRPreview() {
     if (!currentQR?.imageUrl) return;
     printQR(currentQR.imageUrl);
   };
+
+  // Safe checks for frame and logo config from legacy/partial history store items
+  const logoUrl = currentQR?.style?.logoUrl;
+  const frameEnabled = currentQR?.style?.frame?.enabled ?? false;
+  const frameColor = currentQR?.style?.frame?.color || "#000000";
+  const frameText = currentQR?.style?.frame?.text || "SCAN ME";
 
   return (
     <motion.div
@@ -49,25 +56,25 @@ const QRPreview = memo(function QRPreview() {
                 alt="Generated QR Code"
                 className={`w-56 h-56 object-contain rounded-xl ${isGenerating ? "opacity-70 scale-[0.98]" : "opacity-100 scale-100"} transition-all duration-500`}
               />
-              {currentQR.style.logoUrl && (
+              {logoUrl && (
                 <div className="absolute inset-0 flex items-center justify-center">
                   <img
-                    src={currentQR.style.logoUrl}
+                    src={logoUrl}
                     alt="Logo"
                     className="w-12 h-12 object-contain rounded-lg bg-white/90 shadow-sm p-1"
                   />
                 </div>
               )}
-              {currentQR.style.frame?.enabled && (
+              {frameEnabled && (
                 <div
                   className="absolute -bottom-2 left-1/2 -translate-x-1/2 px-3 py-1 rounded-full text-[10px] font-bold uppercase tracking-widest whitespace-nowrap shadow-sm"
                   style={{
-                    backgroundColor: currentQR.style.frame.color + "15",
-                    color: currentQR.style.frame.color,
-                    border: `1px solid ${currentQR.style.frame.color}30`,
+                    backgroundColor: frameColor + "15",
+                    color: frameColor,
+                    border: `1px solid ${frameColor}30`,
                   }}
                 >
-                  {currentQR.style.frame.text}
+                  {frameText}
                 </div>
               )}
             </div>
