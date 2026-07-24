@@ -43,3 +43,6 @@ coverage/
 .vercel
 .env*
 api/index.js
+
+.vercel
+.env*
