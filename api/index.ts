@@ -21,12 +21,12 @@ app.use("/api/trpc/*", async (c) => {
 });
 app.all("/api/*", (c) => c.json({ error: "Not Found" }, 404));
 
-import { handle } from "hono/vercel";
-
-const handler = handle(app);
-
-export { handler as GET, handler as POST, handler as PUT, handler as DELETE, handler as PATCH, handler as OPTIONS };
-export default handler;
+export const GET = app.fetch;
+export const POST = app.fetch;
+export const PUT = app.fetch;
+export const DELETE = app.fetch;
+export const PATCH = app.fetch;
+export const OPTIONS = app.fetch;
 
 if (env.isProduction && !process.env.VERCEL) {
   const { serve } = await import("@hono/node-server");
