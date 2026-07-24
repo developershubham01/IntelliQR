@@ -6,6 +6,9 @@ import {
   QrCode,
   Shield,
   Palette,
+  Code2,
+  Layers,
+  Lock,
 } from "lucide-react";
 
 
@@ -149,6 +152,48 @@ export default function Home() {
               <h3 className="text-[20px] font-bold text-slate-900 mb-3 tracking-tight">Enterprise QR Analytics</h3>
               <p className="text-[15px] text-slate-500 font-medium leading-[1.6]">
                 Gain actionable insights with comprehensive scan tracking. Monitor locations, device types, and daily performance metrics globally.
+              </p>
+            </div>
+
+            {/* Card 4 */}
+            <div className="flex flex-col bg-white border border-slate-100 rounded-[32px] p-6 shadow-[0_8px_30px_rgb(0,0,0,0.02)] hover:shadow-[0_8px_30px_rgb(0,0,0,0.04)] transition-all duration-300">
+              <div className="w-full h-[200px] rounded-2xl bg-gradient-to-br from-[#A1C4FD] to-[#C2E9FB] mb-6 flex items-center justify-center relative overflow-hidden">
+                 <div className="absolute inset-0 opacity-40 bg-[radial-gradient(circle_at_center,_var(--tw-gradient-stops))] from-white via-transparent to-transparent mix-blend-overlay"></div>
+                 <div className="w-16 h-16 border-[2px] border-white/60 rounded-full flex items-center justify-center text-white relative z-10 shadow-[0_0_30px_rgba(255,255,255,0.3)]">
+                   <Code2 className="w-8 h-8" />
+                 </div>
+              </div>
+              <h3 className="text-[20px] font-bold text-slate-900 mb-3 tracking-tight">Developer API Access</h3>
+              <p className="text-[15px] text-slate-500 font-medium leading-[1.6]">
+                Generate QR codes programmatically inside your apps. Access simple API endpoints, client libraries, and webhook notifications automatically.
+              </p>
+            </div>
+
+            {/* Card 5 */}
+            <div className="flex flex-col bg-white border border-slate-100 rounded-[32px] p-6 shadow-[0_8px_30px_rgb(0,0,0,0.02)] hover:shadow-[0_8px_30px_rgb(0,0,0,0.04)] transition-all duration-300">
+              <div className="w-full h-[200px] rounded-2xl bg-gradient-to-br from-[#F5D020] to-[#F59020] mb-6 flex items-center justify-center relative overflow-hidden">
+                 <div className="absolute inset-0 opacity-40 bg-[radial-gradient(circle_at_center,_var(--tw-gradient-stops))] from-white via-transparent to-transparent mix-blend-overlay"></div>
+                 <div className="w-16 h-16 border-[2px] border-white/60 rounded-full flex items-center justify-center text-white relative z-10 shadow-[0_0_30px_rgba(255,255,255,0.3)]">
+                   <Layers className="w-8 h-8" />
+                 </div>
+              </div>
+              <h3 className="text-[20px] font-bold text-slate-900 mb-3 tracking-tight">Bulk & Batch Processing</h3>
+              <p className="text-[15px] text-slate-500 font-medium leading-[1.6]">
+                Generate thousands of unique QR codes from a single spreadsheet upload. Ideal for product packaging, inventory tracking, and event passes.
+              </p>
+            </div>
+
+            {/* Card 6 */}
+            <div className="flex flex-col bg-white border border-slate-100 rounded-[32px] p-6 shadow-[0_8px_30px_rgb(0,0,0,0.02)] hover:shadow-[0_8px_30px_rgb(0,0,0,0.04)] transition-all duration-300">
+              <div className="w-full h-[200px] rounded-2xl bg-gradient-to-br from-[#D4FC79] to-[#96E6A1] mb-6 flex items-center justify-center relative overflow-hidden">
+                 <div className="absolute inset-0 opacity-40 bg-[radial-gradient(circle_at_center,_var(--tw-gradient-stops))] from-white via-transparent to-transparent mix-blend-overlay"></div>
+                 <div className="w-16 h-16 border-[2px] border-white/60 rounded-full flex items-center justify-center text-white relative z-10 shadow-[0_0_30px_rgba(255,255,255,0.3)]">
+                   <Lock className="w-8 h-8" />
+                 </div>
+              </div>
+              <h3 className="text-[20px] font-bold text-slate-900 mb-3 tracking-tight">Secure Link Redirection</h3>
+              <p className="text-[15px] text-slate-500 font-medium leading-[1.6]">
+                Keep your users safe with built-in link verification. Destinations are automatically audited in real-time to prevent phishing and malicious redirects.
               </p>
             </div>
 
