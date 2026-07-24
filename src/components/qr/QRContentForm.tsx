@@ -2,8 +2,10 @@ import { QR_TYPES } from "@/types/qr";
 import { useQRStore } from "@/store/qrStore";
 import { Loader2, Sparkles, Zap } from "lucide-react";
 import { Switch } from "@/components/ui/switch";
+import { useAuth } from "@/hooks/useAuth";
 
 export default function QRContentForm() {
+  const { isAuthenticated } = useAuth();
   const { selectedType, formData, updateFormField, generateQR, isGenerating, isDynamic, setIsDynamic } = useQRStore();
 
   const qrType = QR_TYPES.find((t) => t.type === selectedType);

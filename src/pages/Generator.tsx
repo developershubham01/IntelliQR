@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import QRTypeSelector from "@/components/qr/QRTypeSelector";
 import QRContentForm from "@/components/qr/QRContentForm";
 import QRPreview from "@/components/qr/QRPreview";
@@ -8,6 +8,7 @@ import Header from "@/components/Header";
 import { FileText, Palette, Download, History, Zap } from "lucide-react";
 import { useQRStore } from "@/store/qrStore";
 import { motion, AnimatePresence } from "framer-motion";
+import { useAuth } from "@/hooks/useAuth";
 
 type Tab = "content" | "design" | "export";
 
@@ -18,6 +19,13 @@ const tabs: { id: Tab; label: string; icon: React.ElementType }[] = [
 ];
 
 export default function Generator() {
+  const { isAuthenticated } = useAuth();
+  const setStoreAuth = useQRStore((state) => state.setStoreAuth);
+
+  useEffect(() => {
+    setStoreAuth(isAuthenticated);
+  }, [isAuthenticated, setStoreAuth]);
+
   const [activeTab, setActiveTab] = useState<Tab>("content");
   const [showHistory, setShowHistory] = useState(false);
   const { history, loadQR, toggleFavorite, removeFromHistory, duplicateQR } = useQRStore();

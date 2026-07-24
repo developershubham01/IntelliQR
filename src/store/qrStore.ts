@@ -3,6 +3,7 @@ import { persist } from "zustand/middleware";
 import type { QRType, QRData, QRStyle, QRCodeItem } from "@/types/qr";
 import { DEFAULT_QR_STYLE } from "@/types/qr";
 import { generateQRContent, generateQRCode, generateId } from "@/lib/qr-generator";
+import { toast } from "sonner";
 
 interface QRStore {
   // Current QR being edited
@@ -17,7 +18,12 @@ interface QRStore {
   // History
   history: QRCodeItem[];
 
+  // Guest limiting
+  anonymousGenerations: number[];
+  isAuthenticated: boolean;
+
   // Actions
+  setStoreAuth: (auth: boolean) => void;
   setSelectedType: (type: QRType) => void;
   setFormData: (data: QRData) => void;
   updateFormField: (name: string, value: string) => void;
@@ -54,6 +60,10 @@ export const useQRStore = create<QRStore>()(
       generatedAt: null,
       history: [],
       searchQuery: "",
+      anonymousGenerations: [],
+      isAuthenticated: false,
+
+      setStoreAuth: (isAuthenticated) => set({ isAuthenticated }),
 
       setSelectedType: (type) =>
         set({ selectedType: type, formData: {}, currentQR: null, generatedAt: null }),
@@ -76,8 +86,36 @@ export const useQRStore = create<QRStore>()(
 
       generateQR: async () => {
         const state = get();
+        const isAuthenticated = state.isAuthenticated;
         const content = generateQRContent(state.selectedType, state.formData);
         if (!content) return;
+
+        // Apply rate limit for unauthenticated users
+        if (!isAuthenticated) {
+          const now = Date.now();
+          const oneDayAgo = now - 24 * 60 * 60 * 1000;
+          const recentGenerations = (state.anonymousGenerations || []).filter((t) => t > oneDayAgo);
+
+          if (recentGenerations.length >= 5) {
+            toast.error(
+              "You have reached the free limit of 5 QR codes per day. Sign up for a free account to get unlimited generations!",
+              {
+                duration: 6000,
+                action: {
+                  label: "Sign Up / Log In",
+                  onClick: () => {
+                    window.location.href = "/login";
+                  },
+                },
+              }
+            );
+            return;
+          }
+
+          set({
+            anonymousGenerations: [...recentGenerations, now],
+          });
+        }
 
         set({ isGenerating: true });
 
@@ -86,6 +124,19 @@ export const useQRStore = create<QRStore>()(
           let shortId: string | undefined;
 
           if (state.isDynamic) {
+            if (!isAuthenticated) {
+              toast.error("Dynamic QR codes require a free account. Please log in or sign up first!", {
+                action: {
+                  label: "Log In",
+                  onClick: () => {
+                    window.location.href = "/login";
+                  },
+                },
+              });
+              set({ isGenerating: false });
+              return;
+            }
+
             const res = await fetch("/api/trpc/qr.create", {
               method: "POST",
               headers: { "Content-Type": "application/json" },
@@ -239,6 +290,7 @@ export const useQRStore = create<QRStore>()(
       partialize: (state) => ({
         history: state.history,
         style: state.style,
+        anonymousGenerations: state.anonymousGenerations,
       }),
     }
   )
