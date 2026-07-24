@@ -12,33 +12,33 @@ export default function QRContentForm() {
   return (
     <div className="space-y-6">
       <div className="flex items-center justify-between">
-        <h3 className="text-foreground font-medium">{qrType.label} Details</h3>
-        <span className="text-xs text-muted-foreground">{qrType.category}</span>
+        <h3 className="text-xs font-bold text-slate-400 uppercase tracking-widest">{qrType.label} Details</h3>
+        <span className="text-[10px] font-bold text-indigo-600 bg-indigo-50 border border-indigo-200/50 px-2.5 py-1 rounded-full uppercase tracking-wider">{qrType.category}</span>
       </div>
 
-      <div className="bg-primary/5 border border-primary/20 rounded-xl p-4 flex items-start justify-between gap-4">
+      <div className="bg-white/40 backdrop-blur-sm border border-slate-200/30 rounded-2xl p-4 flex items-start justify-between gap-4 shadow-sm">
         <div className="space-y-1">
-          <div className="flex items-center gap-2 font-medium text-foreground">
-            <Zap className="w-4 h-4 text-primary" />
+          <div className="flex items-center gap-2 font-bold text-xs text-slate-700 uppercase tracking-wider">
+            <Zap className="w-4 h-4 text-indigo-500 animate-pulse" />
             Dynamic QR Code
           </div>
-          <p className="text-xs text-muted-foreground leading-relaxed">
+          <p className="text-[11px] text-slate-400 leading-relaxed font-semibold">
             Dynamic QR codes let you change the destination URL later and track scan statistics without reprinting.
           </p>
         </div>
         <Switch
           checked={isDynamic}
           onCheckedChange={setIsDynamic}
-          className="data-[state=checked]:bg-primary"
+          className="data-[state=checked]:bg-slate-900"
         />
       </div>
 
-      <div className="space-y-3">
+      <div className="space-y-4">
         {qrType.fields.map((field) => (
           <div key={field.name}>
-            <label className="block text-sm text-muted-foreground mb-1.5">
+            <label className="block text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-1.5">
               {field.label}
-              {field.required && <span className="text-accent ml-1">*</span>}
+              {field.required && <span className="text-red-500 ml-1">*</span>}
             </label>
 
             {field.type === "textarea" ? (
@@ -50,26 +50,28 @@ export default function QRContentForm() {
                 required={field.required}
                 aria-required={field.required}
                 rows={3}
-                className="input-cyber w-full resize-none focus-visible:ring-primary"
+                className="w-full px-4 py-2.5 rounded-xl border border-slate-200/60 bg-white text-sm focus:outline-none focus:border-indigo-500 text-slate-800 font-semibold shadow-sm resize-none"
               />
             ) : field.type === "select" ? (
-              <select
-                id={field.name}
-                value={(formData[field.name] as string) || ""}
-                onChange={(e) => updateFormField(field.name, e.target.value)}
-                required={field.required}
-                aria-required={field.required}
-                className="input-cyber w-full appearance-none cursor-pointer focus-visible:ring-primary"
-              >
-                <option value="" className="bg-background">
-                  Select...
-                </option>
-                {field.options?.map((opt) => (
-                  <option key={opt.value} value={opt.value} className="bg-background">
-                    {opt.label}
+              <div className="relative">
+                <select
+                  id={field.name}
+                  value={(formData[field.name] as string) || ""}
+                  onChange={(e) => updateFormField(field.name, e.target.value)}
+                  required={field.required}
+                  aria-required={field.required}
+                  className="w-full px-4 py-2.5 rounded-xl border border-slate-200/60 bg-white text-sm focus:outline-none focus:border-indigo-500 text-slate-800 font-semibold shadow-sm appearance-none cursor-pointer"
+                >
+                  <option value="" className="bg-white">
+                    Select...
                   </option>
-                ))}
-              </select>
+                  {field.options?.map((opt) => (
+                    <option key={opt.value} value={opt.value} className="bg-white">
+                      {opt.label}
+                    </option>
+                  ))}
+                </select>
+              </div>
             ) : (
               <input
                 id={field.name}
@@ -79,7 +81,7 @@ export default function QRContentForm() {
                 placeholder={field.placeholder}
                 required={field.required}
                 aria-required={field.required}
-                className="input-cyber w-full focus-visible:ring-primary"
+                className="w-full px-4 py-2.5 rounded-xl border border-slate-200/60 bg-white text-sm focus:outline-none focus:border-indigo-500 text-slate-800 font-semibold shadow-sm"
               />
             )}
           </div>
@@ -89,7 +91,7 @@ export default function QRContentForm() {
       <button
         onClick={generateQR}
         disabled={isGenerating}
-        className="w-full btn-primary flex items-center justify-center gap-2 py-3 disabled:opacity-50 disabled:cursor-not-allowed"
+        className="w-full py-3.5 rounded-full text-xs font-bold tracking-widest uppercase bg-slate-900 hover:bg-slate-800 text-white transition-all shadow-md shadow-slate-950/10 flex items-center justify-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed"
       >
         {isGenerating ? (
           <>
