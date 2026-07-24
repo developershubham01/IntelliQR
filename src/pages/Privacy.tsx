@@ -1,127 +1,94 @@
 import { motion } from "framer-motion";
-
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
-import { Shield } from "lucide-react";
+import { Shield, Sparkles } from "lucide-react";
 
 export default function Privacy() {
   return (
-    <div className="min-h-screen bg-[#030C14] text-white relative">
-      
+    <div className="min-h-screen bg-slate-50 relative flex flex-col font-sans sarvam-gradient overflow-x-hidden">
       <Header />
 
-      <div className="relative z-10 pt-28 pb-16">
+      <div className="relative z-10 pt-32 pb-20 min-h-[calc(100vh-6rem)]">
+        {/* Background mesh decoration */}
+        <div className="absolute w-[500px] h-[500px] bg-gradient-to-tr from-indigo-500/10 via-purple-500/10 to-pink-500/10 rounded-full blur-[100px] top-12 left-1/4 -z-10 pointer-events-none" />
+        <div className="absolute w-[500px] h-[500px] bg-gradient-to-br from-blue-500/10 via-sky-500/10 to-teal-500/10 rounded-full blur-[100px] bottom-12 right-1/4 -z-10 pointer-events-none" />
+
         <div className="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8">
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             className="text-center mb-12"
           >
-            <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-cyan-500/10 border border-cyan-500/20 text-cyan-400 text-sm font-medium mb-6">
-              <Shield className="w-4 h-4" />
-              Legal
-            </div>
-            <h1 className="text-5xl sm:text-6xl font-bold mb-6">
-              Privacy <span className="text-gradient-cyan">Policy</span>
+            <span className="inline-flex items-center gap-1.5 px-4 py-1.5 rounded-full bg-white/60 backdrop-blur-md border border-white/80 shadow-sm text-xs font-bold text-slate-800 uppercase tracking-widest mb-6">
+              <Shield className="w-3.5 h-3.5 text-indigo-500" />
+              Legal Policy
+            </span>
+            <h1 className="text-5xl sm:text-6xl font-serif text-slate-900 mb-6 tracking-tight">
+              Privacy <span className="italic font-normal text-slate-500 font-serif">Policy</span>
             </h1>
-            <p className="text-gray-400">Last updated: June 29, 2026</p>
+            <p className="text-slate-500 text-sm font-bold">Last updated: July 24, 2026</p>
           </motion.div>
 
-          <div className="glass-panel rounded-2xl p-8 space-y-8">
+          <div className="bg-white/70 backdrop-blur-xl border border-white/60 shadow-[0_12px_40px_rgba(0,0,0,0.03)] rounded-[32px] p-8 space-y-8">
             <section>
-              <h2 className="text-xl font-semibold mb-3">1. Introduction</h2>
-              <p className="text-gray-400 text-sm leading-relaxed">
-                QRify Pro (&quot;we&quot;, &quot;us&quot;, or &quot;our&quot;) is committed to protecting your privacy. This Privacy Policy explains how we collect, use, disclose, and safeguard your information when you use our website and services.
+              <h2 className="text-xl font-bold text-slate-900 mb-3 tracking-tight">1. Introduction</h2>
+              <p className="text-slate-600 font-medium text-sm leading-relaxed">
+                IntelliQR (&quot;we&quot;, &quot;us&quot;, or &quot;our&quot;) is committed to protecting your privacy. This Privacy Policy explains how we collect, use, disclose, and safeguard your information when you use our website and services.
               </p>
             </section>
 
             <section>
-              <h2 className="text-xl font-semibold mb-3">2. Information We Collect</h2>
-              <p className="text-gray-400 text-sm leading-relaxed mb-3">
+              <h2 className="text-xl font-bold text-slate-900 mb-3 tracking-tight">2. Information We Collect</h2>
+              <p className="text-slate-600 font-medium text-sm leading-relaxed mb-3">
                 We collect information that you provide directly to us, including:
               </p>
-              <ul className="list-disc list-inside text-gray-400 text-sm space-y-1">
-                <li>Account information (name, email address)</li>
-                <li>QR code content and styling preferences</li>
+              <ul className="list-disc list-inside text-slate-500 font-semibold text-sm space-y-1">
+                <li>Account credentials (name, email address)</li>
+                <li>QR code content configurations and design styling preferences</li>
                 <li>Payment information (processed securely by our payment providers)</li>
-                <li>Communications you send to us</li>
+                <li>Communications and support requests you submit</li>
               </ul>
             </section>
 
             <section>
-              <h2 className="text-xl font-semibold mb-3">3. How We Use Your Information</h2>
-              <p className="text-gray-400 text-sm leading-relaxed mb-3">
+              <h2 className="text-xl font-bold text-slate-900 mb-3 tracking-tight">3. How We Use Your Information</h2>
+              <p className="text-slate-600 font-medium text-sm leading-relaxed mb-3">
                 We use the information we collect to:
               </p>
-              <ul className="list-disc list-inside text-gray-400 text-sm space-y-1">
-                <li>Provide, maintain, and improve our services</li>
-                <li>Process transactions and send related information</li>
-                <li>Send technical notices, updates, and support messages</li>
-                <li>Respond to your comments and questions</li>
-                <li>Understand how users interact with our services</li>
+              <ul className="list-disc list-inside text-slate-500 font-semibold text-sm space-y-1">
+                <li>Provide, operate, and maintain our generation services</li>
+                <li>Process secure checkout transactions</li>
+                <li>Send technical notices, product updates, and email notifications</li>
+                <li>Respond to feedback and help requests</li>
+                <li>Analyze aggregate usage to optimize website speeds</li>
               </ul>
             </section>
 
             <section>
-              <h2 className="text-xl font-semibold mb-3">4. Data Security</h2>
-              <p className="text-gray-400 text-sm leading-relaxed">
-                We implement appropriate technical and organizational security measures to protect your personal information. All data is transmitted over HTTPS and stored securely. However, no method of transmission over the Internet is 100% secure.
+              <h2 className="text-xl font-bold text-slate-900 mb-3 tracking-tight">4. Data Security</h2>
+              <p className="text-slate-600 font-medium text-sm leading-relaxed">
+                We implement strict industry-standard technical security measures to protect your database assets. All data transfers occur over encrypted HTTPS connections and are stored securely under pooler relays.
               </p>
             </section>
 
             <section>
-              <h2 className="text-xl font-semibold mb-3">5. Data Retention</h2>
-              <p className="text-gray-400 text-sm leading-relaxed">
-                We retain your information for as long as your account is active or as needed to provide you services. You can request deletion of your account and associated data at any time by contacting us.
+              <h2 className="text-xl font-bold text-slate-900 mb-3 tracking-tight">5. Data Retention</h2>
+              <p className="text-slate-600 font-medium text-sm leading-relaxed">
+                We retain your history details for as long as your profile remains active. Guests' local storage records are preserved locally in their own browser cache. You can request deletion of your account metadata at any time.
               </p>
             </section>
 
             <section>
-              <h2 className="text-xl font-semibold mb-3">6. Your Rights</h2>
-              <p className="text-gray-400 text-sm leading-relaxed mb-3">
-                Depending on your location, you may have certain rights regarding your personal information:
-              </p>
-              <ul className="list-disc list-inside text-gray-400 text-sm space-y-1">
-                <li>Access the personal information we hold about you</li>
-                <li>Request correction or deletion of your data</li>
-                <li>Object to or restrict certain processing</li>
-                <li>Data portability</li>
-                <li>Withdraw consent at any time</li>
-              </ul>
-            </section>
-
-            <section>
-              <h2 className="text-xl font-semibold mb-3">7. Third-Party Services</h2>
-              <p className="text-gray-400 text-sm leading-relaxed">
-                We may use third-party services for analytics, payment processing, and hosting. These services have their own privacy policies and may collect information as specified in their respective privacy policies.
+              <h2 className="text-xl font-bold text-slate-900 mb-3 tracking-tight">6. Third-Party Services</h2>
+              <p className="text-slate-600 font-medium text-sm leading-relaxed">
+                We utilize hosting platforms (Vercel) and database handlers (Supabase) to operate our redirect functions. These providers process data safely in accordance with their respective security policies.
               </p>
             </section>
 
             <section>
-              <h2 className="text-xl font-semibold mb-3">8. Cookies</h2>
-              <p className="text-gray-400 text-sm leading-relaxed">
-                We use cookies and similar tracking technologies to track activity on our service and hold certain information. You can instruct your browser to refuse all cookies or to indicate when a cookie is being sent.
-              </p>
-            </section>
-
-            <section>
-              <h2 className="text-xl font-semibold mb-3">9. Children's Privacy</h2>
-              <p className="text-gray-400 text-sm leading-relaxed">
-                Our services are not intended for use by children under the age of 13. We do not knowingly collect personal information from children under 13.
-              </p>
-            </section>
-
-            <section>
-              <h2 className="text-xl font-semibold mb-3">10. Changes to This Policy</h2>
-              <p className="text-gray-400 text-sm leading-relaxed">
-                We may update our Privacy Policy from time to time. We will notify you of any changes by posting the new Privacy Policy on this page and updating the &quot;Last updated&quot; date.
-              </p>
-            </section>
-
-            <section>
-              <h2 className="text-xl font-semibold mb-3">11. Contact Us</h2>
-              <p className="text-gray-400 text-sm leading-relaxed">
-                If you have any questions about this Privacy Policy, please contact us at hello@qrify.pro.
+              <h2 className="text-xl font-bold text-slate-900 mb-3 tracking-tight">7. Contact Us</h2>
+              <p className="text-slate-600 font-medium text-sm leading-relaxed">
+                If you have any questions or feedback regarding this Privacy Policy, please reach out to us directly at <a href="mailto:info@abwcurious.com" className="text-indigo-600 hover:underline">info@abwcurious.com</a>.
               </p>
             </section>
           </div>
