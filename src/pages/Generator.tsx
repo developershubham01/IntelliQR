@@ -23,26 +23,30 @@ export default function Generator() {
   const { history, loadQR, toggleFavorite, removeFromHistory, duplicateQR } = useQRStore();
 
   return (
-    <div className="min-h-screen bg-[#FAFAFA] text-foreground relative font-sans">
+    <div className="min-h-screen bg-slate-50 relative flex flex-col font-sans sarvam-gradient overflow-x-hidden">
       <Header />
 
       <div className="relative z-10 pt-24 pb-8 min-h-screen">
-        <div className="max-w-[1400px] mx-auto px-4 sm:px-6 lg:px-8 lg:h-[calc(100vh-6rem)] min-h-screen lg:min-h-0 pb-20">
+        {/* Background mesh decoration */}
+        <div className="absolute w-[500px] h-[500px] bg-gradient-to-tr from-indigo-500/10 via-purple-500/10 to-pink-500/10 rounded-full blur-[100px] top-12 left-1/4 -z-10 pointer-events-none" />
+        <div className="absolute w-[500px] h-[500px] bg-gradient-to-br from-blue-500/10 via-sky-500/10 to-teal-500/10 rounded-full blur-[100px] bottom-12 right-1/4 -z-10 pointer-events-none" />
+
+        <div className="max-w-[1400px] mx-auto px-4 sm:px-6 lg:px-8 lg:h-[calc(100vh-7rem)] min-h-screen lg:min-h-0 pb-20">
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:h-full">
             {/* Left Panel - Type Selector */}
             <motion.div
               initial={{ opacity: 0, x: -20 }}
               animate={{ opacity: 1, x: 0 }}
               transition={{ duration: 0.5 }}
-              className="lg:col-span-3 bg-white border border-slate-100/80 shadow-[0_8px_30px_rgb(0,0,0,0.02)] rounded-[28px] p-5 overflow-hidden flex flex-col h-full"
+              className="lg:col-span-3 bg-white/70 backdrop-blur-xl border border-white/60 shadow-[0_12px_40px_rgba(0,0,0,0.03)] rounded-[32px] p-6 overflow-hidden flex flex-col h-full"
             >
-              <div className="flex items-center justify-between mb-4 border-b border-slate-100 pb-3">
-                <h2 className="text-[15px] font-bold text-slate-800 tracking-tight">
+              <div className="flex items-center justify-between mb-5 border-b border-slate-100/60 pb-3">
+                <h2 className="text-xs font-bold text-slate-400 uppercase tracking-widest">
                   QR Type
                 </h2>
                 <button
                   onClick={() => setShowHistory(!showHistory)}
-                  className="p-2 rounded-xl text-slate-400 hover:text-slate-800 hover:bg-slate-50 transition-all border border-slate-100"
+                  className="p-2 rounded-xl text-slate-400 hover:text-slate-800 hover:bg-white/80 transition-all border border-slate-200/50 shadow-sm bg-white/40"
                   title="History"
                 >
                   <History className="w-4 h-4" />
@@ -191,7 +195,7 @@ export default function Generator() {
               className="lg:col-span-5 flex items-center justify-center relative"
             >
               {/* Background soft mesh decoration */}
-              <div className="absolute w-[350px] h-[350px] bg-gradient-to-tr from-orange-400/10 via-rose-500/10 to-indigo-500/10 rounded-full blur-[80px] -z-10 pointer-events-none" />
+              <div className="absolute w-[350px] h-[350px] bg-gradient-to-tr from-indigo-500/10 via-purple-500/10 to-pink-500/10 rounded-full blur-[80px] -z-10 pointer-events-none animate-pulse" />
               <QRPreview />
             </motion.div>
 
@@ -200,28 +204,36 @@ export default function Generator() {
               initial={{ opacity: 0, x: 20 }}
               animate={{ opacity: 1, x: 0 }}
               transition={{ duration: 0.5, delay: 0.2 }}
-              className="lg:col-span-4 bg-white border border-slate-100/80 shadow-[0_8px_30px_rgb(0,0,0,0.02)] rounded-[28px] overflow-hidden flex flex-col h-full"
+              className="lg:col-span-4 bg-white/70 backdrop-blur-xl border border-white/60 shadow-[0_12px_40px_rgba(0,0,0,0.03)] rounded-[32px] overflow-hidden flex flex-col h-full"
             >
               {/* Tab Headers */}
-              <div className="flex border-b border-slate-100 bg-slate-50/50">
-                {tabs.map((tab) => (
-                  <button
-                    key={tab.id}
-                    onClick={() => setActiveTab(tab.id)}
-                    className={`flex-1 flex items-center justify-center gap-2 px-3 py-3.5 text-sm font-semibold transition-all ${
-                      activeTab === tab.id
-                        ? "text-slate-800 border-b-2 border-slate-800 bg-white"
-                        : "text-slate-400 hover:text-slate-600 hover:bg-slate-50/50"
-                    }`}
-                  >
-                    <tab.icon className="w-4 h-4" />
-                    <span className="hidden sm:inline">{tab.label}</span>
-                  </button>
-                ))}
+              <div className="flex p-1.5 gap-1 bg-slate-100/60 backdrop-blur-sm border-b border-white/40">
+                {tabs.map((tab) => {
+                  const isActive = activeTab === tab.id;
+                  return (
+                    <button
+                      key={tab.id}
+                      onClick={() => setActiveTab(tab.id)}
+                      className={`relative flex-1 flex items-center justify-center gap-2 px-3 py-2.5 rounded-full text-[10px] font-bold uppercase tracking-widest transition-colors focus:outline-none ${
+                        isActive ? "text-slate-900" : "text-slate-400 hover:text-slate-700"
+                      }`}
+                    >
+                      {isActive && (
+                        <motion.div
+                          layoutId="activeTabPill"
+                          className="absolute inset-0 bg-white border border-slate-200/50 shadow-sm rounded-full -z-10"
+                          transition={{ type: "spring", stiffness: 380, damping: 30 }}
+                        />
+                      )}
+                      <tab.icon className="w-3.5 h-3.5" />
+                      <span className="hidden sm:inline">{tab.label}</span>
+                    </button>
+                  );
+                })}
               </div>
 
               {/* Tab Content */}
-              <div className="flex-1 overflow-y-auto scrollbar-thin p-5">
+              <div className="flex-1 overflow-y-auto scrollbar-thin p-6">
                 <AnimatePresence mode="wait">
                   <motion.div
                     key={activeTab}

@@ -41,39 +41,39 @@ export default function QRTypeSelector() {
   );
 
   return (
-    <div className="space-y-3">
+    <div className="space-y-4">
       {/* Search */}
       <div className="relative">
-        <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
+        <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />
         <input
           type="text"
           value={searchQuery}
           onChange={(e) => setSearchQuery(e.target.value)}
           placeholder="Search QR types..."
-          className="input-cyber w-full pl-9 pr-4 py-2.5 text-sm"
+          className="w-full pl-11 pr-4 py-2.5 rounded-full border border-slate-200/60 bg-white/50 text-sm focus:outline-none focus:border-indigo-500 focus:bg-white text-slate-800 font-medium placeholder:text-slate-400 transition-all shadow-sm"
         />
       </div>
 
       {/* Categories */}
-      <div className="space-y-1 max-h-[300px] overflow-y-auto scrollbar-thin">
+      <div className="space-y-1.5 max-h-[350px] overflow-y-auto scrollbar-thin pr-1">
         {Object.entries(grouped).map(([category, types]) => (
-          <div key={category}>
+          <div key={category} className="space-y-1">
             <button
               onClick={() =>
                 setExpandedCategory(expandedCategory === category ? null : category)
               }
-              className="flex items-center justify-between w-full px-3 py-2 text-xs font-medium text-muted-foreground uppercase tracking-wider hover:text-foreground transition-colors"
+              className="flex items-center justify-between w-full px-3 py-2 text-[10px] font-bold text-slate-400 uppercase tracking-widest hover:text-slate-800 transition-colors"
             >
               {category}
               <ChevronDown
-                className={`w-3.5 h-3.5 transition-transform ${
+                className={`w-3.5 h-3.5 text-slate-400 transition-transform ${
                   expandedCategory === category ? "rotate-180" : ""
                 }`}
               />
             </button>
 
             {expandedCategory === category && (
-              <div className="space-y-0.5">
+              <div className="space-y-1">
                 {types.map((qrType) => {
                   const Icon = iconMap[qrType.icon] || Globe;
                   const isActive = selectedType === qrType.type;
@@ -82,16 +82,16 @@ export default function QRTypeSelector() {
                     <button
                       key={qrType.type}
                       onClick={() => setSelectedType(qrType.type)}
-                      className={`flex items-center gap-3 w-full px-3 py-2.5 rounded-lg text-sm transition-all ${
+                      className={`flex items-center gap-3 w-full px-3 py-2.5 rounded-2xl text-xs font-semibold uppercase tracking-wider transition-all border ${
                         isActive
-                          ? "bg-accent/15 text-accent border border-accent/30"
-                          : "text-muted-foreground hover:text-foreground hover:bg-secondary border border-transparent"
+                          ? "bg-slate-900 text-white shadow-[0_8px_20px_rgba(15,23,42,0.15)] border-slate-900"
+                          : "text-slate-500 hover:text-slate-800 hover:bg-white border-slate-200/30 hover:border-slate-200/60 shadow-sm"
                       }`}
                     >
                       <Icon className="w-4 h-4 flex-shrink-0" />
                       <span className="truncate">{qrType.label}</span>
                       {isActive && (
-                        <div className="ml-auto w-1.5 h-1.5 rounded-full bg-accent shadow-lg shadow-accent/50" />
+                        <div className="ml-auto w-1.5 h-1.5 rounded-full bg-indigo-400 animate-pulse shadow-lg shadow-indigo-400/50" />
                       )}
                     </button>
                   );
