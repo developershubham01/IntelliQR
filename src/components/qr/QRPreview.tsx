@@ -1,10 +1,11 @@
 import { useQRStore } from "@/store/qrStore";
-import { Copy, Printer, RefreshCw } from "lucide-react";
+import { Copy, Printer, RefreshCw, Sparkles } from "lucide-react";
 import { useState } from "react";
 import { copyQRToClipboard, printQR } from "@/lib/qr-generator";
 import { toast } from "sonner";
 import { memo } from "react";
 import { motion } from "framer-motion";
+import { Link } from "react-router";
 
 const QRPreview = memo(function QRPreview() {
   const { currentQR, isGenerating, generateQR } = useQRStore();
@@ -37,10 +38,10 @@ const QRPreview = memo(function QRPreview() {
     <motion.div
       whileHover={{ y: -4 }}
       transition={{ duration: 0.3, ease: "easeOut" }}
-      className="relative w-full max-w-[400px]"
+      className="relative w-full max-w-[400px] flex flex-col items-center gap-6"
     >
       {/* Glass Frame */}
-      <div className="bg-white/80 backdrop-blur-xl border border-white/60 shadow-[0_12px_40px_rgba(0,0,0,0.03)] rounded-[32px] p-6 relative">
+      <div className="w-full bg-white/80 backdrop-blur-xl border border-white/60 shadow-[0_12px_40px_rgba(0,0,0,0.03)] rounded-[32px] p-6 relative">
         {/* Corner Brackets */}
         <div className="absolute top-4 left-4 w-6 h-6 border-l-2 border-t-2 border-indigo-500/20 rounded-tl-lg" />
         <div className="absolute top-4 right-4 w-6 h-6 border-r-2 border-t-2 border-indigo-500/20 rounded-tr-lg" />
@@ -121,6 +122,23 @@ const QRPreview = memo(function QRPreview() {
           </div>
         )}
       </div>
+
+      {/* Choose Template Action */}
+      {currentQR?.imageUrl && (
+        <motion.div 
+          initial={{ opacity: 0, y: 10 }}
+          animate={{ opacity: 1, y: 0 }}
+          className="w-full"
+        >
+          <Link
+            to="/templates"
+            className="w-full py-4 rounded-full text-xs font-bold tracking-widest uppercase bg-[#1C1E2D] hover:bg-slate-800 text-white transition-all shadow-lg shadow-slate-900/10 flex items-center justify-center gap-2"
+          >
+            <Sparkles className="w-4 h-4 text-indigo-300 animate-pulse" />
+            Choose Template
+          </Link>
+        </motion.div>
+      )}
     </motion.div>
   );
 });
