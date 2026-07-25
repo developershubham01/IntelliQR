@@ -6,7 +6,8 @@ import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 import { 
   Sparkles, ArrowLeft, Download, Wifi, Briefcase, Ticket, Tag, 
-  ZoomIn, ZoomOut, RotateCcw, AlertCircle, Check, Loader2, Info
+  ZoomIn, ZoomOut, RotateCcw, AlertCircle, Check, Loader2, Info,
+  Palette, ShieldCheck, HelpCircle, Layers, Maximize
 } from "lucide-react";
 import { toPng, toJpeg, toSvg } from "html-to-image";
 import { jsPDF } from "jspdf";
@@ -14,6 +15,13 @@ import { toast } from "sonner";
 
 type TemplateType = "wifi" | "business" | "ticket" | "tag";
 type ExportFormat = "png" | "jpg" | "svg" | "pdf";
+
+interface DesignTheme {
+  id: string;
+  name: string;
+  className: string;
+  style?: React.CSSProperties;
+}
 
 export default function Templates() {
   const { currentQR, history } = useQRStore();
@@ -25,6 +33,11 @@ export default function Templates() {
   const [exportFormat, setExportFormat] = useState<ExportFormat>("png");
   const [resolution, setResolution] = useState<number>(2); // 1x, 2x, 3x
   const [isExporting, setIsExporting] = useState(false);
+
+  // Design Customization State (Enables 100+ unique designs)
+  const [selectedTheme, setSelectedTheme] = useState<string>("default");
+  const [selectedBorder, setSelectedBorder] = useState<string>("none");
+  const [badgeOverlay, setBadgeOverlay] = useState<string>("none");
 
   // Template Custom Fields
   const [wifiData, setWifiData] = useState({
@@ -59,6 +72,42 @@ export default function Templates() {
   });
 
   const canvasRef = useRef<HTMLDivElement>(null);
+
+  // Predefined Design Themes (10 premium choices)
+  const themes: DesignTheme[] = [
+    { id: "default", name: "Classic White", className: "bg-white text-slate-800 border-slate-200/50" },
+    { id: "dark", name: "Corporate Dark", className: "bg-[#0B1520] text-white border-slate-800" },
+    { id: "spring", name: "Soft Spring", className: "bg-gradient-to-tr from-indigo-50 via-purple-50 to-pink-50 text-slate-800 border-indigo-100/50" },
+    { id: "ocean", name: "Ocean Breeze", className: "bg-gradient-to-tr from-sky-400 via-blue-500 to-indigo-600 text-white border-sky-400/20" },
+    { id: "sunset", name: "Sunset Haze", className: "bg-gradient-to-tr from-amber-400 via-rose-500 to-purple-600 text-white border-amber-400/20" },
+    { id: "emerald", name: "Deep Emerald", className: "bg-gradient-to-br from-emerald-800 via-teal-900 to-slate-900 text-white border-emerald-700/20" },
+    { id: "gold", name: "Golden Luxury", className: "bg-gradient-to-tr from-yellow-600 via-amber-700 to-stone-900 text-white border-yellow-500/20" },
+    { id: "cyber", name: "Cyber Neon", className: "bg-gradient-to-br from-purple-900 via-violet-950 to-[#030C14] text-white border-fuchsia-500/20" },
+    { id: "glass", name: "Glassmorphic Frost", className: "bg-white/60 backdrop-blur-xl border border-white/60 text-slate-800 shadow-sm" },
+    { id: "foliage", name: "Indian Tea", className: "bg-gradient-to-br from-emerald-50 via-teal-50 to-green-100 text-slate-800 border-teal-100/50" }
+  ];
+
+  // Predefined Border Styles (5 choices)
+  const borders = [
+    { id: "none", name: "Clean No Border", className: "border-none" },
+    { id: "solid", name: "Sleek Accent Line", className: "border-2 border-indigo-500/55" },
+    { id: "dotted", name: "Dot-Dash Outline", className: "border-4 border-dotted border-indigo-400/40" },
+    { id: "double", name: "Thick Double Trim", className: "border-double border-4 border-slate-800/80" },
+    { id: "brackets", name: "Vintage Corner Brackets", className: "relative border-none" }
+  ];
+
+  // Predefined Badges (5 choices)
+  const badges = [
+    { id: "none", name: "No Badge" },
+    { id: "vip", name: "VIP Access", color: "bg-amber-500 text-slate-950" },
+    { id: "wifi", name: "Scan to Connect", color: "bg-indigo-600 text-white" },
+    { id: "official", name: "Official Product", color: "bg-emerald-600 text-white" },
+    { id: "secure", name: "100% Secure Link", color: "bg-sky-600 text-white" }
+  ];
+
+  const getThemeClass = () => themes.find(t => t.id === selectedTheme) || themes[0];
+  const getBorderClass = () => borders.find(b => b.id === selectedBorder) || borders[0];
+  const getBadge = () => badges.find(b => b.id === badgeOverlay) || badges[0];
 
   const handleZoomIn = () => setZoom(prev => Math.min(prev + 0.1, 1.5));
   const handleZoomOut = () => setZoom(prev => Math.max(prev - 0.1, 0.6));
@@ -139,11 +188,11 @@ export default function Templates() {
               </Link>
               <div>
                 <h1 className="text-xl font-bold text-slate-900 tracking-tight flex items-center gap-2">
-                  <Sparkles className="w-4 h-4 text-indigo-500" />
+                  <Sparkles className="w-4 h-4 text-indigo-500 animate-pulse" />
                   QR Template Compositor
                 </h1>
                 <p className="text-xs text-slate-500 font-semibold">
-                  Embed your active QR code into premium physical print designs.
+                  Combine 4 layouts with 10 themes and 5 borders to create 100+ unique styles!
                 </p>
               </div>
             </div>
@@ -205,16 +254,30 @@ export default function Templates() {
                 {selectedTemplate === "wifi" && (
                   <div 
                     ref={canvasRef}
-                    className="w-[340px] h-[480px] bg-amber-50/50 border border-amber-200/50 shadow-2xl rounded-[32px] p-8 flex flex-col items-center justify-between relative overflow-hidden bg-white"
+                    className={`w-[340px] h-[480px] shadow-2xl rounded-[32px] p-8 flex flex-col items-center justify-between relative overflow-hidden border ${getThemeClass().className} ${getBorderClass().id !== "brackets" ? getBorderClass().className : ""}`}
                   >
-                    {/* Decorative Header Arc */}
-                    <div className="absolute top-0 inset-x-0 h-3 bg-gradient-to-r from-amber-400 via-indigo-500 to-purple-600" />
-                    
-                    <div className="text-center mt-6">
-                      <div className="w-12 h-12 rounded-full bg-indigo-500/10 flex items-center justify-center mx-auto mb-3">
-                        <Wifi className="w-6 h-6 text-indigo-600" />
+                    {/* Brackets Corner overlay */}
+                    {getBorderClass().id === "brackets" && (
+                      <>
+                        <div className="absolute top-4 left-4 w-6 h-6 border-l-2 border-t-2 border-indigo-500/40 rounded-tl-lg" />
+                        <div className="absolute top-4 right-4 w-6 h-6 border-r-2 border-t-2 border-indigo-500/40 rounded-tr-lg" />
+                        <div className="absolute bottom-4 left-4 w-6 h-6 border-l-2 border-b-2 border-indigo-500/40 rounded-bl-lg" />
+                        <div className="absolute bottom-4 right-4 w-6 h-6 border-r-2 border-b-2 border-indigo-500/40 rounded-br-lg" />
+                      </>
+                    )}
+
+                    {/* Badge Overlay */}
+                    {getBadge().id !== "none" && (
+                      <div className={`absolute top-4 left-4 px-2.5 py-0.5 rounded-full text-[7px] font-bold uppercase tracking-wider ${getBadge().color}`}>
+                        {getBadge().name}
                       </div>
-                      <h2 className="text-lg font-bold text-slate-800 tracking-wider uppercase">{wifiData.title}</h2>
+                    )}
+
+                    <div className="text-center mt-6">
+                      <div className="w-10 h-10 rounded-full bg-indigo-500/10 flex items-center justify-center mx-auto mb-2">
+                        <Wifi className="w-5 h-5 text-indigo-600" />
+                      </div>
+                      <h2 className="text-base font-bold tracking-wider uppercase">{wifiData.title}</h2>
                       <div className="w-12 h-0.5 bg-slate-200 mx-auto mt-2" />
                     </div>
 
@@ -227,19 +290,19 @@ export default function Templates() {
                       />
                     </div>
 
-                    <div className="w-full space-y-3 bg-slate-50/60 border border-slate-100 p-4 rounded-2xl text-center">
+                    <div className="w-full space-y-2 bg-white/10 backdrop-blur-md border border-white/20 p-4 rounded-2xl text-center">
                       <div>
-                        <span className="text-[10px] font-bold text-slate-400 uppercase tracking-widest block">Network SSID</span>
-                        <span className="text-sm font-extrabold text-slate-700">{wifiData.ssid}</span>
+                        <span className="text-[8px] font-bold opacity-60 uppercase tracking-widest block">Network SSID</span>
+                        <span className="text-xs font-extrabold">{wifiData.ssid}</span>
                       </div>
-                      <div className="w-full h-px bg-slate-100" />
+                      <div className="w-full h-px bg-white/10" />
                       <div>
-                        <span className="text-[10px] font-bold text-slate-400 uppercase tracking-widest block">Password</span>
-                        <span className="text-sm font-extrabold text-slate-700">{wifiData.password}</span>
+                        <span className="text-[8px] font-bold opacity-60 uppercase tracking-widest block">Password</span>
+                        <span className="text-xs font-extrabold">{wifiData.password}</span>
                       </div>
                     </div>
 
-                    <p className="text-[9px] text-slate-400 font-semibold text-center max-w-[220px] mb-4">
+                    <p className="text-[8px] opacity-60 font-semibold text-center max-w-[220px] mb-2 leading-relaxed">
                       {wifiData.note}
                     </p>
                   </div>
@@ -249,25 +312,38 @@ export default function Templates() {
                 {selectedTemplate === "business" && (
                   <div 
                     ref={canvasRef}
-                    className="w-[500px] h-[290px] bg-slate-900 border border-slate-800 shadow-2xl rounded-[24px] p-8 flex items-center justify-between relative overflow-hidden bg-white text-white"
-                    style={{ backgroundColor: "#0B1520" }}
+                    className={`w-[500px] h-[290px] shadow-2xl rounded-[24px] p-8 flex items-center justify-between relative overflow-hidden border ${getThemeClass().className} ${getBorderClass().id !== "brackets" ? getBorderClass().className : ""}`}
                   >
-                    {/* Diagonal accent slash */}
-                    <div className="absolute top-0 right-0 w-44 h-full bg-gradient-to-bl from-indigo-500/10 via-purple-500/5 to-transparent -z-0 pointer-events-none transform skew-x-12 origin-top-right" />
+                    {/* Brackets Corner overlay */}
+                    {getBorderClass().id === "brackets" && (
+                      <>
+                        <div className="absolute top-4 left-4 w-6 h-6 border-l-2 border-t-2 border-indigo-500/40 rounded-tl-lg" />
+                        <div className="absolute top-4 right-4 w-6 h-6 border-r-2 border-t-2 border-indigo-500/40 rounded-tr-lg" />
+                        <div className="absolute bottom-4 left-4 w-6 h-6 border-l-2 border-b-2 border-indigo-500/40 rounded-bl-lg" />
+                        <div className="absolute bottom-4 right-4 w-6 h-6 border-r-2 border-b-2 border-indigo-500/40 rounded-br-lg" />
+                      </>
+                    )}
+
+                    {/* Badge Overlay */}
+                    {getBadge().id !== "none" && (
+                      <div className={`absolute top-4 right-4 px-2.5 py-0.5 rounded-full text-[7px] font-bold uppercase tracking-wider ${getBadge().color}`}>
+                        {getBadge().name}
+                      </div>
+                    )}
                     
                     {/* Left Info block */}
                     <div className="flex flex-col justify-between h-full relative z-10 max-w-[260px]">
                       <div>
-                        <span className="text-xs font-bold text-indigo-400 tracking-widest uppercase mb-1.5 block">
+                        <span className="text-[10px] font-bold text-indigo-400 tracking-widest uppercase mb-1 block">
                           {businessData.company}
                         </span>
-                        <h2 className="text-2xl font-serif tracking-tight font-medium mb-1 text-white">{businessData.name}</h2>
-                        <span className="text-[10px] font-bold text-slate-400 tracking-wider uppercase block">{businessData.title}</span>
+                        <h2 className="text-xl font-serif tracking-tight font-medium mb-0.5">{businessData.name}</h2>
+                        <span className="text-[8px] font-bold opacity-60 tracking-wider uppercase block">{businessData.title}</span>
                       </div>
 
-                      <div className="space-y-2 border-l border-indigo-500/30 pl-3">
-                        <p className="text-[10px] font-semibold text-slate-300">{businessData.phone}</p>
-                        <p className="text-[10px] font-semibold text-slate-300">{businessData.email}</p>
+                      <div className="space-y-1.5 border-l border-indigo-500/30 pl-3">
+                        <p className="text-[9px] font-semibold opacity-80">{businessData.phone}</p>
+                        <p className="text-[9px] font-semibold opacity-80">{businessData.email}</p>
                       </div>
                     </div>
 
@@ -278,7 +354,7 @@ export default function Templates() {
                         alt="QR Code Embed"
                         className="w-28 h-28 object-contain"
                       />
-                      <span className="text-[7px] text-slate-400 font-bold uppercase tracking-widest mt-1.5">Scan vCard</span>
+                      <span className="text-[6px] text-slate-400 font-bold uppercase tracking-widest mt-1">Scan vCard</span>
                     </div>
                   </div>
                 )}
@@ -287,44 +363,60 @@ export default function Templates() {
                 {selectedTemplate === "ticket" && (
                   <div 
                     ref={canvasRef}
-                    className="w-[520px] h-[210px] bg-white border border-slate-200 shadow-2xl rounded-3xl flex overflow-hidden relative"
+                    className={`w-[520px] h-[210px] shadow-2xl rounded-3xl flex overflow-hidden relative border ${getThemeClass().className} ${getBorderClass().id !== "brackets" ? getBorderClass().className : ""}`}
                   >
+                    {/* Brackets Corner overlay */}
+                    {getBorderClass().id === "brackets" && (
+                      <>
+                        <div className="absolute top-4 left-4 w-4 h-4 border-l-2 border-t-2 border-indigo-500/40 rounded-tl-lg" />
+                        <div className="absolute top-4 right-4 w-4 h-4 border-r-2 border-t-2 border-indigo-500/40 rounded-tr-lg" />
+                        <div className="absolute bottom-4 left-4 w-4 h-4 border-l-2 border-b-2 border-indigo-500/40 rounded-bl-lg" />
+                        <div className="absolute bottom-4 right-4 w-4 h-4 border-r-2 border-b-2 border-indigo-500/40 rounded-br-lg" />
+                      </>
+                    )}
+
                     {/* Left main stub */}
                     <div className="flex-1 p-6 flex flex-col justify-between">
                       <div>
-                        <span className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full bg-indigo-50 text-[9px] font-bold text-indigo-600 uppercase tracking-widest mb-3">
-                          <Ticket className="w-3 h-3" />
+                        <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full bg-indigo-500/15 text-[8px] font-bold text-indigo-500 uppercase tracking-widest mb-2">
+                          <Ticket className="w-2.5 h-2.5" />
                           ADMIT ONE
                         </span>
-                        <h2 className="text-lg font-bold text-slate-800 tracking-tight leading-tight">{ticketData.event}</h2>
-                        <p className="text-[10px] text-slate-400 font-semibold mt-1">{ticketData.location}</p>
+                        <h2 className="text-base font-bold tracking-tight leading-tight">{ticketData.event}</h2>
+                        <p className="text-[9px] opacity-60 font-semibold mt-0.5">{ticketData.location}</p>
                       </div>
 
-                      <div className="grid grid-cols-3 gap-2 border-t border-slate-100 pt-3">
+                      <div className="grid grid-cols-3 gap-2 border-t border-white/10 pt-2.5">
                         <div>
-                          <span className="text-[8px] font-bold text-slate-400 uppercase tracking-widest block">Date</span>
-                          <span className="text-[10px] font-extrabold text-slate-700">{ticketData.date}</span>
+                          <span className="text-[7px] font-bold opacity-50 uppercase tracking-widest block">Date</span>
+                          <span className="text-[9px] font-extrabold">{ticketData.date}</span>
                         </div>
                         <div>
-                          <span className="text-[8px] font-bold text-slate-400 uppercase tracking-widest block">Time</span>
-                          <span className="text-[10px] font-extrabold text-slate-700">{ticketData.time}</span>
+                          <span className="text-[7px] font-bold opacity-50 uppercase tracking-widest block">Time</span>
+                          <span className="text-[9px] font-extrabold">{ticketData.time}</span>
                         </div>
                         <div>
-                          <span className="text-[8px] font-bold text-slate-400 uppercase tracking-widest block">Seat</span>
-                          <span className="text-[10px] font-extrabold text-indigo-600">{ticketData.seat}</span>
+                          <span className="text-[7px] font-bold opacity-50 uppercase tracking-widest block">Seat</span>
+                          <span className="text-[9px] font-extrabold text-indigo-500">{ticketData.seat}</span>
                         </div>
                       </div>
                     </div>
 
                     {/* Dotted border ticket stub separator */}
-                    <div className="w-px h-full border-l border-dashed border-slate-300 relative">
-                      <div className="absolute -top-3 -left-3 w-6 h-6 rounded-full bg-slate-100 border border-slate-200" />
-                      <div className="absolute -bottom-3 -left-3 w-6 h-6 rounded-full bg-slate-100 border border-slate-200" />
+                    <div className="w-px h-full border-l border-dashed border-white/20 relative">
+                      <div className="absolute -top-3 -left-3 w-6 h-6 rounded-full bg-slate-100 border border-slate-200/50" />
+                      <div className="absolute -bottom-3 -left-3 w-6 h-6 rounded-full bg-slate-100 border border-slate-200/50" />
                     </div>
 
                     {/* Right stub */}
-                    <div className="w-[160px] bg-slate-50/50 p-6 flex flex-col items-center justify-between text-center">
-                      <div className="bg-white p-2.5 rounded-xl border border-slate-100 shadow-sm">
+                    <div className="w-[160px] bg-white/5 backdrop-blur-sm p-6 flex flex-col items-center justify-between text-center">
+                      {getBadge().id !== "none" && (
+                        <span className={`px-2 py-0.5 rounded-full text-[6px] font-bold uppercase tracking-wider mb-2 ${getBadge().color}`}>
+                          {getBadge().name}
+                        </span>
+                      )}
+
+                      <div className="bg-white p-2.5 rounded-xl border border-slate-100 shadow-sm mt-1">
                         <img 
                           src={activeQR?.imageUrl || "https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=IntelliQR"} 
                           alt="QR Code Embed"
@@ -332,8 +424,7 @@ export default function Templates() {
                         />
                       </div>
                       <div>
-                        <span className="text-[8px] font-bold text-slate-400 block tracking-widest">{ticketData.ticketNo}</span>
-                        <span className="text-[7px] text-slate-400 font-bold uppercase tracking-widest mt-0.5 block">Scan at Gate</span>
+                        <span className="text-[7px] opacity-60 block tracking-widest mt-1">{ticketData.ticketNo}</span>
                       </div>
                     </div>
                   </div>
@@ -343,24 +434,39 @@ export default function Templates() {
                 {selectedTemplate === "tag" && (
                   <div 
                     ref={canvasRef}
-                    className="w-[280px] h-[450px] bg-white border border-slate-200 shadow-2xl rounded-3xl p-6 flex flex-col items-center justify-between relative overflow-hidden"
+                    className={`w-[280px] h-[450px] shadow-2xl rounded-3xl p-6 flex flex-col items-center justify-between relative overflow-hidden border ${getThemeClass().className} ${getBorderClass().id !== "brackets" ? getBorderClass().className : ""}`}
                   >
+                    {/* Brackets Corner overlay */}
+                    {getBorderClass().id === "brackets" && (
+                      <>
+                        <div className="absolute top-8 left-4 w-5 h-5 border-l-2 border-t-2 border-indigo-500/40 rounded-tl-lg" />
+                        <div className="absolute top-8 right-4 w-5 h-5 border-r-2 border-t-2 border-indigo-500/40 rounded-tr-lg" />
+                        <div className="absolute bottom-4 left-4 w-5 h-5 border-l-2 border-b-2 border-indigo-500/40 rounded-bl-lg" />
+                        <div className="absolute bottom-4 right-4 w-5 h-5 border-r-2 border-b-2 border-indigo-500/40 rounded-br-lg" />
+                      </>
+                    )}
+
                     {/* Decorative hole & string */}
-                    <div className="absolute top-4 left-1/2 -translate-x-1/2 flex flex-col items-center gap-1">
-                      <div className="w-3.5 h-3.5 rounded-full bg-slate-100 border border-slate-200 shadow-inner flex items-center justify-center">
-                        <div className="w-1.5 h-1.5 rounded-full bg-slate-200" />
+                    <div className="absolute top-3 left-1/2 -translate-x-1/2 flex flex-col items-center gap-0.5">
+                      <div className="w-3 h-3 rounded-full bg-slate-100 border border-slate-200/50 shadow-inner flex items-center justify-center">
+                        <div className="w-1 h-1 rounded-full bg-slate-300" />
                       </div>
-                      <div className="w-0.5 h-4 bg-slate-300" />
+                      <div className="w-0.5 h-3 bg-slate-300" />
                     </div>
 
-                    <div className="text-center mt-12 w-full">
-                      <span className="text-[9px] font-bold text-slate-400 uppercase tracking-widest block mb-1">Authentic Product</span>
-                      <h2 className="text-base font-bold text-slate-800 tracking-tight truncate px-4">{tagData.product}</h2>
-                      <span className="text-xs font-semibold text-slate-400 block mt-0.5">{tagData.sku}</span>
+                    <div className="text-center mt-8 w-full">
+                      {getBadge().id !== "none" && (
+                        <span className={`inline-block px-2.5 py-0.5 rounded-full text-[6px] font-bold uppercase tracking-wider mb-2 ${getBadge().color}`}>
+                          {getBadge().name}
+                        </span>
+                      )}
+                      <span className="text-[8px] opacity-60 uppercase tracking-widest block mb-0.5">Product Label</span>
+                      <h2 className="text-sm font-bold tracking-tight truncate px-3">{tagData.product}</h2>
+                      <span className="text-[10px] opacity-40 block mt-0.5">{tagData.sku}</span>
                     </div>
 
                     {/* QR Code Container */}
-                    <div className="my-4 bg-slate-50 border border-slate-100 p-3 rounded-2xl shadow-inner flex items-center justify-center">
+                    <div className="my-3 bg-white/10 backdrop-blur-md border border-white/10 p-3 rounded-2xl shadow-inner flex items-center justify-center">
                       <img 
                         src={activeQR?.imageUrl || "https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=IntelliQR"} 
                         alt="QR Code Embed"
@@ -369,11 +475,11 @@ export default function Templates() {
                     </div>
 
                     {/* Price and Details */}
-                    <div className="text-center w-full mb-4">
-                      <span className="text-[9px] font-bold text-slate-400 uppercase tracking-widest block">Retail Price</span>
-                      <div className="text-3xl font-extrabold text-slate-900 tracking-tight mt-0.5">{tagData.price}</div>
-                      <div className="w-16 h-0.5 bg-slate-100 mx-auto my-3" />
-                      <p className="text-[10px] text-slate-400 font-bold uppercase tracking-widest">{tagData.footer}</p>
+                    <div className="text-center w-full mb-2">
+                      <span className="text-[8px] opacity-60 uppercase tracking-widest block">Retail Price</span>
+                      <div className="text-2xl font-extrabold tracking-tight mt-0.5">{tagData.price}</div>
+                      <div className="w-12 h-0.5 bg-slate-100/10 mx-auto my-2" />
+                      <p className="text-[8px] font-bold uppercase tracking-widest opacity-60">{tagData.footer}</p>
                     </div>
                   </div>
                 )}
@@ -391,38 +497,92 @@ export default function Templates() {
             {/* Right Editor Controls Sidebar */}
             <div className="lg:col-span-4 bg-white/70 backdrop-blur-xl border border-white/60 shadow-[0_12px_40px_rgba(0,0,0,0.03)] rounded-[32px] p-6 overflow-y-auto flex flex-col h-full gap-6">
               
-              {/* Step 1: Select Template */}
+              {/* Step 1: Layout Selection */}
               <div>
-                <h3 className="text-xs font-bold text-slate-400 uppercase tracking-widest mb-3">
-                  1. Select Design Template
+                <h3 className="text-xs font-bold text-slate-400 uppercase tracking-widest mb-3 flex items-center gap-1">
+                  <Layers className="w-3.5 h-3.5" />
+                  1. Base Layout ({selectedTemplate.toUpperCase()})
                 </h3>
-                <div className="grid grid-cols-2 gap-3">
+                <div className="grid grid-cols-4 gap-2">
                   {[
-                    { id: "wifi", label: "WiFi Tent", icon: Wifi },
-                    { id: "business", label: "Biz Card", icon: Briefcase },
-                    { id: "ticket", label: "Event Ticket", icon: Ticket },
-                    { id: "tag", label: "Product Tag", icon: Tag },
+                    { id: "wifi", icon: Wifi, title: "WiFi" },
+                    { id: "business", icon: Briefcase, title: "vCard" },
+                    { id: "ticket", icon: Ticket, title: "Pass" },
+                    { id: "tag", icon: Tag, title: "Tag" },
                   ].map((temp) => (
                     <button
                       key={temp.id}
                       onClick={() => setSelectedTemplate(temp.id as TemplateType)}
-                      className={`p-3 rounded-2xl border text-left transition-all flex flex-col gap-2 relative overflow-hidden ${
+                      className={`py-2.5 rounded-xl border transition-all flex flex-col items-center justify-center gap-1 ${
                         selectedTemplate === temp.id
                           ? "bg-slate-900 border-slate-900 text-white shadow-md shadow-slate-900/10"
-                          : "bg-white border-slate-200/60 text-slate-600 hover:border-slate-300"
+                          : "bg-white border-slate-200/60 text-slate-500 hover:border-slate-300"
                       }`}
+                      title={temp.title}
                     >
-                      <temp.icon className={`w-4 h-4 ${selectedTemplate === temp.id ? "text-indigo-400" : "text-slate-400"}`} />
-                      <span className="text-[11px] font-bold tracking-tight">{temp.label}</span>
+                      <temp.icon className="w-4 h-4" />
+                      <span className="text-[9px] font-bold tracking-tight">{temp.title}</span>
                     </button>
                   ))}
                 </div>
               </div>
 
-              {/* Step 2: Customize Fields */}
+              {/* Step 2: Styling Combinator (Creates 100+ variations) */}
+              <div>
+                <h3 className="text-xs font-bold text-slate-400 uppercase tracking-widest mb-3 flex items-center gap-1">
+                  <Palette className="w-3.5 h-3.5" />
+                  2. Style & Themes Combinator
+                </h3>
+                <div className="space-y-4">
+                  {/* Theme Select */}
+                  <div>
+                    <label className="block text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-1.5">Color Palette / Background</label>
+                    <select
+                      value={selectedTheme}
+                      onChange={(e) => setSelectedTheme(e.target.value)}
+                      className="w-full px-4 py-2.5 rounded-xl border border-slate-200/60 bg-white text-xs focus:outline-none focus:border-indigo-500 text-slate-800 font-bold shadow-sm"
+                    >
+                      {themes.map((t) => (
+                        <option key={t.id} value={t.id}>{t.name}</option>
+                      ))}
+                    </select>
+                  </div>
+
+                  {/* Border Style Select */}
+                  <div>
+                    <label className="block text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-1.5">Frame / Borders</label>
+                    <select
+                      value={selectedBorder}
+                      onChange={(e) => setSelectedBorder(e.target.value)}
+                      className="w-full px-4 py-2.5 rounded-xl border border-slate-200/60 bg-white text-xs focus:outline-none focus:border-indigo-500 text-slate-800 font-bold shadow-sm"
+                    >
+                      {borders.map((b) => (
+                        <option key={b.id} value={b.id}>{b.name}</option>
+                      ))}
+                    </select>
+                  </div>
+
+                  {/* Badge Select */}
+                  <div>
+                    <label className="block text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-1.5">Stamp / Badge Overlay</label>
+                    <select
+                      value={badgeOverlay}
+                      onChange={(e) => setBadgeOverlay(e.target.value)}
+                      className="w-full px-4 py-2.5 rounded-xl border border-slate-200/60 bg-white text-xs focus:outline-none focus:border-indigo-500 text-slate-800 font-bold shadow-sm"
+                    >
+                      {badges.map((bg) => (
+                        <option key={bg.id} value={bg.id}>{bg.name}</option>
+                      ))}
+                    </select>
+                  </div>
+                </div>
+              </div>
+
+              {/* Step 3: Customize Fields */}
               <div className="flex-1 flex flex-col min-h-0">
-                <h3 className="text-xs font-bold text-slate-400 uppercase tracking-widest mb-3">
-                  2. Customize Text Fields
+                <h3 className="text-xs font-bold text-slate-400 uppercase tracking-widest mb-3 flex items-center gap-1">
+                  <Maximize className="w-3.5 h-3.5" />
+                  3. Customize Text Fields
                 </h3>
 
                 <div className="space-y-4 flex-1 overflow-y-auto pr-1">
@@ -628,10 +788,10 @@ export default function Templates() {
                 </div>
               </div>
 
-              {/* Step 3: Download Panel (Export formats & resolutions) */}
+              {/* Step 4: Download Panel (Export formats & resolutions) */}
               <div className="border-t border-slate-100 pt-4">
                 <h3 className="text-xs font-bold text-slate-400 uppercase tracking-widest mb-3">
-                  3. Export Settings
+                  4. Export Settings
                 </h3>
 
                 <div className="space-y-4">
@@ -652,7 +812,7 @@ export default function Templates() {
                     ))}
                   </div>
 
-                  {/* Resolution Selector (Not visible for PDF/SVG as they are vector/high res by default) */}
+                  {/* Resolution Selector */}
                   {exportFormat !== "pdf" && exportFormat !== "svg" && (
                     <div className="flex items-center justify-between bg-slate-50/60 border border-slate-100 px-3 py-2 rounded-2xl">
                       <span className="text-[10px] font-bold text-slate-400 uppercase tracking-wider">Export Resolution</span>
