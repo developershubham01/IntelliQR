@@ -2,6 +2,7 @@ import { useState, useRef, useMemo, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Link } from "react-router";
 import { useQRStore } from "@/store/qrStore";
+import { useAuth } from "@/hooks/useAuth";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 import { TEMPLATES_DATA } from "@/data/templates";
@@ -12,7 +13,7 @@ import {
   Palette, Search, Filter, Layers, Maximize, Heart, Eye, Star, 
   Share2, Grid, List, ChevronUp, X, CheckCircle, Smartphone, 
   Monitor, Globe, Mail, Phone, MessageSquare, BookOpen, 
-  Stethoscope, Landmark, Play, Trophy, Dumbbell, Code, ShoppingBag, MapPin, HeartHandshake, HelpCircle
+  Stethoscope, Landmark, Play, Trophy, Dumbbell, Code, ShoppingBag, MapPin, HeartHandshake, HelpCircle, Lock
 } from "lucide-react";
 import { toPng, toJpeg, toSvg } from "html-to-image";
 import { jsPDF } from "jspdf";
@@ -21,6 +22,9 @@ import { toast } from "sonner";
 type ExportFormat = "png" | "jpg" | "svg" | "pdf";
 
 export default function Templates() {
+  // Auth Gate - Redirect to /login if unauthenticated
+  const { user, isLoading: isAuthLoading } = useAuth({ redirectOnUnauthenticated: true });
+  
   const { currentQR, history } = useQRStore();
   const activeQR = currentQR || history[0];
 
@@ -252,7 +256,6 @@ export default function Templates() {
     badgeStyle: string,
     isMini: boolean = false
   ) => {
-    const cardBg = `linear-gradient(135deg, ${themeColor}10, ${secondaryColor}25)`;
     const qrEmbedUrl = activeQR?.imageUrl || "https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=IntelliQR";
 
     return (
@@ -504,51 +507,84 @@ export default function Templates() {
     }
   };
 
+  // If Auth is resolving, render full-page loader matching Home page theme
+  if (isAuthLoading || !user) {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-background font-sans">
+        <div className="flex flex-col items-center gap-4">
+          <Loader2 className="w-10 h-10 text-orange-500 animate-spin" />
+          <p className="text-slate-600 font-serif text-lg">Authenticating your access to IntelliQR Templates...</p>
+        </div>
+      </div>
+    );
+  }
+
   return (
-    <div className="min-h-screen bg-[#F8FAFC] relative flex flex-col font-sans overflow-x-hidden antialiased text-slate-800">
+    <div className="min-h-screen bg-background text-foreground relative font-sans">
       <Header />
 
-      {/* Background glow meshes */}
-      <div className="absolute top-0 left-0 right-0 h-[500px] bg-gradient-to-b from-indigo-50/40 via-purple-50/20 to-transparent pointer-events-none z-0" />
-      <div className="absolute top-40 left-[10%] w-[300px] h-[300px] bg-indigo-200/20 rounded-full blur-[100px] pointer-events-none" />
-      <div className="absolute top-60 right-[10%] w-[250px] h-[250px] bg-purple-200/20 rounded-full blur-[100px] pointer-events-none" />
+      {/* Hero Section - Matching Home Page Sarvam Gradient & Fonts */}
+      <section className="sarvam-gradient pt-32 pb-20 border-b border-border overflow-hidden relative">
+        <div className="absolute inset-0 bg-grid-slate-100/[0.04] bg-[size:32px_32px]" />
+        
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
+          <div className="text-center max-w-4xl mx-auto">
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.6 }}
+              className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-white/40 backdrop-blur-md border border-white/40 text-sm font-medium text-slate-800 mb-8 shadow-sm"
+            >
+              <span className="w-2 h-2 rounded-full bg-orange-500 animate-pulse" />
+              200+ Premium QR Templates
+            </motion.div>
 
-      {/* Main Container */}
-      <div className="relative z-10 pt-32 pb-20 flex-1 flex flex-col">
+            <motion.h1 
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.6, delay: 0.1 }}
+              className="text-5xl sm:text-[76px] leading-[1.1] tracking-tight mb-8 text-slate-900 font-serif"
+            >
+              Choose Your Perfect <br/>
+              <span className="text-transparent bg-clip-text bg-gradient-to-r from-orange-600 via-rose-600 to-purple-600">
+                QR Design Template
+              </span>
+            </motion.h1>
+            
+            <motion.p 
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.6, delay: 0.2 }}
+              className="text-xl sm:text-2xl text-slate-700/80 leading-relaxed mb-8 max-w-2xl mx-auto font-medium"
+            >
+              Explore 200 high-performance QR templates across 15 industries. Customize text, colors, frame borders, and stamps live.
+            </motion.p>
+          </div>
+        </div>
+      </section>
+
+      {/* Main Catalog & Customizer Section - Matching Home Page FAFAFA Section */}
+      <section className="py-16 bg-[#FAFAFA] flex-1 flex flex-col">
         <div className="max-w-[1440px] w-full mx-auto px-4 sm:px-6 lg:px-8 flex-1 flex flex-col">
 
           {/* VIEW A: CATALOG VIEW */}
           {viewMode === "catalog" && (
             <div className="space-y-8">
               
-              {/* Hero Section */}
-              <div className="text-center space-y-4 max-w-3xl mx-auto">
-                <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-indigo-50 border border-indigo-100 text-indigo-600 text-xs font-bold uppercase tracking-wider">
-                  <Sparkles className="w-3.5 h-3.5" />
-                  Premium Templates Composer
-                </div>
-                <h1 className="text-4xl sm:text-5xl font-black text-slate-900 tracking-tight leading-none">
-                  Choose Your Perfect <span className="text-transparent bg-clip-text bg-gradient-to-r from-indigo-600 to-purple-600">QR Template</span>
-                </h1>
-                <p className="text-slate-500 font-medium text-sm sm:text-base max-w-xl mx-auto leading-relaxed">
-                  Browse 100+ professionally designed QR templates for every business, portfolio, and shop counter. Customize instantly and download in high-res.
-                </p>
-              </div>
-
-              {/* Advanced Filter System Panel */}
-              <div className="bg-white border border-slate-200/80 rounded-[32px] p-6 shadow-sm shadow-slate-100 space-y-6">
+              {/* Filter System Panel - Matching Home Card Styling */}
+              <div className="bg-white border border-slate-100 rounded-[32px] p-6 shadow-[0_8px_30px_rgb(0,0,0,0.02)] space-y-6">
                 
                 {/* Search, Sort and Layout Toggles */}
                 <div className="grid grid-cols-1 md:grid-cols-12 gap-4 items-center">
                   
                   {/* Search Bar */}
-                  <div className="md:col-span-6 relative bg-slate-50 border border-slate-200/60 rounded-2xl px-4 py-3 flex items-center focus-within:ring-2 focus-within:ring-indigo-500/20 focus-within:border-indigo-500 transition-all">
+                  <div className="md:col-span-6 relative bg-slate-50 border border-slate-200/60 rounded-2xl px-4 py-3 flex items-center focus-within:ring-2 focus-within:ring-slate-900/10 focus-within:border-slate-400 transition-all">
                     <Search className="w-4 h-4 text-slate-400 mr-2.5 flex-shrink-0" />
                     <input
                       type="text"
                       value={searchQuery}
                       onChange={(e) => setSearchQuery(e.target.value)}
-                      placeholder="Search templates by industry, tag, name..."
+                      placeholder="Search 200 templates by industry, tag, name..."
                       className="bg-transparent border-none outline-none focus:ring-0 text-xs w-full text-slate-800 font-semibold placeholder:text-slate-400"
                     />
                     {searchQuery && (
@@ -563,7 +599,7 @@ export default function Templates() {
                     <select
                       value={sortBy}
                       onChange={(e) => setSortBy(e.target.value)}
-                      className="w-full px-4 py-3 rounded-2xl border border-slate-200/80 bg-white text-xs focus:outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 text-slate-700 font-bold cursor-pointer"
+                      className="w-full px-4 py-3 rounded-2xl border border-slate-200/80 bg-white text-xs focus:outline-none focus:ring-2 focus:ring-slate-900/10 focus:border-slate-400 text-slate-700 font-bold cursor-pointer"
                     >
                       <option value="popular">Most Popular</option>
                       <option value="rating">Top Rated</option>
@@ -577,7 +613,7 @@ export default function Templates() {
                     <select
                       value={priceFilter}
                       onChange={(e) => setPriceFilter(e.target.value as any)}
-                      className="w-full px-4 py-3 rounded-2xl border border-slate-200/80 bg-white text-xs focus:outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 text-slate-700 font-bold cursor-pointer"
+                      className="w-full px-4 py-3 rounded-2xl border border-slate-200/80 bg-white text-xs focus:outline-none focus:ring-2 focus:ring-slate-900/10 focus:border-slate-400 text-slate-700 font-bold cursor-pointer"
                     >
                       <option value="all">All (Free & Pro)</option>
                       <option value="free">Free Templates</option>
@@ -590,7 +626,7 @@ export default function Templates() {
                     <button
                       onClick={() => setIsGridView(true)}
                       className={`p-3 rounded-xl border transition-all ${
-                        isGridView ? "bg-slate-900 border-slate-900 text-white" : "bg-white border-slate-200 text-slate-400 hover:bg-slate-50"
+                        isGridView ? "bg-[#2A2C3C] border-[#2A2C3C] text-white" : "bg-white border-slate-200 text-slate-400 hover:bg-slate-50"
                       }`}
                       title="Grid View"
                     >
@@ -599,7 +635,7 @@ export default function Templates() {
                     <button
                       onClick={() => setIsGridView(false)}
                       className={`p-3 rounded-xl border transition-all ${
-                        !isGridView ? "bg-slate-900 border-slate-900 text-white" : "bg-white border-slate-200 text-slate-400 hover:bg-slate-50"
+                        !isGridView ? "bg-[#2A2C3C] border-[#2A2C3C] text-white" : "bg-white border-slate-200 text-slate-400 hover:bg-slate-50"
                       }`}
                       title="List View"
                     >
@@ -610,7 +646,7 @@ export default function Templates() {
 
                 {/* Categories Pills Swipe Bar */}
                 <div className="space-y-2">
-                  <span className="text-[10px] font-bold text-slate-400 uppercase tracking-widest block">Browse Industries</span>
+                  <span className="text-[10px] font-bold text-slate-400 uppercase tracking-widest block">Browse Industries (15 Categories)</span>
                   <div className="flex gap-2 overflow-x-auto pb-2 scrollbar-thin">
                     {categoriesList.map((cat) => (
                       <button
@@ -618,7 +654,7 @@ export default function Templates() {
                         onClick={() => setSelectedCategory(cat)}
                         className={`px-4 py-2.5 rounded-full text-xs font-bold uppercase tracking-wider whitespace-nowrap border transition-all flex items-center gap-2 ${
                           selectedCategory.toLowerCase() === cat.toLowerCase()
-                            ? "bg-indigo-600 border-indigo-600 text-white shadow-md shadow-indigo-600/10"
+                            ? "bg-[#2A2C3C] border-[#2A2C3C] text-white shadow-md"
                             : "bg-white border-slate-200 text-slate-500 hover:border-slate-300"
                         }`}
                       >
@@ -634,7 +670,7 @@ export default function Templates() {
                   
                   {/* Colors Filter */}
                   <div className="flex items-center gap-2">
-                    <span className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">Color theme:</span>
+                    <span className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">Color Theme:</span>
                     <div className="flex gap-1 flex-wrap">
                       {colorFilterOptions.map((c) => (
                         <button
@@ -644,13 +680,12 @@ export default function Templates() {
                             c.value === "all" 
                               ? "bg-slate-200 text-slate-700 text-[8px] font-bold border-slate-300" 
                               : `${c.hex} border-slate-200/50`
-                          } ${colorFilter === c.value ? "ring-2 ring-indigo-500 ring-offset-2 scale-110" : "hover:scale-105"}`}
+                          } ${colorFilter === c.value ? "ring-2 ring-slate-900 ring-offset-2 scale-110" : "hover:scale-105"}`}
                           title={c.label}
                         >
                           {colorFilter === c.value && (
                             <Check className={`w-3.5 h-3.5 ${c.value === "all" ? "text-slate-800" : "text-white"}`} />
                           )}
-                          {c.value === "all" && !colorFilter && "ALL"}
                         </button>
                       ))}
                     </div>
@@ -673,7 +708,7 @@ export default function Templates() {
                           onClick={() => setRatingFilter(rat.id)}
                           className={`px-3 py-1 rounded-lg text-xs font-bold border transition-all ${
                             ratingFilter === rat.id
-                              ? "bg-indigo-50 border-indigo-200 text-indigo-600"
+                              ? "bg-slate-100 border-slate-300 text-slate-900"
                               : "bg-white border-slate-200 text-slate-500 hover:border-slate-300"
                           }`}
                         >
@@ -690,7 +725,7 @@ export default function Templates() {
               {/* Search Count status bar */}
               <div className="flex justify-between items-center px-2">
                 <span className="text-xs text-slate-500 font-semibold uppercase tracking-wider">
-                  Showing <span className="text-slate-800 font-extrabold">{filteredTemplates.length}</span> templates matching query
+                  Showing <span className="text-slate-900 font-extrabold">{filteredTemplates.length}</span> of 200 templates
                 </span>
                 {favorites.length > 0 && (
                   <span className="text-xs text-slate-400 font-bold">
@@ -714,54 +749,49 @@ export default function Templates() {
                           initial={{ opacity: 0, y: 20 }}
                           animate={{ opacity: 1, y: 0 }}
                           exit={{ opacity: 0, scale: 0.95 }}
-                          transition={{ duration: 0.25, delay: Math.min(index * 0.02, 0.2) }}
+                          transition={{ duration: 0.25, delay: Math.min(index * 0.015, 0.2) }}
                           key={tpl.id}
-                          className="group bg-white border border-slate-200/80 rounded-[28px] overflow-hidden hover:border-indigo-200 hover:shadow-xl hover:shadow-indigo-500/[0.03] transition-all flex flex-col h-[400px] relative"
+                          className="group bg-white border border-slate-100 rounded-[32px] p-5 shadow-[0_8px_30px_rgb(0,0,0,0.02)] hover:shadow-[0_8px_30px_rgb(0,0,0,0.06)] transition-all duration-300 flex flex-col h-[410px] relative"
                         >
                           {/* Card upper - design preview display */}
-                          <div className="h-[210px] bg-slate-50 p-4 relative flex items-center justify-center overflow-hidden flex-shrink-0">
+                          <div className="h-[210px] bg-slate-50 rounded-2xl p-4 relative flex items-center justify-center overflow-hidden flex-shrink-0 border border-slate-100/60">
                             {/* Decorative grid */}
                             <div className="absolute inset-0 bg-[linear-gradient(to_right,#e2e8f0_1px,transparent_1px),linear-gradient(to_bottom,#e2e8f0_1px,transparent_1px)] bg-[size:14px_24px] [mask-image:radial-gradient(ellipse_60%_50%_at_50%_50%,#000_70%,transparent_100%)] opacity-30 pointer-events-none" />
                             
                             {/* Visual Card Canvas */}
-                            <div className="w-[150px] h-[190px] transform group-hover:scale-[1.03] transition-all duration-300">
+                            <div className="w-[145px] h-[185px] transform group-hover:scale-[1.03] transition-all duration-300">
                               {renderTemplateLayout(tpl.layoutType, tpl.fields, defaultColor, secondaryColor, "none", "none", true)}
                             </div>
 
                             {/* Floating overlays: Favorite Toggle */}
                             <button
                               onClick={(e) => toggleFavorite(tpl.id, e)}
-                              className="absolute top-3.5 right-3.5 p-2 rounded-full backdrop-blur-md bg-white/70 hover:bg-white border border-slate-100 text-rose-500 hover:scale-105 shadow-sm transition-all z-10"
+                              className="absolute top-3 right-3 p-2 rounded-full backdrop-blur-md bg-white/80 hover:bg-white border border-slate-100 text-rose-500 hover:scale-105 shadow-sm transition-all z-10"
                             >
                               <Heart className={`w-3.5 h-3.5 ${isFav ? "fill-rose-500" : ""}`} />
                             </button>
 
                             {/* Pro/Free indicators */}
-                            <div className="absolute top-3.5 left-3.5 flex gap-1 z-10 select-none">
+                            <div className="absolute top-3 left-3 flex gap-1 z-10 select-none">
                               {tpl.premium ? (
-                                <span className="px-2 py-0.5 rounded bg-indigo-600 text-white font-extrabold uppercase text-[7px] tracking-wider shadow-sm">
+                                <span className="px-2 py-0.5 rounded-full bg-slate-900 text-white font-extrabold uppercase text-[7px] tracking-wider shadow-sm">
                                   PRO
                                 </span>
                               ) : (
-                                <span className="px-2 py-0.5 rounded bg-slate-900/60 text-white font-extrabold uppercase text-[7px] tracking-wider shadow-sm">
+                                <span className="px-2 py-0.5 rounded-full bg-emerald-600 text-white font-extrabold uppercase text-[7px] tracking-wider shadow-sm">
                                   FREE
                                 </span>
                               )}
                               {tpl.new && (
-                                <span className="px-2 py-0.5 rounded bg-emerald-600 text-white font-extrabold uppercase text-[7px] tracking-wider shadow-sm">
+                                <span className="px-2 py-0.5 rounded-full bg-orange-500 text-white font-extrabold uppercase text-[7px] tracking-wider shadow-sm">
                                   NEW
-                                </span>
-                              )}
-                              {tpl.popular && (
-                                <span className="px-2 py-0.5 rounded bg-amber-500 text-slate-950 font-extrabold uppercase text-[7px] tracking-wider shadow-sm">
-                                  POP
                                 </span>
                               )}
                             </div>
                           </div>
 
                           {/* Card lower details */}
-                          <div className="flex-1 p-5 flex flex-col justify-between">
+                          <div className="flex-1 pt-4 flex flex-col justify-between">
                             <div>
                               <div className="flex items-center justify-between gap-2">
                                 <span className="text-[8px] font-bold text-slate-400 uppercase tracking-widest flex items-center gap-1.5">
@@ -774,29 +804,29 @@ export default function Templates() {
                                 </div>
                               </div>
 
-                              <h3 className="font-extrabold text-slate-800 text-[13px] tracking-tight leading-snug mt-1.5 group-hover:text-indigo-600 transition-all truncate">
+                              <h3 className="font-serif font-bold text-slate-900 text-[15px] tracking-tight leading-snug mt-1.5 group-hover:text-orange-600 transition-colors truncate">
                                 {tpl.name}
                               </h3>
-                              <p className="text-[10px] text-slate-400 font-semibold line-clamp-2 leading-relaxed mt-1">
+                              <p className="text-[11px] text-slate-500 font-medium line-clamp-2 leading-relaxed mt-1">
                                 {tpl.description}
                               </p>
                             </div>
 
                             {/* CTAs layout */}
-                            <div className="flex gap-2 pt-3 border-t border-slate-100/60">
+                            <div className="flex gap-2 pt-3 border-t border-slate-100">
                               <button
                                 onClick={() => setPreviewTemplate(tpl)}
-                                className="flex-1 py-2 text-center rounded-xl text-[10px] font-bold border border-slate-200 text-slate-600 hover:bg-slate-50 transition-all flex items-center justify-center gap-1.5"
+                                className="flex-1 py-2.5 text-center rounded-full text-xs font-medium border border-slate-200 text-slate-700 hover:bg-slate-50 transition-all flex items-center justify-center gap-1.5"
                               >
-                                <Eye className="w-3 h-3" />
+                                <Eye className="w-3.5 h-3.5" />
                                 Preview
                               </button>
                               <button
                                 onClick={() => startEditing(tpl)}
-                                className="flex-1 py-2 text-center rounded-xl text-[10px] font-bold bg-slate-900 hover:bg-slate-800 text-white transition-all flex items-center justify-center gap-1.5 shadow-sm"
+                                className="flex-1 py-2.5 text-center rounded-full text-xs font-medium bg-[#2A2C3C] hover:bg-[#1A1C29] text-white transition-all flex items-center justify-center gap-1.5 shadow-sm"
                               >
-                                <Sparkles className="w-3 h-3 text-indigo-400" />
-                                Use
+                                <Sparkles className="w-3.5 h-3.5 text-amber-300" />
+                                Edit
                               </button>
                             </div>
                           </div>
@@ -811,36 +841,35 @@ export default function Templates() {
                           animate={{ opacity: 1, x: 0 }}
                           exit={{ opacity: 0, scale: 0.95 }}
                           key={tpl.id}
-                          className="bg-white border border-slate-200/80 rounded-[20px] p-4 flex flex-col sm:flex-row sm:items-center justify-between gap-4 hover:border-indigo-100 hover:shadow-sm transition-all"
+                          className="bg-white border border-slate-100 rounded-[28px] p-5 flex flex-col sm:flex-row sm:items-center justify-between gap-4 hover:shadow-[0_8px_30px_rgb(0,0,0,0.04)] transition-all"
                         >
                           <div className="flex items-center gap-4">
-                            {/* Left little color badge representation */}
                             <div 
                               style={{ background: `linear-gradient(135deg, ${defaultColor}, ${secondaryColor})` }}
-                              className="w-12 h-12 rounded-xl flex-shrink-0 flex items-center justify-center text-white"
+                              className="w-12 h-12 rounded-2xl flex-shrink-0 flex items-center justify-center text-white shadow-sm"
                             >
                               {getCategoryIcon(tpl.category)}
                             </div>
                             <div>
                               <div className="flex items-center gap-2">
-                                <h3 className="font-extrabold text-slate-800 text-sm">{tpl.name}</h3>
-                                <span className="text-[8px] font-bold px-1.5 py-0.5 rounded bg-slate-100 text-slate-500 uppercase">
+                                <h3 className="font-serif font-bold text-slate-900 text-base">{tpl.name}</h3>
+                                <span className="text-[8px] font-bold px-2 py-0.5 rounded-full bg-slate-100 text-slate-600 uppercase">
                                   {tpl.category}
                                 </span>
                                 {tpl.premium && (
-                                  <span className="text-[7px] font-bold px-1.5 py-0.5 rounded bg-indigo-50 text-indigo-600 uppercase">
+                                  <span className="text-[7px] font-bold px-2 py-0.5 rounded-full bg-slate-900 text-white uppercase">
                                     PRO
                                   </span>
                                 )}
                               </div>
-                              <p className="text-xs text-slate-400 font-semibold line-clamp-1 mt-0.5">{tpl.description}</p>
+                              <p className="text-xs text-slate-500 font-medium line-clamp-1 mt-0.5">{tpl.description}</p>
                             </div>
                           </div>
 
                           <div className="flex items-center gap-6 self-end sm:self-auto">
                             <div className="hidden md:flex flex-col text-right">
                               <span className="text-[9px] font-bold text-slate-400 uppercase tracking-wider">Rating</span>
-                              <span className="text-xs text-slate-800 font-extrabold flex items-center gap-1">
+                              <span className="text-xs text-slate-800 font-extrabold flex items-center justify-end gap-1">
                                 <Star className="w-3.5 h-3.5 fill-amber-500 text-amber-500" />
                                 {tpl.rating}
                               </span>
@@ -853,7 +882,7 @@ export default function Templates() {
                             <div className="flex gap-2">
                               <button
                                 onClick={(e) => toggleFavorite(tpl.id, e)}
-                                className={`p-2.5 rounded-xl border transition-all ${
+                                className={`p-2.5 rounded-full border transition-all ${
                                   isFav ? "bg-rose-50 border-rose-100 text-rose-500" : "bg-white border-slate-200 text-slate-400 hover:text-slate-600"
                                 }`}
                               >
@@ -861,16 +890,16 @@ export default function Templates() {
                               </button>
                               <button
                                 onClick={() => setPreviewTemplate(tpl)}
-                                className="px-4 py-2.5 rounded-xl border border-slate-200 text-xs font-bold text-slate-600 hover:bg-slate-50 transition-all flex items-center gap-1.5"
+                                className="px-5 py-2.5 rounded-full border border-slate-200 text-xs font-medium text-slate-700 hover:bg-slate-50 transition-all flex items-center gap-1.5"
                               >
                                 <Eye className="w-3.5 h-3.5" />
                                 Preview
                               </button>
                               <button
                                 onClick={() => startEditing(tpl)}
-                                className="px-4 py-2.5 rounded-xl bg-slate-900 hover:bg-slate-800 text-white text-xs font-bold transition-all flex items-center gap-1.5 shadow-sm"
+                                className="px-5 py-2.5 rounded-full bg-[#2A2C3C] hover:bg-[#1A1C29] text-white text-xs font-medium transition-all flex items-center gap-1.5 shadow-sm"
                               >
-                                <Sparkles className="w-3.5 h-3.5 text-indigo-400" />
+                                <Sparkles className="w-3.5 h-3.5 text-amber-300" />
                                 Edit Design
                               </button>
                             </div>
@@ -882,11 +911,11 @@ export default function Templates() {
                 </AnimatePresence>
 
                 {filteredTemplates.length === 0 && (
-                  <div className="col-span-full text-center py-20 bg-white border border-slate-200/80 rounded-[32px] p-6 space-y-3">
+                  <div className="col-span-full text-center py-20 bg-white border border-slate-100 rounded-[32px] p-6 space-y-3 shadow-sm">
                     <HelpCircle className="w-12 h-12 text-slate-300 mx-auto" />
-                    <h3 className="font-extrabold text-slate-800 text-lg">No templates found matching filters</h3>
-                    <p className="text-xs text-slate-400 font-bold max-w-sm mx-auto">
-                      Try resetting search keywords or category filters to find the right layout for your QR code.
+                    <h3 className="font-serif font-bold text-slate-900 text-xl">No templates found matching filters</h3>
+                    <p className="text-xs text-slate-500 font-medium max-w-sm mx-auto">
+                      Try resetting search keywords or category filters to explore all 200 presets.
                     </p>
                     <button
                       onClick={() => {
@@ -896,7 +925,7 @@ export default function Templates() {
                         setColorFilter("all");
                         setRatingFilter("all");
                       }}
-                      className="px-4 py-2.5 rounded-xl bg-indigo-600 text-white text-xs font-bold hover:bg-indigo-700 transition-all"
+                      className="px-6 py-3 rounded-full bg-[#2A2C3C] text-white text-xs font-medium hover:bg-[#1A1C29] transition-all"
                     >
                       Reset All Filters
                     </button>
@@ -916,23 +945,23 @@ export default function Templates() {
                 <div className="flex items-center gap-3">
                   <button
                     onClick={() => setViewMode("catalog")}
-                    className="p-2.5 rounded-xl text-slate-500 hover:text-slate-900 hover:bg-white border border-slate-200 bg-white/50 shadow-sm transition-all"
+                    className="p-2.5 rounded-full text-slate-600 hover:text-slate-900 hover:bg-white border border-slate-200 bg-white/50 shadow-sm transition-all"
                   >
                     <ArrowLeft className="w-4 h-4" />
                   </button>
                   <div>
-                    <span className="text-[9px] font-bold text-indigo-600 uppercase tracking-widest">Workspace Compositor</span>
-                    <h2 className="text-xl font-black text-slate-900 tracking-tight leading-none mt-0.5">
+                    <span className="text-[9px] font-bold text-orange-600 uppercase tracking-widest">Workspace Customizer</span>
+                    <h2 className="text-2xl font-serif font-bold text-slate-900 tracking-tight leading-none mt-0.5">
                       {selectedTemplate.name}
                     </h2>
                   </div>
                 </div>
 
                 {/* Canvas tools */}
-                <div className="flex items-center gap-2 bg-white p-1 border border-slate-200/60 shadow-sm rounded-xl">
+                <div className="flex items-center gap-2 bg-white p-1 border border-slate-200/60 shadow-sm rounded-full">
                   <button
                     onClick={handleZoomOut}
-                    className="p-2 rounded-lg hover:bg-slate-100 text-slate-500 transition-all"
+                    className="p-2 rounded-full hover:bg-slate-100 text-slate-500 transition-all"
                     title="Zoom Out"
                   >
                     <ZoomOut className="w-3.5 h-3.5" />
@@ -942,7 +971,7 @@ export default function Templates() {
                   </span>
                   <button
                     onClick={handleZoomIn}
-                    className="p-2 rounded-lg hover:bg-slate-100 text-slate-500 transition-all"
+                    className="p-2 rounded-full hover:bg-slate-100 text-slate-500 transition-all"
                     title="Zoom In"
                   >
                     <ZoomIn className="w-3.5 h-3.5" />
@@ -950,7 +979,7 @@ export default function Templates() {
                   <div className="w-px h-4 bg-slate-200 mx-1" />
                   <button
                     onClick={handleResetZoom}
-                    className="p-2 rounded-lg hover:bg-slate-100 text-slate-500 transition-all"
+                    className="p-2 rounded-full hover:bg-slate-100 text-slate-500 transition-all"
                     title="Reset Zoom"
                   >
                     <RotateCcw className="w-3.5 h-3.5" />
@@ -977,7 +1006,7 @@ export default function Templates() {
                 {/* Workspace preview board (left - 7 cols) */}
                 <div className="lg:col-span-7 bg-slate-100 border border-slate-200/50 rounded-[36px] min-h-[480px] lg:min-h-[560px] flex items-center justify-center p-8 overflow-hidden relative shadow-inner">
                   {/* Digital Board decoration */}
-                  <div className="absolute inset-0 bg-[radial-gradient(#c7d2fe_1px,transparent_1px)] [background-size:16px_16px] opacity-40 pointer-events-none" />
+                  <div className="absolute inset-0 bg-[radial-gradient(#cbd5e1_1px,transparent_1px)] [background-size:16px_16px] opacity-40 pointer-events-none" />
 
                   {/* Scaled Composition viewport */}
                   <div
@@ -1002,15 +1031,15 @@ export default function Templates() {
 
                   {/* Helper tag instructions */}
                   <div className="absolute bottom-4 left-6 right-6 text-center select-none pointer-events-none">
-                    <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-slate-900/5 text-[9px] font-extrabold text-slate-400 uppercase tracking-wider">
+                    <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-slate-900/5 text-[9px] font-extrabold text-slate-500 uppercase tracking-wider">
                       <Info className="w-3.5 h-3.5 text-slate-400" />
-                      Visual Board View. Modifications below will render here live.
+                      Visual Board View. All edits below update the preview instantly.
                     </span>
                   </div>
                 </div>
 
                 {/* Right controls side panel (5 cols) */}
-                <div className="lg:col-span-5 bg-white border border-slate-200/80 rounded-[32px] p-6 space-y-6 text-left shadow-sm shadow-slate-100">
+                <div className="lg:col-span-5 bg-white border border-slate-100 rounded-[32px] p-6 space-y-6 text-left shadow-[0_8px_30px_rgb(0,0,0,0.02)]">
                   
                   {/* SECTION A: EDIT PREDEFINED FIELDS */}
                   <div className="space-y-4">
@@ -1030,14 +1059,14 @@ export default function Templates() {
                               rows={3}
                               value={val}
                               onChange={(e) => setEditedFields(prev => ({ ...prev, [key]: e.target.value }))}
-                              className="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 focus:outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 text-xs text-slate-800 font-semibold resize-none"
+                              className="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 focus:outline-none focus:ring-2 focus:ring-slate-900/10 focus:border-slate-400 text-xs text-slate-800 font-semibold resize-none"
                             />
                           ) : (
                             <input
                               type="text"
                               value={val}
                               onChange={(e) => setEditedFields(prev => ({ ...prev, [key]: e.target.value }))}
-                              className="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 focus:outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 text-xs text-slate-800 font-semibold"
+                              className="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 focus:outline-none focus:ring-2 focus:ring-slate-900/10 focus:border-slate-400 text-xs text-slate-800 font-semibold"
                             />
                           )}
                         </div>
@@ -1144,9 +1173,9 @@ export default function Templates() {
                         <button
                           key={fmt}
                           onClick={() => setExportFormat(fmt)}
-                          className={`flex-1 py-2 text-center rounded-xl text-[10px] font-extrabold uppercase tracking-wider border transition-all ${
+                          className={`flex-1 py-2.5 text-center rounded-full text-[10px] font-extrabold uppercase tracking-wider border transition-all ${
                             exportFormat === fmt
-                              ? "bg-slate-900 border-slate-900 text-white shadow-sm"
+                              ? "bg-[#2A2C3C] border-[#2A2C3C] text-white shadow-sm"
                               : "bg-white border-slate-200 text-slate-600 hover:bg-slate-50"
                           }`}
                         >
@@ -1157,10 +1186,10 @@ export default function Templates() {
 
                     {/* Resolution slider */}
                     {exportFormat !== "pdf" && exportFormat !== "svg" && (
-                      <div className="flex items-center justify-between bg-slate-50 border border-slate-100 px-4 py-2.5 rounded-xl">
+                      <div className="flex items-center justify-between bg-slate-50 border border-slate-100 px-4 py-2.5 rounded-2xl">
                         <div className="text-left">
                           <span className="text-[10px] font-bold text-slate-400 uppercase tracking-wider block">Resolution Factor</span>
-                          <span className="text-[8px] text-slate-400 font-semibold">Higher values generate larger files</span>
+                          <span className="text-[8px] text-slate-400 font-semibold">Higher multiplier produces sharper output</span>
                         </div>
                         <div className="flex gap-1.5">
                           {[1, 2, 3].map((res) => (
@@ -1169,7 +1198,7 @@ export default function Templates() {
                               onClick={() => setResolution(res)}
                               className={`w-7 h-7 rounded-full text-[10px] font-bold flex items-center justify-center transition-all ${
                                 resolution === res
-                                  ? "bg-indigo-600 text-white shadow-sm"
+                                  ? "bg-[#2A2C3C] text-white shadow-sm"
                                   : "bg-white text-slate-500 border border-slate-200 hover:bg-slate-100"
                               }`}
                             >
@@ -1183,16 +1212,16 @@ export default function Templates() {
                     <button
                       onClick={handleDownload}
                       disabled={isExporting}
-                      className="w-full py-4 rounded-full text-xs font-bold tracking-widest uppercase bg-slate-900 hover:bg-slate-800 text-white transition-all shadow-md shadow-slate-950/10 flex items-center justify-center gap-2 disabled:opacity-50"
+                      className="w-full py-4 rounded-full text-xs font-medium tracking-widest uppercase bg-[#2A2C3C] hover:bg-[#1A1C29] text-white transition-all shadow-md flex items-center justify-center gap-2 disabled:opacity-50"
                     >
                       {isExporting ? (
                         <>
                           <Loader2 className="w-4 h-4 animate-spin text-white" />
-                          Rerendering high-res canvas...
+                          Rendering high-res canvas...
                         </>
                       ) : (
                         <>
-                          <Download className="w-4 h-4 text-indigo-400" />
+                          <Download className="w-4 h-4 text-amber-300" />
                           Download Design Files
                         </>
                       )}
@@ -1207,7 +1236,7 @@ export default function Templates() {
           )}
 
         </div>
-      </div>
+      </section>
 
       {/* VIEW C: DETAILS PREVIEW MODAL */}
       <AnimatePresence>
@@ -1227,14 +1256,14 @@ export default function Templates() {
               initial={{ opacity: 0, scale: 0.95, y: 10 }}
               animate={{ opacity: 1, scale: 1, y: 0 }}
               exit={{ opacity: 0, scale: 0.95, y: 10 }}
-              className="bg-white border border-slate-200 rounded-[32px] w-full max-w-4xl overflow-hidden shadow-2xl relative z-10 grid grid-cols-1 md:grid-cols-12 h-auto max-h-[90vh]"
+              className="bg-white border border-slate-100 rounded-[32px] w-full max-w-4xl overflow-hidden shadow-2xl relative z-10 grid grid-cols-1 md:grid-cols-12 h-auto max-h-[90vh]"
             >
               
               {/* Left Column: Simulated mockup view selector (7 cols) */}
               <div className="md:col-span-7 bg-slate-100 p-6 flex flex-col justify-between items-center min-h-[360px] md:min-h-0 relative">
                 
                 {/* Mockup viewport header switches */}
-                <div className="flex gap-2 bg-white/70 backdrop-blur-md border border-slate-200/50 p-1 rounded-xl relative z-10 shadow-sm">
+                <div className="flex gap-2 bg-white/70 backdrop-blur-md border border-slate-200/50 p-1 rounded-full relative z-10 shadow-sm">
                   {[
                     { id: "desktop", label: "Desktop", icon: <Monitor className="w-3.5 h-3.5" /> },
                     { id: "tablet", label: "Tablet", icon: <Smartphone className="w-3.5 h-3.5 rotate-90" /> },
@@ -1243,9 +1272,9 @@ export default function Templates() {
                     <button
                       key={dev.id}
                       onClick={() => setPreviewDevice(dev.id as any)}
-                      className={`px-3 py-1.5 rounded-lg text-[10px] font-extrabold uppercase tracking-wider transition-all flex items-center gap-1.5 ${
+                      className={`px-3 py-1.5 rounded-full text-[10px] font-extrabold uppercase tracking-wider transition-all flex items-center gap-1.5 ${
                         previewDevice === dev.id
-                          ? "bg-slate-900 text-white shadow-sm"
+                          ? "bg-[#2A2C3C] text-white shadow-sm"
                           : "text-slate-500 hover:bg-slate-50"
                       }`}
                     >
@@ -1263,7 +1292,7 @@ export default function Templates() {
                       width: previewDevice === "desktop" ? "240px" : (previewDevice === "tablet" ? "200px" : "160px"),
                       height: previewDevice === "desktop" ? "340px" : (previewDevice === "tablet" ? "290px" : "230px")
                     }}
-                    className={`bg-white rounded-[24px] shadow-2xl border-[6px] border-slate-900 overflow-hidden relative transition-all duration-300`}
+                    className="bg-white rounded-[24px] shadow-2xl border-[6px] border-slate-900 overflow-hidden relative transition-all duration-300"
                   >
                     {/* Simulated camera dot inside mobile */}
                     {previewDevice === "mobile" && (
@@ -1296,14 +1325,14 @@ export default function Templates() {
               <div className="md:col-span-5 p-8 flex flex-col justify-between text-left h-full border-t md:border-t-0 md:border-l border-slate-100 overflow-y-auto">
                 <div className="space-y-5">
                   <div>
-                    <span className="text-[9px] font-extrabold text-indigo-600 uppercase tracking-widest flex items-center gap-1.5 mb-1.5">
+                    <span className="text-[9px] font-extrabold text-orange-600 uppercase tracking-widest flex items-center gap-1.5 mb-1.5">
                       {getCategoryIcon(previewTemplate.category)}
                       {previewTemplate.category}
                     </span>
-                    <h2 className="text-xl font-black text-slate-900 tracking-tight leading-snug">
+                    <h2 className="text-2xl font-serif font-bold text-slate-900 tracking-tight leading-snug">
                       {previewTemplate.name}
                     </h2>
-                    <p className="text-xs text-slate-400 font-semibold mt-1">
+                    <p className="text-xs text-slate-500 font-medium mt-1">
                       {previewTemplate.description}
                     </p>
                   </div>
@@ -1332,7 +1361,7 @@ export default function Templates() {
                     <span className="text-[10px] font-bold text-slate-400 uppercase tracking-widest block">Palette Used</span>
                     <div className="flex gap-1.5">
                       {previewTemplate.colors.map((c, i) => (
-                        <div key={i} className="flex items-center gap-1.5 bg-slate-50 border border-slate-100 px-2.5 py-1 rounded-xl shadow-inner">
+                        <div key={i} className="flex items-center gap-1.5 bg-slate-50 border border-slate-100 px-2.5 py-1 rounded-full shadow-inner">
                           <div style={{ backgroundColor: c }} className="w-4 h-4 rounded-full border border-slate-200/50" />
                           <span className="font-mono text-[9px] font-bold text-slate-500 uppercase">{c}</span>
                         </div>
@@ -1345,7 +1374,7 @@ export default function Templates() {
                     <span className="text-[10px] font-bold text-slate-400 uppercase tracking-widest block">Associated Tags</span>
                     <div className="flex gap-1.5 flex-wrap">
                       {previewTemplate.tags.map((tag) => (
-                        <span key={tag} className="px-2 py-1 rounded bg-slate-50 border border-slate-100 text-[10px] text-slate-400 font-bold uppercase tracking-wide">
+                        <span key={tag} className="px-2.5 py-1 rounded-full bg-slate-50 border border-slate-100 text-[10px] text-slate-500 font-bold uppercase tracking-wide">
                           #{tag}
                         </span>
                       ))}
@@ -1354,17 +1383,17 @@ export default function Templates() {
                 </div>
 
                 {/* Modal Footer CTAs */}
-                <div className="space-y-2 pt-6 border-t border-slate-100/60 mt-6 md:mt-0">
+                <div className="space-y-2 pt-6 border-t border-slate-100 mt-6 md:mt-0">
                   <button
                     onClick={() => startEditing(previewTemplate)}
-                    className="w-full py-3.5 rounded-full bg-slate-900 hover:bg-slate-800 text-white text-xs font-bold uppercase tracking-widest transition-all flex items-center justify-center gap-2 shadow-md shadow-slate-950/10"
+                    className="w-full py-3.5 rounded-full bg-[#2A2C3C] hover:bg-[#1A1C29] text-white text-xs font-medium uppercase tracking-widest transition-all flex items-center justify-center gap-2 shadow-md"
                   >
-                    <Sparkles className="w-3.5 h-3.5 text-indigo-400" />
+                    <Sparkles className="w-3.5 h-3.5 text-amber-300" />
                     Apply Design Preset
                   </button>
                   <button
                     onClick={() => setPreviewTemplate(null)}
-                    className="w-full py-3 rounded-full border border-slate-200 text-slate-500 text-xs font-bold uppercase tracking-widest hover:bg-slate-50 transition-all flex items-center justify-center"
+                    className="w-full py-3 rounded-full border border-slate-200 text-slate-600 text-xs font-medium uppercase tracking-widest hover:bg-slate-50 transition-all flex items-center justify-center"
                   >
                     Back to Catalog
                   </button>
@@ -1385,7 +1414,7 @@ export default function Templates() {
             animate={{ opacity: 1, scale: 1, y: 0 }}
             exit={{ opacity: 0, scale: 0.8, y: 20 }}
             onClick={scrollToTop}
-            className="fixed bottom-6 right-6 z-40 p-4 rounded-full bg-slate-900 hover:bg-slate-800 text-white shadow-xl shadow-slate-950/20 border border-slate-800 hover:scale-105 transition-all flex items-center justify-center"
+            className="fixed bottom-6 right-6 z-40 p-4 rounded-full bg-[#2A2C3C] hover:bg-[#1A1C29] text-white shadow-xl hover:scale-105 transition-all flex items-center justify-center"
             title="Scroll to Top"
           >
             <ChevronUp className="w-5 h-5" />
