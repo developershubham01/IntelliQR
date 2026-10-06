@@ -1,6 +1,14 @@
 import { Link } from "react-router";
-import { QrCode, Github, Linkedin, Twitter, Mail } from "lucide-react";
+import { QrCode, Linkedin, Instagram, Youtube, Facebook, Mail } from "lucide-react";
 import { useState, useEffect } from "react";
+
+function XIcon({ className = "w-[18px] h-[18px]" }: { className?: string }) {
+  return (
+    <svg className={className} viewBox="0 0 24 24" fill="currentColor">
+      <path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z" />
+    </svg>
+  );
+}
 
 const footerLinks = {
   PRODUCTS: [
@@ -76,24 +84,75 @@ export default function Footer() {
 
             {/* Socials & Address */}
             <div className="space-y-6">
-              <div className="flex items-center gap-4 text-slate-400">
-                <a href="https://github.com" target="_blank" rel="noopener noreferrer" className="hover:text-slate-900 transition-colors">
-                  <Github className="w-[18px] h-[18px]" />
-                </a>
-                <a href="https://linkedin.com" target="_blank" rel="noopener noreferrer" className="hover:text-slate-900 transition-colors">
+              <div className="flex items-center gap-3.5 text-slate-400">
+                <a 
+                  href="https://in.linkedin.com/company/abwcurious?trk=public_post_feed-actor-name" 
+                  target="_blank" 
+                  rel="noopener noreferrer" 
+                  aria-label="LinkedIn"
+                  className="hover:text-slate-900 transition-colors"
+                >
                   <Linkedin className="w-[18px] h-[18px]" />
                 </a>
-                <a href="https://twitter.com" target="_blank" rel="noopener noreferrer" className="hover:text-slate-900 transition-colors">
-                  <Twitter className="w-[18px] h-[18px]" />
+                <a 
+                  href="https://x.com/abwcurious?t=Y6CfDuM_ljg1gNvd7ByVQA&s=09" 
+                  target="_blank" 
+                  rel="noopener noreferrer" 
+                  aria-label="X"
+                  className="hover:text-slate-900 transition-colors"
+                >
+                  <XIcon className="w-[17px] h-[17px]" />
                 </a>
-                <a href="mailto:hello@intelliqr.pro" className="hover:text-slate-900 transition-colors">
+                <a 
+                  href="http://instagram.com/abwcurious?igsh=b2o3eGxxbGtlM2pu" 
+                  target="_blank" 
+                  rel="noopener noreferrer" 
+                  aria-label="Instagram"
+                  className="hover:text-slate-900 transition-colors"
+                >
+                  <Instagram className="w-[18px] h-[18px]" />
+                </a>
+                <a 
+                  href="https://www.youtube.com/@ABWcurious" 
+                  target="_blank" 
+                  rel="noopener noreferrer" 
+                  aria-label="YouTube"
+                  className="hover:text-slate-900 transition-colors"
+                >
+                  <Youtube className="w-[18px] h-[18px]" />
+                </a>
+                <a 
+                  href="https://www.facebook.com/share/1aTRdmi65g/" 
+                  target="_blank" 
+                  rel="noopener noreferrer" 
+                  aria-label="Facebook"
+                  className="hover:text-slate-900 transition-colors"
+                >
+                  <Facebook className="w-[18px] h-[18px]" />
+                </a>
+                <a 
+                  href="mailto:info@abwcurious.com" 
+                  aria-label="Email"
+                  className="hover:text-slate-900 transition-colors"
+                >
                   <Mail className="w-[18px] h-[18px]" />
                 </a>
               </div>
 
               <div className="text-[13px] text-slate-400 leading-relaxed font-medium">
-                <p>&copy; {new Date().getFullYear()} IntelliQR Labs Inc.</p>
-                <p className="mt-1 text-slate-300">Navi Mumbai &bull; Maharashtra, India</p>
+                <p>
+                  Product of{" "}
+                  <a
+                    href="https://www.abwcurious.com"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="text-slate-700 hover:text-slate-900 underline underline-offset-4 decoration-slate-300 hover:decoration-slate-900 transition-colors font-semibold"
+                  >
+                    abwcurious
+                  </a>
+                </p>
+                <p className="mt-1">&copy; {new Date().getFullYear()} IntelliQR Labs Inc.</p>
+                <p className="mt-0.5 text-slate-300">Navi Mumbai &bull; Maharashtra, India</p>
               </div>
             </div>
           </div>
