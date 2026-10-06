@@ -1,7 +1,6 @@
 import { QR_TYPES } from "@/types/qr";
 import { useQRStore } from "@/store/qrStore";
 import { Loader2, Sparkles, Zap } from "lucide-react";
-import { Switch } from "@/components/ui/switch";
 import { useAuth } from "@/hooks/useAuth";
 
 export default function QRContentForm() {

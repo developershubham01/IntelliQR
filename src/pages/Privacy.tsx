@@ -1,7 +1,7 @@
 import { motion } from "framer-motion";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
-import { Shield, Sparkles } from "lucide-react";
+import { Shield } from "lucide-react";
 
 export default function Privacy() {
   return (

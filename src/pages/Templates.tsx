@@ -10,10 +10,10 @@ import type { QRTemplate } from "@/data/templates";
 import { 
   Sparkles, ArrowLeft, Download, Wifi, Briefcase, Ticket, Tag, 
   ZoomIn, ZoomOut, RotateCcw, AlertCircle, Check, Loader2, Info,
-  Palette, Search, Filter, Layers, Maximize, Heart, Eye, Star, 
-  Share2, Grid, List, ChevronUp, X, CheckCircle, Smartphone, 
-  Monitor, Globe, Mail, Phone, MessageSquare, BookOpen, 
-  Stethoscope, Landmark, Play, Trophy, Dumbbell, Code, ShoppingBag, MapPin, HeartHandshake, HelpCircle, Lock
+  Palette, Search, Maximize, Heart, Eye, Star, 
+  Grid, List, ChevronUp, X, Smartphone, 
+  Monitor, Globe, BookOpen, 
+  Stethoscope, Landmark, Play, Dumbbell, Code, ShoppingBag, MapPin, HelpCircle
 } from "lucide-react";
 import { toPng, toJpeg, toSvg } from "html-to-image";
 import { jsPDF } from "jspdf";

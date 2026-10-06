@@ -34,7 +34,8 @@ export interface QRTemplate {
     | "product_tag"
     | "coupon_pass"
     | "feedback_survey"
-    | "review_badge";
+    | "review_badge"
+    | "generic_card";
   fields: Record<string, string>;
 }
 

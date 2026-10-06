@@ -4,7 +4,7 @@ import { Link } from "react-router";
 
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
-import { ChevronDown, HelpCircle, MessageCircle, Sparkles } from "lucide-react";
+import { ChevronDown, MessageCircle, Sparkles } from "lucide-react";
 
 const faqs = [
   { q: "What is IntelliQR?", a: "IntelliQR is a modern, professional QR code generator that lets you create beautiful, customizable QR codes for any purpose. With 25+ QR types, advanced styling options, and multiple export formats, it's the most powerful QR tool built for the modern web." },
