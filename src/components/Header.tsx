@@ -13,6 +13,7 @@ import {
 
 const navLinks = [
   { label: "Generator", href: "/generator" },
+  { label: "Dashboard", href: "/dashboard" },
   { label: "Features", href: "/features" },
   { label: "Pricing", href: "/pricing" },
   { label: "API Docs", href: "/api-docs" },
@@ -88,7 +89,7 @@ export default function Header() {
                       </p>
                     </div>
                     <DropdownMenuItem asChild className="rounded-xl px-3 py-2 cursor-pointer focus:bg-slate-50 transition-colors">
-                      <Link to="/generator" className="flex items-center text-slate-700 hover:text-slate-900 text-xs font-medium">
+                      <Link to="/dashboard" className="flex items-center text-slate-700 hover:text-slate-900 text-xs font-medium">
                         <LayoutDashboard className="mr-2 h-4 w-4 text-slate-400" />
                         My Dashboard
                       </Link>

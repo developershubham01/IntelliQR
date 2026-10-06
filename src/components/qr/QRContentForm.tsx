@@ -18,21 +18,88 @@ export default function QRContentForm() {
         <span className="text-[10px] font-bold text-indigo-600 bg-indigo-50 border border-indigo-200/50 px-2.5 py-1 rounded-full uppercase tracking-wider">{qrType.category}</span>
       </div>
 
-      <div className="bg-white/40 backdrop-blur-sm border border-slate-200/30 rounded-2xl p-4 flex items-start justify-between gap-4 shadow-sm">
-        <div className="space-y-1">
-          <div className="flex items-center gap-2 font-bold text-xs text-slate-700 uppercase tracking-wider">
-            <Zap className="w-4 h-4 text-indigo-500 animate-pulse" />
-            Dynamic QR Code
-          </div>
-          <p className="text-[11px] text-slate-400 leading-relaxed font-semibold">
-            Dynamic QR codes let you change the destination URL later and track scan statistics without reprinting.
-          </p>
+      {/* Static vs Dynamic QR Mode Selector */}
+      <div className="space-y-3">
+        <label className="block text-[10px] font-bold text-slate-400 uppercase tracking-widest">
+          QR Code Type
+        </label>
+        <div className="grid grid-cols-2 gap-3">
+          <button
+            type="button"
+            onClick={() => setIsDynamic(false)}
+            className={`p-3.5 rounded-2xl border text-left transition-all ${
+              !isDynamic
+                ? "bg-white border-slate-900 shadow-sm ring-1 ring-slate-900"
+                : "bg-white/60 border-slate-200/60 hover:bg-white text-slate-600"
+            }`}
+          >
+            <div className="flex items-center gap-2 mb-1">
+              <div className={`w-3.5 h-3.5 rounded-full border flex items-center justify-center ${!isDynamic ? "border-slate-900" : "border-slate-300"}`}>
+                {!isDynamic && <div className="w-2 h-2 rounded-full bg-slate-900" />}
+              </div>
+              <span className="text-xs font-bold text-slate-900">Static QR</span>
+            </div>
+            <p className="text-[10px] text-slate-500 font-medium leading-relaxed pl-5">
+              Direct destination. Fast, permanent, no tracking or updates.
+            </p>
+          </button>
+
+          <button
+            type="button"
+            onClick={() => setIsDynamic(true)}
+            className={`p-3.5 rounded-2xl border text-left transition-all relative overflow-hidden ${
+              isDynamic
+                ? "bg-indigo-50/40 border-indigo-600 shadow-sm ring-1 ring-indigo-600"
+                : "bg-white/60 border-slate-200/60 hover:bg-white text-slate-600"
+            }`}
+          >
+            <div className="flex items-center gap-2 mb-1">
+              <div className={`w-3.5 h-3.5 rounded-full border flex items-center justify-center ${isDynamic ? "border-indigo-600" : "border-slate-300"}`}>
+                {isDynamic && <div className="w-2 h-2 rounded-full bg-indigo-600" />}
+              </div>
+              <span className="text-xs font-bold text-slate-900 flex items-center gap-1">
+                Dynamic QR
+                <Zap className="w-3 h-3 text-indigo-500 fill-indigo-500" />
+              </span>
+            </div>
+            <p className="text-[10px] text-slate-500 font-medium leading-relaxed pl-5">
+              Editable destination URL & real-time scan analytics.
+            </p>
+          </button>
         </div>
-        <Switch
-          checked={isDynamic}
-          onCheckedChange={setIsDynamic}
-          className="data-[state=checked]:bg-slate-900"
-        />
+
+        {isDynamic && (
+          <div className="p-3 rounded-2xl bg-indigo-50/60 border border-indigo-100/80 space-y-2">
+            <div className="flex items-center justify-between">
+              <span className="text-[10px] font-bold text-indigo-700 uppercase tracking-wider flex items-center gap-1">
+                <Sparkles className="w-3 h-3" />
+                Dynamic Campaign Features Enabled
+              </span>
+              {!isAuthenticated && (
+                <span className="text-[9px] font-bold text-amber-700 bg-amber-100/80 px-2 py-0.5 rounded-full">
+                  Sign in required to save
+                </span>
+              )}
+            </div>
+            <p className="text-[10px] text-slate-600 leading-relaxed font-medium">
+              Encodes a permanent IntelliQR link (<span className="font-mono text-indigo-600 font-bold">/q/8Kx92LmP</span>). You can edit the destination URL anytime without reprinting.
+            </p>
+
+            <div className="pt-1">
+              <label htmlFor="qrCustomName" className="block text-[10px] font-bold text-slate-500 uppercase tracking-wider mb-1">
+                QR Campaign Name (Optional)
+              </label>
+              <input
+                id="qrCustomName"
+                type="text"
+                value={(formData["name"] as string) || ""}
+                onChange={(e) => updateFormField("name", e.target.value)}
+                placeholder="e.g. Restaurant Menu, Summer Campaign..."
+                className="w-full px-3 py-1.5 rounded-xl border border-indigo-200/70 bg-white text-xs font-medium text-slate-800 focus:outline-none focus:border-indigo-500 placeholder:text-slate-400"
+              />
+            </div>
+          </div>
+        )}
       </div>
 
       <div className="space-y-4">

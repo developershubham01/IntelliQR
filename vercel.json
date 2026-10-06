@@ -6,6 +6,10 @@
       "destination": "/api"
     },
     {
+      "source": "/q/:path*",
+      "destination": "/api"
+    },
+    {
       "source": "/r/:path*",
       "destination": "/api"
     },

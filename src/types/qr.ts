@@ -77,6 +77,7 @@ export interface QRCodeItem {
   name: string;
   type: QRType;
   content: string;
+  destinationUrl?: string;
   data: QRData;
   style: QRStyle;
   imageUrl: string;
@@ -84,6 +85,7 @@ export interface QRCodeItem {
   isFavorite: boolean;
   isDynamic: boolean;
   shortId?: string;
+  status?: "active" | "paused" | "expired";
   scanCount: number;
   downloadCount: number;
   createdAt: Date;

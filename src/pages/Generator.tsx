@@ -126,7 +126,7 @@ export default function Generator() {
                             {item.isDynamic && item.shortId && (
                               <button
                                 onClick={() => {
-                                  window.open(`/r/${item.shortId}`, "_blank");
+                                  window.open(`/q/${item.shortId}`, "_blank");
                                 }}
                                 className="p-1 rounded text-slate-400 hover:text-indigo-600"
                                 title="Open Link"

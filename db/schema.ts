@@ -12,7 +12,7 @@ import {
 
 // Enums for Postgres
 export const roleEnum = pgEnum("user_role", ["user", "admin"]);
-export const qrCodeStatusEnum = pgEnum("qr_status", ["active", "paused"]);
+export const qrCodeStatusEnum = pgEnum("qr_status", ["active", "paused", "expired"]);
 export const contactStatusEnum = pgEnum("contact_status", ["new", "read", "replied"]);
 
 export const users = pgTable("users", {
@@ -45,6 +45,7 @@ export const qrCodes = pgTable("qr_codes", {
   name: varchar("name", { length: 255 }).notNull(),
   type: varchar("type", { length: 50 }).notNull(),
   content: text("content").notNull(),
+  destinationUrl: text("destinationUrl"),
   data: jsonb("data").$type<Record<string, unknown>>(),
   style: jsonb("style").$type<QRStyleConfig>(),
   imageUrl: text("imageUrl"),
@@ -55,6 +56,10 @@ export const qrCodes = pgTable("qr_codes", {
   status: qrCodeStatusEnum("status").default("active").notNull(),
   scanCount: integer("scanCount").default(0),
   downloadCount: integer("downloadCount").default(0),
+  expiresAt: timestamp("expiresAt"),
+  passwordHash: text("passwordHash"),
+  customDomain: varchar("customDomain", { length: 255 }),
+  metadata: jsonb("metadata").$type<Record<string, unknown>>(),
   createdAt: timestamp("createdAt").defaultNow().notNull(),
   updatedAt: timestamp("updatedAt")
     .defaultNow()
@@ -122,10 +127,13 @@ export const qrScans = pgTable("qr_scans", {
   qrCodeId: integer("qrCodeId").notNull().references(() => qrCodes.id),
   ipAddress: varchar("ipAddress", { length: 45 }),
   userAgent: text("userAgent"),
-  country: varchar("country", { length: 2 }),
+  country: varchar("country", { length: 50 }),
   city: varchar("city", { length: 255 }),
   device: varchar("device", { length: 50 }),
+  browser: varchar("browser", { length: 50 }),
   os: varchar("os", { length: 50 }),
+  referrer: text("referrer"),
+  visitorHash: varchar("visitorHash", { length: 64 }),
   scannedAt: timestamp("scannedAt").defaultNow().notNull(),
 });
 

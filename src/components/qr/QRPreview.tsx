@@ -1,15 +1,17 @@
 import { useQRStore } from "@/store/qrStore";
-import { Copy, Printer, RefreshCw, Sparkles } from "lucide-react";
+import { Copy, Printer, RefreshCw, Sparkles, Zap, Edit3, BarChart2 } from "lucide-react";
 import { useState } from "react";
 import { copyQRToClipboard, printQR } from "@/lib/qr-generator";
 import { toast } from "sonner";
 import { memo } from "react";
 import { motion } from "framer-motion";
 import { Link } from "react-router";
+import DynamicQREditModal from "./DynamicQREditModal";
 
 const QRPreview = memo(function QRPreview() {
   const { currentQR, isGenerating, generateQR } = useQRStore();
   const [copied, setCopied] = useState(false);
+  const [isEditOpen, setIsEditOpen] = useState(false);
 
   const handleCopy = async () => {
     if (!currentQR?.imageUrl) return;
@@ -123,6 +125,69 @@ const QRPreview = memo(function QRPreview() {
         )}
       </div>
 
+      {/* Dynamic QR Info & Management Card */}
+      {currentQR?.isDynamic && currentQR?.shortId && (
+        <motion.div
+          initial={{ opacity: 0, y: 10 }}
+          animate={{ opacity: 1, y: 0 }}
+          className="w-full bg-white/90 backdrop-blur-xl border border-indigo-100 rounded-3xl p-5 shadow-sm space-y-3.5"
+        >
+          <div className="flex items-center justify-between">
+            <span className="px-2.5 py-0.5 rounded-full text-[10px] font-bold uppercase tracking-wider bg-indigo-50 text-indigo-600 border border-indigo-200/50 flex items-center gap-1">
+              <Zap className="w-2.5 h-2.5" />
+              Dynamic QR Active
+            </span>
+            <Link
+              to="/dashboard"
+              className="text-[11px] font-bold text-indigo-600 hover:underline flex items-center gap-0.5"
+            >
+              Dashboard &rarr;
+            </Link>
+          </div>
+
+          <div>
+            <div className="text-[10px] font-bold uppercase tracking-wider text-slate-400">QR Name</div>
+            <div className="text-xs font-bold text-slate-800 truncate">{currentQR.name}</div>
+          </div>
+
+          <div>
+            <div className="text-[10px] font-bold uppercase tracking-wider text-slate-400 mb-1">Permanent Short URL</div>
+            <div className="p-2 rounded-xl bg-slate-50 border border-slate-100 flex items-center justify-between gap-2">
+              <span className="font-mono text-xs font-semibold text-slate-800 truncate">
+                {window.location.origin}/q/{currentQR.shortId}
+              </span>
+              <button
+                onClick={() => {
+                  navigator.clipboard.writeText(`${window.location.origin}/q/${currentQR.shortId}`);
+                  toast.success("Short link copied!");
+                }}
+                className="p-1 text-slate-400 hover:text-slate-800"
+                title="Copy Link"
+              >
+                <Copy className="w-3.5 h-3.5" />
+              </button>
+            </div>
+          </div>
+
+          <div className="pt-1 flex flex-wrap gap-2">
+            <button
+              onClick={() => setIsEditOpen(true)}
+              className="flex-1 py-2 px-3 rounded-xl bg-slate-900 hover:bg-slate-800 text-white text-[10px] font-bold uppercase tracking-wider transition-all flex items-center justify-center gap-1 shadow-sm"
+            >
+              <Edit3 className="w-3 h-3" />
+              Edit Destination
+            </button>
+            <Link
+              to="/dashboard"
+              className="py-2 px-3 rounded-xl bg-white border border-slate-200 hover:bg-slate-50 text-slate-700 text-[10px] font-bold uppercase tracking-wider transition-all flex items-center justify-center gap-1 shadow-sm"
+            >
+              <BarChart2 className="w-3 h-3" />
+              Analytics
+            </Link>
+          </div>
+        </motion.div>
+      )}
+
       {/* Choose Template Action */}
       {currentQR?.imageUrl && (
         <motion.div 
@@ -138,6 +203,21 @@ const QRPreview = memo(function QRPreview() {
             Choose Template
           </Link>
         </motion.div>
+      )}
+
+      {/* Edit Destination Modal */}
+      {currentQR?.isDynamic && (
+        <DynamicQREditModal
+          qr={{
+            id: Number(currentQR.id) || 0,
+            name: currentQR.name,
+            shortId: currentQR.shortId,
+            destinationUrl: currentQR.destinationUrl || currentQR.content,
+            content: currentQR.content,
+          }}
+          isOpen={isEditOpen}
+          onClose={() => setIsEditOpen(false)}
+        />
       )}
     </motion.div>
   );

@@ -144,6 +144,7 @@ export const useQRStore = create<QRStore>()(
                 name: `${state.selectedType.charAt(0).toUpperCase() + state.selectedType.slice(1)} QR`,
                 type: state.selectedType,
                 content: content,
+                destinationUrl: content,
                 data: state.formData,
                 style: state.style,
                 isDynamic: true,
@@ -152,7 +153,7 @@ export const useQRStore = create<QRStore>()(
             const json = await res.json();
             if (json.result?.data?.shortId) {
               shortId = json.result.data.shortId;
-              finalContent = `${window.location.origin}/r/${shortId}`;
+              finalContent = `${window.location.origin}/q/${shortId}`;
             }
           }
 
@@ -162,7 +163,8 @@ export const useQRStore = create<QRStore>()(
             id: generateId(),
             name: `${state.selectedType.charAt(0).toUpperCase() + state.selectedType.slice(1)} QR`,
             type: state.selectedType,
-            content,
+            content: finalContent,
+            destinationUrl: state.isDynamic ? content : undefined,
             data: { ...state.formData },
             style: { ...state.style },
             imageUrl: dataUrl,
@@ -170,6 +172,7 @@ export const useQRStore = create<QRStore>()(
             isFavorite: false,
             isDynamic: state.isDynamic,
             shortId,
+            status: "active",
             scanCount: 0,
             downloadCount: 0,
             createdAt: new Date(),
