@@ -20,10 +20,10 @@ function parseUserAgent(ua: string) {
   }
 
   // OS detection
-  if (/windows nt/i.test(ua)) os = "Windows";
-  else if (/mac os x|macintosh/i.test(ua)) os = "macOS";
+  if (/iphone|ipad|ipod/i.test(ua)) os = "iOS";
   else if (/android/i.test(ua)) os = "Android";
-  else if (/iphone|ipad|ipod/i.test(ua)) os = "iOS";
+  else if (/windows nt/i.test(ua)) os = "Windows";
+  else if (/mac os x|macintosh/i.test(ua)) os = "macOS";
   else if (/cros/i.test(ua)) os = "ChromeOS";
   else if (/linux/i.test(ua)) os = "Linux";
 
@@ -330,7 +330,7 @@ export const handleRedirection = async (c: Context) => {
   db.insert(qrScans)
     .values({
       qrCodeId: qr.id,
-      ipAddress: rawIp.length <= 45 ? rawIp : null,
+      ipAddress: null, // Privacy-conscious: raw IP is not stored permanently
       userAgent: userAgent.slice(0, 500),
       country: country ? country.slice(0, 50) : null,
       city: city ? city.slice(0, 255) : null,
@@ -344,15 +344,17 @@ export const handleRedirection = async (c: Context) => {
     .execute()
     .catch((e) => console.error("Failed to log scan analytics:", e));
 
-  // Atomic database increment for scanCount (avoids race conditions)
-  db.update(qrCodes)
-    .set({
-      scanCount: sql`COALESCE(${qrCodes.scanCount}, 0) + 1`,
-      updatedAt: new Date(),
-    })
-    .where(eq(qrCodes.id, qr.id))
-    .execute()
-    .catch((e) => console.error("Failed to atomically increment scan count:", e));
+  // Atomic database increment for scanCount (avoids race conditions & serverless loss)
+  try {
+    await db.update(qrCodes)
+      .set({
+        scanCount: sql`COALESCE(${qrCodes.scanCount}, 0) + 1`,
+        updatedAt: new Date(),
+      })
+      .where(eq(qrCodes.id, qr.id));
+  } catch (e) {
+    console.error("Failed to atomically increment scan count:", e);
+  }
 
   // Set anti-caching headers so client browsers always query the server on subsequent scans
   c.header("Cache-Control", "no-store, no-cache, must-revalidate, proxy-revalidate");

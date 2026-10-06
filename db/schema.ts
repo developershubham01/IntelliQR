@@ -124,7 +124,7 @@ export type ApiKey = typeof apiKeys.$inferSelect;
 // QR Scans (Analytics) table
 export const qrScans = pgTable("qr_scans", {
   id: serial("id").primaryKey(),
-  qrCodeId: integer("qrCodeId").notNull().references(() => qrCodes.id),
+  qrCodeId: integer("qrCodeId").notNull().references(() => qrCodes.id, { onDelete: "cascade" }),
   ipAddress: varchar("ipAddress", { length: 45 }),
   userAgent: text("userAgent"),
   country: varchar("country", { length: 50 }),

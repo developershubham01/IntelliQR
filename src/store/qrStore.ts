@@ -137,31 +137,76 @@ export const useQRStore = create<QRStore>()(
               return;
             }
 
+            const customName = ((state.formData["name"] as string) || "").trim();
+            const qrName = customName || `${state.selectedType.charAt(0).toUpperCase() + state.selectedType.slice(1)} QR`;
+
             const res = await fetch("/api/trpc/qr.create", {
               method: "POST",
               headers: { "Content-Type": "application/json" },
+              credentials: "include",
               body: JSON.stringify({
-                name: `${state.selectedType.charAt(0).toUpperCase() + state.selectedType.slice(1)} QR`,
-                type: state.selectedType,
-                content: content,
-                destinationUrl: content,
-                data: state.formData,
-                style: state.style,
-                isDynamic: true,
+                json: {
+                  name: qrName,
+                  type: state.selectedType,
+                  content: content,
+                  destinationUrl: content,
+                  data: state.formData,
+                  style: state.style,
+                  isDynamic: true,
+                },
               }),
             });
+
+            if (!res.ok) {
+              const errJson = await res.json().catch(() => null);
+              const errMsg = errJson?.error?.json?.message || errJson?.error?.message || "Failed to create Dynamic QR code.";
+              toast.error(errMsg);
+              set({ isGenerating: false });
+              return;
+            }
+
             const json = await res.json();
-            if (json.result?.data?.shortId) {
-              shortId = json.result.data.shortId;
+            const created = json.result?.data?.json || json.result?.data;
+            if (created?.shortId) {
+              shortId = created.shortId;
               finalContent = `${window.location.origin}/q/${shortId}`;
+            } else {
+              toast.error("Server did not return a valid short code.");
+              set({ isGenerating: false });
+              return;
             }
           }
 
           const { dataUrl, svgContent } = await generateQRCode(finalContent, state.style);
 
+          // If dynamic, update image and SVG in database
+          if (state.isDynamic && shortId) {
+            fetch("/api/trpc/qr.updateImage", {
+              method: "POST",
+              headers: { "Content-Type": "application/json" },
+              credentials: "include",
+              body: JSON.stringify({
+                json: {
+                  imageUrl: dataUrl,
+                  svgContent,
+                  shortId,
+                },
+              }),
+            }).catch(() => {});
+
+            toast.success("Dynamic QR created and saved to your dashboard!", {
+              action: {
+                label: "View Dashboard",
+                onClick: () => {
+                  window.location.href = "/dashboard";
+                },
+              },
+            });
+          }
+
           const newQR: QRCodeItem = {
             id: generateId(),
-            name: `${state.selectedType.charAt(0).toUpperCase() + state.selectedType.slice(1)} QR`,
+            name: ((state.formData["name"] as string) || "").trim() || `${state.selectedType.charAt(0).toUpperCase() + state.selectedType.slice(1)} QR`,
             type: state.selectedType,
             content: finalContent,
             destinationUrl: state.isDynamic ? content : undefined,

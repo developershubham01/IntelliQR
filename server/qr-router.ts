@@ -108,6 +108,10 @@ export const qrRouter = createRouter({
       let shortId: string | null = null;
       let finalDestination = (input.destinationUrl || input.content).trim();
 
+      console.log("[DYNAMIC QR] Create request");
+      console.log("[DYNAMIC QR] Authenticated user:", ctx.user.id);
+      console.log("[DYNAMIC QR] Payload:", { name: input.name, type: input.type, isDynamic: input.isDynamic, destinationUrl: input.destinationUrl });
+
       if (input.isDynamic) {
         // Validate destination URL security
         if (!isValidRedirectUrl(finalDestination)) {
@@ -140,8 +144,10 @@ export const qrRouter = createRouter({
         if (!shortId) {
           throw new Error("Failed to generate unique short code. Please try again.");
         }
+        console.log("[DYNAMIC QR] Generated short code:", shortId);
       }
 
+      console.log("[DYNAMIC QR] Database insert");
       const result = await db
         .insert(qrCodes)
         .values({
@@ -161,11 +167,47 @@ export const qrRouter = createRouter({
         })
         .returning({ id: qrCodes.id, shortId: qrCodes.shortId });
 
+      console.log("[DYNAMIC QR] Database response:", result[0]);
+      console.log("[DYNAMIC QR] Final result: success");
+
       return {
         id: result[0].id,
         shortId: result[0].shortId,
         success: true,
       };
+    }),
+
+  updateImage: authedQuery
+    .input(
+      z.object({
+        id: z.number().optional(),
+        shortId: z.string().optional(),
+        imageUrl: z.string().optional(),
+        svgContent: z.string().optional(),
+      })
+    )
+    .mutation(async ({ ctx, input }) => {
+      const db = getDb();
+      const whereCondition = input.id
+        ? and(eq(qrCodes.id, input.id), eq(qrCodes.userId, ctx.user.id))
+        : input.shortId
+        ? and(eq(qrCodes.shortId, input.shortId), eq(qrCodes.userId, ctx.user.id))
+        : null;
+
+      if (!whereCondition) {
+        throw new Error("Missing QR identifier");
+      }
+
+      await db
+        .update(qrCodes)
+        .set({
+          imageUrl: input.imageUrl,
+          svgContent: input.svgContent,
+          updatedAt: new Date(),
+        })
+        .where(whereCondition);
+
+      return { success: true };
     }),
 
   updateDestination: authedQuery
