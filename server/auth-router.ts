@@ -25,8 +25,9 @@ export const authRouter = createRouter({
         new URL("https://www.googleapis.com/oauth2/v3/certs")
       );
 
+      const expectedAudience = env.googleClientId;
       const { payload } = await jose.jwtVerify(credential, jwks, {
-        audience: "109467875222-v0vgjm6ot9kb85411tvk3veohms4ur4p.apps.googleusercontent.com",
+        audience: expectedAudience,
         issuer: ["https://accounts.google.com", "accounts.google.com"],
       });
 

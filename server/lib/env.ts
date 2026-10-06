@@ -13,7 +13,6 @@ export const env = {
   appSecret: process.env.APP_SECRET || process.env.GOOGLE_CLIENT_SECRET || process.env.JWT_SECRET || "default-app-secret-for-jwt",
   isProduction: process.env.NODE_ENV === "production",
   databaseUrl: required("DATABASE_URL"),
-  kimiAuthUrl: process.env.KIMI_AUTH_URL || "",
-  kimiOpenUrl: process.env.KIMI_OPEN_URL || "",
+  googleClientId: process.env.GOOGLE_CLIENT_ID || "666347407890-jrk5jjrcqepf1gp2oimqtmmfcm6nfa49.apps.googleusercontent.com",
   ownerUnionId: process.env.OWNER_UNION_ID ?? "",
 };

@@ -45,9 +45,10 @@ export default function SignUp() {
 
   useEffect(() => {
     const google = (window as any).google;
+    const clientId = import.meta.env.VITE_GOOGLE_CLIENT_ID || "666347407890-jrk5jjrcqepf1gp2oimqtmmfcm6nfa49.apps.googleusercontent.com";
     if (google) {
       google.accounts.id.initialize({
-        client_id: "109467875222-v0vgjm6ot9kb85411tvk3veohms4ur4p.apps.googleusercontent.com",
+        client_id: clientId,
         callback: handleGoogleCallback,
       });
       google.accounts.id.renderButton(
