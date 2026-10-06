@@ -15,8 +15,7 @@ describe("Dynamic QR - Security & URL Validation", () => {
     expect(isValidRedirectUrl("vbscript:msgbox(1)")).toBe(false);
     expect(isValidRedirectUrl("file:///etc/passwd")).toBe(false);
     expect(isValidRedirectUrl("")).toBe(false);
-    // @ts-expect-error test invalid types
-    expect(isValidRedirectUrl(null)).toBe(false);
+    expect(isValidRedirectUrl(null as any)).toBe(false);
   });
 
   it("allows mailto: and tel: for communication QR codes", () => {
