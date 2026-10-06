@@ -2,6 +2,8 @@ import { motion } from "framer-motion";
 import { Link } from "react-router";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
+import SEOHead from "@/components/seo/SEOHead";
+import Breadcrumbs from "@/components/seo/Breadcrumbs";
 import { Sparkles, ArrowRight, Code2, Heart, ShieldCheck, Zap } from "lucide-react";
 
 export default function About() {
@@ -15,32 +17,42 @@ export default function About() {
   const pillars = [
     {
       icon: Code2,
+      color: "text-indigo-600",
+      gradient: "from-indigo-50 to-indigo-100/50",
       title: "Developer First",
-      description: "Crafted by developers, for developers. Simple REST APIs, SDKs, and clean UI configurations built to save you time.",
-      gradient: "from-sky-500/10 to-blue-500/10",
-      color: "text-blue-600",
-    },
-    {
-      icon: Zap,
-      title: "Limitless Customization",
-      description: "Go beyond black-and-white. Shape your dots, style your eyes, insert high-fidelity logos, and add custom frames in seconds.",
-      gradient: "from-amber-500/10 to-orange-500/10",
-      color: "text-orange-600",
+      description: "Built with high-throughput REST APIs, SDKs, and sub-10ms redirection latency engineered for global scale.",
     },
     {
       icon: ShieldCheck,
-      title: "Privacy & Reliability",
-      description: "Your users' security is paramount. Dynamic redirects are vetted in real-time, blocking phishing attempts and malicious targets.",
-      gradient: "from-emerald-500/10 to-teal-500/10",
       color: "text-emerald-600",
+      gradient: "from-emerald-50 to-emerald-100/50",
+      title: "Privacy & Security",
+      description: "GDPR-compliant telemetry with phishing defense, HTTPS encryption, and zero intrusive tracking cookies.",
+    },
+    {
+      icon: Zap,
+      color: "text-amber-600",
+      gradient: "from-amber-50 to-amber-100/50",
+      title: "Real-time Intelligence",
+      description: "Instant analytics, geolocation insights, device attribution, and dynamic URL updates without reprinting.",
     },
   ];
 
   return (
     <div className="min-h-screen bg-slate-50 relative flex flex-col font-sans sarvam-gradient overflow-x-hidden">
+      <SEOHead
+        title="About IntelliQR – The Intelligent QR Generation Platform"
+        description="Learn about IntelliQR's mission to bridge physical experiences with modern digital workflows through customizable, secure, and trackable dynamic QR codes."
+        canonicalUrl="https://intelli-qr.vercel.app/about"
+        breadcrumbs={[{ name: "About Us", url: "/about" }]}
+      />
+
       <Header />
 
       <div className="relative z-10 pt-32 pb-20 min-h-[calc(100vh-6rem)]">
+        <div className="max-w-6xl mx-auto px-4 sm:px-6 mb-4">
+          <Breadcrumbs items={[{ name: "About Us", url: "/about" }]} />
+        </div>
         {/* Background mesh decoration */}
         <div className="absolute w-[500px] h-[500px] bg-gradient-to-tr from-indigo-500/10 via-purple-500/10 to-pink-500/10 rounded-full blur-[100px] top-12 left-1/4 -z-10 pointer-events-none" />
         <div className="absolute w-[500px] h-[500px] bg-gradient-to-br from-blue-500/10 via-sky-500/10 to-teal-500/10 rounded-full blur-[100px] bottom-12 right-1/4 -z-10 pointer-events-none" />

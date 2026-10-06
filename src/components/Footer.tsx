@@ -13,28 +13,49 @@ function XIcon({ className = "w-[18px] h-[18px]" }: { className?: string }) {
 const footerLinks = {
   PRODUCTS: [
     { label: "QR Generator", href: "/generator" },
-    { label: "Dynamic Links", href: "/generator" },
-    { label: "Bulk Creation", href: "/generator" },
-    { label: "Custom Domain", href: "/generator" },
+    { label: "Dynamic QR Codes", href: "/dynamic-qr-code" },
+    { label: "QR Analytics & Tracking", href: "/qr-code-analytics" },
+    { label: "Design Templates", href: "/templates" },
+    { label: "Platform Features", href: "/features" },
+    { label: "Blog & Knowledge Hub", href: "/blog" },
   ],
-  APIs: [
-    { label: "QR Generation", href: "/api-docs" },
-    { label: "Analytics API", href: "/api-docs" },
-    { label: "Redirection API", href: "/api-docs" },
+  "QR TYPES": [
+    { label: "WiFi QR Code", href: "/qr-code-types/wifi" },
+    { label: "WhatsApp QR", href: "/qr-code-types/whatsapp" },
+    { label: "vCard Business Card", href: "/qr-code-types/vcard" },
+    { label: "PDF Document QR", href: "/qr-code-types/pdf" },
+    { label: "URL & Website QR", href: "/qr-code-types/url" },
+    { label: "App Download QR", href: "/qr-code-types/app-store" },
+    { label: "Payment & UPI QR", href: "/qr-code-types/payment" },
+    { label: "Google Maps Location", href: "/qr-code-types/google-maps" },
+    { label: "Digital Menu QR", href: "/qr-code-types/menu" },
+    { label: "All 25+ QR Formats", href: "/qr-code-types" },
   ],
-  RESOURCES: [
-    { label: "Documentation", href: "/api-docs" },
-    { label: "Guides & Tutorials", href: "/features" },
-    { label: "FAQ", href: "/faq" },
+  SOLUTIONS: [
+    { label: "Restaurants & Cafes", href: "/solutions/restaurants" },
+    { label: "Hotels & Hospitality", href: "/solutions/hotels" },
+    { label: "Retail & Packaging", href: "/solutions/retail" },
+    { label: "Real Estate Listings", href: "/solutions/real-estate" },
+    { label: "Events & Badges", href: "/solutions/events" },
+    { label: "Gyms & Fitness", href: "/solutions/gyms" },
+    { label: "Salons & Spas", href: "/solutions/salons" },
+    { label: "Education & Campuses", href: "/solutions/education" },
+    { label: "All Industry Solutions", href: "/solutions" },
+  ],
+  DEVELOPERS: [
+    { label: "REST API Docs", href: "/api-docs" },
+    { label: "Developer Portal", href: "/developers" },
+    { label: "Pricing & Plans", href: "/pricing" },
+    { label: "Frequently Asked Questions", href: "/faq" },
+    { label: "Contact Sales", href: "/contact" },
   ],
   COMPANY: [
     { label: "About Us", href: "/about" },
+    { label: "Knowledge Hub / Blog", href: "/blog" },
     { label: "Contact Us", href: "/contact" },
-  ],
-  LEGAL: [
     { label: "Privacy Policy", href: "/privacy" },
     { label: "Terms of Service", href: "/terms" },
-  ]
+  ],
 };
 
 const themeImages = [

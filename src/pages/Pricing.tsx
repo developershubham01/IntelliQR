@@ -4,6 +4,8 @@ import { Link } from "react-router";
 
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
+import SEOHead from "@/components/seo/SEOHead";
+import Breadcrumbs from "@/components/seo/Breadcrumbs";
 import {
   Check, Zap, Building2, Crown, ArrowRight, Sparkles,
 } from "lucide-react";
@@ -94,12 +96,22 @@ export default function Pricing() {
 
   return (
     <div className="min-h-screen bg-background text-foreground relative font-sans">
+      <SEOHead
+        title="IntelliQR Pricing – Free & Enterprise Dynamic QR Plans"
+        description="Affordable, transparent pricing for QR code generation and dynamic tracking. Free plan with unlimited static QR codes, Pro and Enterprise plans with real-time analytics."
+        canonicalUrl="https://intelli-qr.vercel.app/pricing"
+        breadcrumbs={[{ name: "Pricing", url: "/pricing" }]}
+      />
+
       <Header />
 
       {/* Hero Section */}
       <section className="sarvam-gradient pt-32 pb-20 border-b border-border overflow-hidden relative">
         <div className="absolute inset-0 bg-grid-slate-100/[0.04] bg-[size:32px_32px]" />
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10 text-center">
+          <div className="flex justify-start max-w-3xl mx-auto mb-4">
+            <Breadcrumbs items={[{ name: "Pricing", url: "/pricing" }]} />
+          </div>
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}

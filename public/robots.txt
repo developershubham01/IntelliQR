@@ -1,5 +1,59 @@
+# IntelliQR Robots Configuration
+# https://intelli-qr.vercel.app/robots.txt
+
 User-agent: *
 Allow: /
-Disallow: /api/
+Allow: /generator
+Allow: /qr-code-generator
+Allow: /dynamic-qr-code
+Allow: /qr-code-analytics
+Allow: /qr-code-types
+Allow: /qr-code-types/
+Allow: /solutions
+Allow: /solutions/
+Allow: /features
+Allow: /pricing
+Allow: /api-docs
+Allow: /qr-code-api
+Allow: /developers
+Allow: /faq
+Allow: /about
+Allow: /contact
+Allow: /templates
+Allow: /blog
+Allow: /blog/
+Allow: /qr-code-tracking
+Allow: /dynamic-qr-analytics
+Allow: /qr-campaign-tracking
+Allow: /privacy
+Allow: /terms
 
-Sitemap: https://qrify.pro/sitemap.xml
+# Disallow private authenticated paths
+Disallow: /dashboard
+Disallow: /profile
+Disallow: /api/private/
+Disallow: /api/trpc/
+
+# AI Search Engine Crawlers (AEO / GEO)
+User-agent: GPTBot
+Allow: /
+
+User-agent: ChatGPT-User
+Allow: /
+
+User-agent: ClaudeBot
+Allow: /
+
+User-agent: PerplexityBot
+Allow: /
+
+User-agent: Google-Extended
+Allow: /
+
+User-agent: Applebot-Extended
+Allow: /
+
+User-agent: Bingbot
+Allow: /
+
+Sitemap: https://intelli-qr.vercel.app/sitemap.xml

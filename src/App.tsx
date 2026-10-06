@@ -20,6 +20,12 @@ const Terms = lazy(() => import("./pages/Terms"));
 const Login = lazy(() => import("./pages/Login"));
 const SignUp = lazy(() => import("./pages/SignUp"));
 const Profile = lazy(() => import("./pages/Profile"));
+const DynamicQR = lazy(() => import("./pages/DynamicQR"));
+const QRAnalytics = lazy(() => import("./pages/QRAnalytics"));
+const QRTypes = lazy(() => import("./pages/QRTypes"));
+const Solutions = lazy(() => import("./pages/Solutions"));
+const Blog = lazy(() => import("./pages/Blog"));
+const BlogPost = lazy(() => import("./pages/BlogPost"));
 const Dashboard = lazy(() => import("./pages/Dashboard"));
 const NotFound = lazy(() => import("./pages/NotFound"));
 
@@ -39,9 +45,24 @@ export default function App() {
         <Routes>
           <Route path="/" element={<Home />} />
           <Route path="/generator" element={<Generator />} />
+          <Route path="/qr-code-generator" element={<Generator />} />
+          <Route path="/dynamic-qr-code" element={<DynamicQR />} />
+          <Route path="/qr-code-analytics" element={<QRAnalytics />} />
+          <Route path="/qr-code-tracking" element={<QRAnalytics />} />
+          <Route path="/dynamic-qr-analytics" element={<QRAnalytics />} />
+          <Route path="/qr-campaign-tracking" element={<QRAnalytics />} />
+          <Route path="/qr-code-types" element={<QRTypes />} />
+          <Route path="/qr-code-types/:typeSlug" element={<QRTypes />} />
+          <Route path="/qr-code-generator/:typeSlug" element={<QRTypes />} />
+          <Route path="/solutions" element={<Solutions />} />
+          <Route path="/solutions/:industrySlug" element={<Solutions />} />
           <Route path="/features" element={<Features />} />
           <Route path="/pricing" element={<Pricing />} />
+          <Route path="/blog" element={<Blog />} />
+          <Route path="/blog/:slug" element={<BlogPost />} />
           <Route path="/api-docs" element={<ApiDocs />} />
+          <Route path="/qr-code-api" element={<ApiDocs />} />
+          <Route path="/developers" element={<ApiDocs />} />
           <Route path="/faq" element={<FAQ />} />
           <Route path="/contact" element={<Contact />} />
           <Route path="/about" element={<About />} />

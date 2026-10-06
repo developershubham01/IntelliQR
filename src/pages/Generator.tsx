@@ -1,14 +1,18 @@
 import { useState, useEffect } from "react";
+import { useSearchParams } from "react-router";
 import QRTypeSelector from "@/components/qr/QRTypeSelector";
 import QRContentForm from "@/components/qr/QRContentForm";
 import QRPreview from "@/components/qr/QRPreview";
 import QRDesignPanel from "@/components/qr/QRDesignPanel";
 import QRExportPanel from "@/components/qr/QRExportPanel";
 import Header from "@/components/Header";
+import SEOHead from "@/components/seo/SEOHead";
+import Breadcrumbs from "@/components/seo/Breadcrumbs";
 import { FileText, Palette, Download, History, Zap } from "lucide-react";
 import { useQRStore } from "@/store/qrStore";
 import { motion, AnimatePresence } from "framer-motion";
 import { useAuth } from "@/hooks/useAuth";
+import type { QRType } from "@/types/qr";
 
 type Tab = "content" | "design" | "export";
 
@@ -19,12 +23,26 @@ const tabs: { id: Tab; label: string; icon: React.ElementType }[] = [
 ];
 
 export default function Generator() {
+  const [searchParams] = useSearchParams();
   const { isAuthenticated } = useAuth();
   const setStoreAuth = useQRStore((state) => state.setStoreAuth);
+  const setSelectedType = useQRStore((state) => state.setSelectedType);
+  const setIsDynamic = useQRStore((state) => state.setIsDynamic);
 
   useEffect(() => {
     setStoreAuth(isAuthenticated);
   }, [isAuthenticated, setStoreAuth]);
+
+  useEffect(() => {
+    const typeParam = searchParams.get("type");
+    if (typeParam) {
+      setSelectedType(typeParam as QRType);
+    }
+    const modeParam = searchParams.get("mode");
+    if (modeParam === "dynamic") {
+      setIsDynamic(true);
+    }
+  }, [searchParams, setSelectedType, setIsDynamic]);
 
   const [activeTab, setActiveTab] = useState<Tab>("content");
   const [showHistory, setShowHistory] = useState(false);
@@ -32,6 +50,13 @@ export default function Generator() {
 
   return (
     <div className="min-h-screen bg-slate-50 relative flex flex-col font-sans sarvam-gradient overflow-x-hidden">
+      <SEOHead
+        title="QR Code Generator – Create Custom & Dynamic QR Codes Online"
+        description="Free online QR code generator. Create custom vector QR codes with brand logos, custom colors, dot styling, and dynamic scan tracking. 25+ formats supported."
+        canonicalUrl="https://intelli-qr.vercel.app/generator"
+        breadcrumbs={[{ name: "QR Generator", url: "/generator" }]}
+      />
+
       <Header />
 
       <div className="relative z-10 pt-24 pb-8 min-h-screen">
@@ -40,6 +65,9 @@ export default function Generator() {
         <div className="absolute w-[500px] h-[500px] bg-gradient-to-br from-blue-500/10 via-sky-500/10 to-teal-500/10 rounded-full blur-[100px] bottom-12 right-1/4 -z-10 pointer-events-none" />
 
         <div className="max-w-[1400px] mx-auto px-4 sm:px-6 lg:px-8 lg:h-[calc(100vh-7rem)] min-h-screen lg:min-h-0 pb-20">
+          <div className="mb-4">
+            <Breadcrumbs items={[{ name: "QR Generator", url: "/generator" }]} />
+          </div>
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:h-full">
             {/* Left Panel - Type Selector */}
             <motion.div

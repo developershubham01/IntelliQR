@@ -3,6 +3,8 @@ import { motion } from "framer-motion";
 
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
+import SEOHead from "@/components/seo/SEOHead";
+import Breadcrumbs from "@/components/seo/Breadcrumbs";
 import { Copy, Check, Code2, Terminal, Globe, Key } from "lucide-react";
 
 const endpoints = [
@@ -224,12 +226,22 @@ export default function ApiDocs() {
 
   return (
     <div className="min-h-screen bg-background text-foreground relative font-sans">
+      <SEOHead
+        title="QR Code API & Developer SDK – REST Endpoints & Webhooks | IntelliQR"
+        description="Programmatic QR code generation API. Create static and dynamic QR codes, customize dot colors and logos, and query scan analytics via developer-friendly REST endpoints."
+        canonicalUrl="https://intelli-qr.vercel.app/api-docs"
+        breadcrumbs={[{ name: "API Documentation", url: "/api-docs" }]}
+      />
+
       <Header />
 
       {/* Hero Section */}
       <section className="sarvam-gradient pt-32 pb-20 border-b border-border overflow-hidden relative">
         <div className="absolute inset-0 bg-grid-slate-100/[0.04] bg-[size:32px_32px]" />
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10 text-center">
+          <div className="flex justify-start max-w-5xl mx-auto mb-4">
+            <Breadcrumbs items={[{ name: "API Documentation", url: "/api-docs" }]} />
+          </div>
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}

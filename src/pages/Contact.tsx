@@ -5,6 +5,8 @@ import { trpc } from "@/providers/trpc";
 
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
+import SEOHead from "@/components/seo/SEOHead";
+import Breadcrumbs from "@/components/seo/Breadcrumbs";
 import { Mail, MapPin, Phone, Send, MessageSquare, Check, Sparkles, Loader2 } from "lucide-react";
 
 export default function Contact() {
@@ -33,9 +35,19 @@ export default function Contact() {
 
   return (
     <div className="min-h-screen bg-slate-50 relative flex flex-col font-sans sarvam-gradient overflow-x-hidden">
+      <SEOHead
+        title="Contact IntelliQR – Support, Enterprise Inquiries & Sales"
+        description="Get in touch with the IntelliQR team for enterprise custom solutions, API support, high-volume batch generation, or general customer support."
+        canonicalUrl="https://intelli-qr.vercel.app/contact"
+        breadcrumbs={[{ name: "Contact", url: "/contact" }]}
+      />
+
       <Header />
 
       <div className="relative z-10 pt-32 pb-20 min-h-[calc(100vh-6rem)]">
+        <div className="max-w-6xl mx-auto px-4 sm:px-6 mb-4">
+          <Breadcrumbs items={[{ name: "Contact", url: "/contact" }]} />
+        </div>
         {/* Background mesh decoration */}
         <div className="absolute w-[500px] h-[500px] bg-gradient-to-tr from-indigo-500/10 via-purple-500/10 to-pink-500/10 rounded-full blur-[100px] top-12 left-1/4 -z-10 pointer-events-none" />
         <div className="absolute w-[500px] h-[500px] bg-gradient-to-br from-blue-500/10 via-sky-500/10 to-teal-500/10 rounded-full blur-[100px] bottom-12 right-1/4 -z-10 pointer-events-none" />

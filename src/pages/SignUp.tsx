@@ -18,7 +18,7 @@ export default function SignUp() {
     onSuccess: async () => {
       toast.success("Account created successfully!");
       await utils.auth.me.invalidate();
-      navigate("/");
+      navigate("/dashboard");
     },
     onError: (err) => {
       toast.error(err.message || "Failed to create account. Please try again.");
@@ -29,7 +29,7 @@ export default function SignUp() {
     onSuccess: async () => {
       toast.success("Account created successfully!");
       await utils.auth.me.invalidate();
-      navigate("/");
+      navigate("/dashboard");
     },
     onError: (err) => {
       toast.error(err.message || "Failed to authenticate with Google.");

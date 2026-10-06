@@ -3,6 +3,8 @@ import { Link } from "react-router";
 
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
+import SEOHead from "@/components/seo/SEOHead";
+import Breadcrumbs from "@/components/seo/Breadcrumbs";
 import {
   QrCode, Palette, Download, Zap, Shield, BarChart3,
   Globe, Clock, Heart, Sparkles, Layers, Lock,
@@ -96,12 +98,22 @@ const techSpecs = [
 export default function Features() {
   return (
     <div className="min-h-screen bg-background text-foreground relative font-sans">
+      <SEOHead
+        title="IntelliQR Features – Custom Styling, Dynamic Redirection & Analytics"
+        description="Explore IntelliQR's comprehensive features: 25+ QR code types, brand logos, custom dot styles, vector SVG exports, dynamic URL redirection, and real-time scan analytics."
+        canonicalUrl="https://intelli-qr.vercel.app/features"
+        breadcrumbs={[{ name: "Features", url: "/features" }]}
+      />
+
       <Header />
 
       {/* Hero Section */}
       <section className="sarvam-gradient pt-32 pb-20 border-b border-border overflow-hidden relative">
         <div className="absolute inset-0 bg-grid-slate-100/[0.04] bg-[size:32px_32px]" />
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10 text-center">
+          <div className="flex justify-start max-w-3xl mx-auto mb-4">
+            <Breadcrumbs items={[{ name: "Features", url: "/features" }]} />
+          </div>
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}

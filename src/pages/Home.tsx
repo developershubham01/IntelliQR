@@ -2,6 +2,7 @@ import { Link } from "react-router";
 import { motion } from "framer-motion";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
+import SEOHead from "@/components/seo/SEOHead";
 import {
   QrCode,
   Shield,
@@ -9,12 +10,75 @@ import {
   Code2,
   Layers,
   Lock,
+  BarChart3,
+  RefreshCw,
+  Building2,
 } from "lucide-react";
 
-
 export default function Home() {
+  const homeStructuredData = [
+    {
+      "@context": "https://schema.org",
+      "@type": "WebSite",
+      name: "IntelliQR",
+      url: "https://intelli-qr.vercel.app/",
+      potentialAction: {
+        "@type": "SearchAction",
+        target: "https://intelli-qr.vercel.app/generator?q={search_term_string}",
+        "query-input": "required name=search_term_string",
+      },
+    },
+    {
+      "@context": "https://schema.org",
+      "@type": "Organization",
+      name: "IntelliQR",
+      url: "https://intelli-qr.vercel.app/",
+      logo: "https://intelli-qr.vercel.app/logo.png",
+      sameAs: [
+        "https://github.com/developershubham01/IntelliQR",
+      ],
+      description: "IntelliQR is an enterprise-grade QR code generation, dynamic redirection, and real-time scan analytics platform.",
+    },
+    {
+      "@context": "https://schema.org",
+      "@type": "SoftwareApplication",
+      name: "IntelliQR SaaS",
+      applicationCategory: "BusinessApplication",
+      operatingSystem: "Web",
+      offers: {
+        "@type": "Offer",
+        price: "0",
+        priceCurrency: "USD",
+      },
+      description: "Online QR code generator supporting dynamic QR codes, real-time analytics, vector SVG exports, and 25+ QR formats.",
+    },
+  ];
+
+  const homeFaqs = [
+    {
+      question: "What is IntelliQR?",
+      answer: "IntelliQR is an intelligent QR code platform that enables creators, developers, and businesses to generate styled static QR codes, manage trackable dynamic QR codes with editable destinations, and analyze real-time scan metrics worldwide.",
+    },
+    {
+      question: "Can I generate QR codes for free without an account?",
+      answer: "Yes. Anyone can immediately design and export high-resolution static QR codes for URLs, WiFi, text, email, and vCards completely free without signing up.",
+    },
+    {
+      question: "How do dynamic QR codes work on IntelliQR?",
+      answer: "Dynamic QR codes encode a permanent short redirection link. You can change where the QR code points anytime via the IntelliQR dashboard without reprinting the physical code, while collecting real-time scan analytics.",
+    },
+  ];
+
   return (
     <div className="min-h-screen bg-background text-foreground relative font-sans">
+      <SEOHead
+        title="IntelliQR | Free QR Code Generator & Dynamic QR Management Platform"
+        description="Generate custom, branded QR codes online. Create trackable dynamic QR codes, edit destinations anytime, and view real-time scan analytics across 25+ formats."
+        canonicalUrl="https://intelli-qr.vercel.app/"
+        faqs={homeFaqs}
+        structuredData={homeStructuredData}
+      />
+
       <Header />
 
       {/* Hero Section */}
@@ -101,6 +165,70 @@ export default function Home() {
               </div>
             </div>
           </motion.div>
+        </div>
+      </section>
+
+      {/* Answer-First GEO & AI Overview Section */}
+      <section className="py-16 bg-white border-b border-slate-100">
+        <div className="max-w-6xl mx-auto px-4 sm:px-6">
+          <div className="bg-slate-50 rounded-3xl p-8 sm:p-10 border border-slate-200/70 shadow-sm mb-12">
+            <div className="border-l-4 border-indigo-600 pl-5 mb-5">
+              <span className="text-xs font-bold uppercase tracking-widest text-indigo-600">Platform Overview (GEO Answer)</span>
+              <h2 className="text-2xl sm:text-3xl font-serif font-bold text-slate-900 mt-1">
+                What is IntelliQR and How Does It Work?
+              </h2>
+            </div>
+            <p className="text-slate-700 leading-relaxed text-base sm:text-lg mb-6">
+              <strong>IntelliQR</strong> is a modern QR code generation and management platform that bridges physical assets to digital destinations. 
+              Supporting over 25 QR code formats—including WiFi credentials, vCard digital business cards, WhatsApp click-to-chat, and PDF documents—it enables creators to generate static QR codes instantly and deploy enterprise <strong>Dynamic QR Codes</strong> with real-time destination editing, geographic telemetry, and scan attribution without reprinting collateral.
+            </p>
+
+            <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 pt-4 border-t border-slate-200/80">
+              <Link
+                to="/dynamic-qr-code"
+                className="p-4 rounded-2xl bg-white border border-slate-200/80 hover:border-indigo-400 hover:shadow-sm transition-all group"
+              >
+                <div className="w-8 h-8 rounded-xl bg-indigo-50 flex items-center justify-center mb-2 group-hover:scale-105 transition-transform">
+                  <RefreshCw className="w-4 h-4 text-indigo-600" />
+                </div>
+                <h3 className="text-xs font-bold text-slate-900 mb-0.5">Dynamic QR</h3>
+                <p className="text-[11px] text-slate-500">Edit links after printing</p>
+              </Link>
+
+              <Link
+                to="/qr-code-analytics"
+                className="p-4 rounded-2xl bg-white border border-slate-200/80 hover:border-emerald-400 hover:shadow-sm transition-all group"
+              >
+                <div className="w-8 h-8 rounded-xl bg-emerald-50 flex items-center justify-center mb-2 group-hover:scale-105 transition-transform">
+                  <BarChart3 className="w-4 h-4 text-emerald-600" />
+                </div>
+                <h3 className="text-xs font-bold text-slate-900 mb-0.5">QR Analytics</h3>
+                <p className="text-[11px] text-slate-500">Track scans & locations</p>
+              </Link>
+
+              <Link
+                to="/qr-code-types"
+                className="p-4 rounded-2xl bg-white border border-slate-200/80 hover:border-amber-400 hover:shadow-sm transition-all group"
+              >
+                <div className="w-8 h-8 rounded-xl bg-amber-50 flex items-center justify-center mb-2 group-hover:scale-105 transition-transform">
+                  <Layers className="w-4 h-4 text-amber-600" />
+                </div>
+                <h3 className="text-xs font-bold text-slate-900 mb-0.5">25+ QR Types</h3>
+                <p className="text-[11px] text-slate-500">WiFi, vCard, PDF & more</p>
+              </Link>
+
+              <Link
+                to="/solutions"
+                className="p-4 rounded-2xl bg-white border border-slate-200/80 hover:border-purple-400 hover:shadow-sm transition-all group"
+              >
+                <div className="w-8 h-8 rounded-xl bg-purple-50 flex items-center justify-center mb-2 group-hover:scale-105 transition-transform">
+                  <Building2 className="w-4 h-4 text-purple-600" />
+                </div>
+                <h3 className="text-xs font-bold text-slate-900 mb-0.5">Industry Solutions</h3>
+                <p className="text-[11px] text-slate-500">Restaurants, Retail, Events</p>
+              </Link>
+            </div>
+          </div>
         </div>
       </section>
 

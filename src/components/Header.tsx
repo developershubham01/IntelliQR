@@ -13,9 +13,11 @@ import {
 
 const navLinks = [
   { label: "Generator", href: "/generator" },
-  { label: "Dashboard", href: "/dashboard" },
+  { label: "Dynamic QR", href: "/dynamic-qr-code" },
+  { label: "Solutions", href: "/solutions" },
   { label: "Features", href: "/features" },
   { label: "Pricing", href: "/pricing" },
+  { label: "Blog", href: "/blog" },
   { label: "API Docs", href: "/api-docs" },
 ];
 
@@ -66,6 +68,17 @@ export default function Header() {
           <div className="flex items-center gap-3">
             {isAuthenticated ? (
               <div className="flex items-center gap-2">
+                <Link
+                  to="/dashboard"
+                  className={`hidden sm:inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-full text-xs font-semibold tracking-wide transition-all ${
+                    isActive("/dashboard")
+                      ? "bg-slate-900 text-white shadow-sm"
+                      : "bg-slate-100/80 text-slate-700 hover:bg-slate-200/80 hover:text-slate-900"
+                  }`}
+                >
+                  <LayoutDashboard className="w-3.5 h-3.5 text-indigo-500" />
+                  Dashboard
+                </Link>
                 <DropdownMenu>
                   <DropdownMenuTrigger asChild>
                     <button className="flex items-center gap-2 rounded-full hover:bg-slate-100/50 p-1 transition-all focus:outline-none focus-visible:ring-2 focus-visible:ring-indigo-500">
@@ -90,7 +103,7 @@ export default function Header() {
                     </div>
                     <DropdownMenuItem asChild className="rounded-xl px-3 py-2 cursor-pointer focus:bg-slate-50 transition-colors">
                       <Link to="/dashboard" className="flex items-center text-slate-700 hover:text-slate-900 text-xs font-medium">
-                        <LayoutDashboard className="mr-2 h-4 w-4 text-slate-400" />
+                        <LayoutDashboard className="mr-2 h-4 w-4 text-indigo-500" />
                         My Dashboard
                       </Link>
                     </DropdownMenuItem>
@@ -183,7 +196,7 @@ export default function Header() {
                       </p>
                     </div>
                   </div>
-                  <Link to="/generator" onClick={() => setMobileOpen(false)} className="btn-primary text-center py-2.5">
+                  <Link to="/dashboard" onClick={() => setMobileOpen(false)} className="btn-primary text-center py-2.5">
                     My Dashboard
                   </Link>
                   <Link to="/profile" onClick={() => setMobileOpen(false)} className="w-full py-2.5 rounded-full border border-slate-200/80 text-slate-700 hover:bg-slate-50 text-center font-bold text-xs tracking-wider uppercase transition-all">

@@ -4,6 +4,8 @@ import { Link } from "react-router";
 
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
+import SEOHead from "@/components/seo/SEOHead";
+import Breadcrumbs from "@/components/seo/Breadcrumbs";
 import { ChevronDown, MessageCircle, Sparkles } from "lucide-react";
 
 const faqs = [
@@ -69,8 +71,18 @@ function FAQItem({ faq, index }: { faq: typeof faqs[0]; index: number }) {
 }
 
 export default function FAQ() {
+  const schemaFaqs = faqs.map((f) => ({ question: f.q, answer: f.a }));
+
   return (
     <div className="min-h-screen bg-slate-50 relative flex flex-col font-sans sarvam-gradient overflow-x-hidden">
+      <SEOHead
+        title="Frequently Asked Questions – Dynamic QR Codes & Tracking | IntelliQR"
+        description="Got questions about IntelliQR? Learn how dynamic QR codes work, how to edit target URLs, tracking analytics, error correction, and vector file exports."
+        canonicalUrl="https://intelli-qr.vercel.app/faq"
+        breadcrumbs={[{ name: "FAQ", url: "/faq" }]}
+        faqs={schemaFaqs}
+      />
+
       <Header />
 
       <div className="relative z-10 pt-32 pb-20 min-h-[calc(100vh-6rem)]">
@@ -79,6 +91,7 @@ export default function FAQ() {
         <div className="absolute w-[500px] h-[500px] bg-gradient-to-br from-blue-500/10 via-sky-500/10 to-teal-500/10 rounded-full blur-[100px] bottom-12 right-1/4 -z-10 pointer-events-none" />
 
         <div className="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8">
+          <Breadcrumbs items={[{ name: "FAQ", url: "/faq" }]} />
           {/* Hero */}
           <motion.div
             initial={{ opacity: 0, y: 20 }}

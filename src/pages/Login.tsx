@@ -17,7 +17,7 @@ export default function Login() {
     onSuccess: async () => {
       toast.success("Welcome back to IntelliQR!");
       await utils.auth.me.invalidate();
-      navigate("/");
+      navigate("/dashboard");
     },
     onError: (err) => {
       toast.error(err.message || "Failed to sign in. Please check your credentials.");
@@ -28,7 +28,7 @@ export default function Login() {
     onSuccess: async () => {
       toast.success("Welcome back to IntelliQR!");
       await utils.auth.me.invalidate();
-      navigate("/");
+      navigate("/dashboard");
     },
     onError: (err) => {
       toast.error(err.message || "Failed to sign in with Google.");
