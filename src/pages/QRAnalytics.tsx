@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { Link } from "react-router";
+import { motion } from "framer-motion";
 import {
   Smartphone,
   Calendar,
@@ -62,7 +63,7 @@ export default function QRAnalytics() {
   };
 
   return (
-    <div className="min-h-screen bg-[#FAFAFA] text-foreground flex flex-col font-sans">
+    <div className="min-h-screen bg-slate-50 relative flex flex-col font-sans sarvam-gradient overflow-x-hidden">
       <SEOHead
         title="QR Code Analytics & Tracking Software – Real-Time Scan Insights"
         description="Monitor QR code campaign performance with real-time scan counts, geographic heatmaps, device breakdowns, and UTM attribution. Privacy-first, GDPR-compliant analytics."
@@ -74,46 +75,60 @@ export default function QRAnalytics() {
 
       <Header />
 
-      <main className="flex-1 pt-32 pb-24">
-        <div className="max-w-6xl mx-auto px-4 sm:px-6">
-          <Breadcrumbs items={[{ name: "QR Analytics", url: "/qr-code-analytics" }]} />
+      {/* Hero Section matching Home Page */}
+      <section className="sarvam-gradient pt-36 sm:pt-40 lg:pt-44 pb-20 border-b border-border overflow-hidden relative">
+        <div className="absolute inset-0 bg-grid-slate-100/[0.04] bg-[size:32px_32px]" />
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10 text-center">
+          <div className="flex justify-start max-w-4xl mx-auto mb-4">
+            <Breadcrumbs items={[{ name: "QR Analytics", url: "/qr-code-analytics" }]} />
+          </div>
 
-          {/* Hero Section */}
-          <section className="text-center max-w-4xl mx-auto mb-16">
-            <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-emerald-50 border border-emerald-100 text-emerald-700 text-xs font-bold uppercase tracking-wider mb-6">
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.6 }}
+            className="max-w-4xl mx-auto"
+          >
+            <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-white/60 backdrop-blur-md border border-white/80 shadow-sm text-xs font-bold text-slate-800 uppercase tracking-widest mb-6">
               <TrendingUp className="w-3.5 h-3.5 text-emerald-600" />
               Real-Time Scan Telemetry & Attribution
             </div>
 
-            <h1 className="text-4xl sm:text-5xl lg:text-6xl font-serif font-bold text-slate-900 tracking-tight leading-[1.1] mb-6">
-              Turn Offline Interactions into Actionable Scan Analytics
+            <h1 className="text-4xl sm:text-6xl lg:text-[70px] leading-[1.1] tracking-tight mb-6 text-slate-900 font-serif">
+              Turn Offline Interactions <br className="hidden sm:inline" />
+              <span className="text-transparent bg-clip-text bg-gradient-to-r from-orange-600 via-rose-600 to-purple-600">
+                into Actionable Scan Analytics.
+              </span>
             </h1>
 
-            <p className="text-lg sm:text-xl text-slate-600 leading-relaxed max-w-3xl mx-auto mb-10 font-normal">
-              Measure every scan across print flyers, restaurant tables, product packaging, and billboard campaigns. 
-              Gain deep visibility into scanner demographics, time peaks, and device platforms.
+            <p className="text-lg sm:text-xl text-slate-700/80 leading-relaxed max-w-3xl mx-auto mb-10 font-medium">
+              Measure every scan across print flyers, restaurant tables, product packaging, and billboard campaigns. Gain deep visibility into scanner demographics, time peaks, and device platforms.
             </p>
 
             <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
               <Link
                 to="/generator?mode=dynamic"
-                className="w-full sm:w-auto px-8 py-4 rounded-full bg-slate-900 hover:bg-slate-800 text-white font-bold text-sm tracking-wider uppercase transition-all flex items-center justify-center gap-2 shadow-lg shadow-slate-950/15"
+                className="btn-primary text-base px-8 py-3.5 flex items-center justify-center gap-2 shadow-sm"
               >
                 Start Tracking Free
                 <ArrowRight className="w-4 h-4" />
               </Link>
               <Link
                 to="/dashboard"
-                className="w-full sm:w-auto px-8 py-4 rounded-full bg-white border border-slate-200 text-slate-700 hover:bg-slate-50 font-bold text-sm tracking-wider uppercase transition-all flex items-center justify-center gap-2"
+                className="btn-secondary text-base px-8 py-3.5 flex items-center justify-center gap-2"
               >
-                <Eye className="w-4 h-4 text-emerald-600" />
+                <Eye className="w-4 h-4 text-orange-600" />
                 View Sample Dashboard
               </Link>
             </div>
-          </section>
+          </motion.div>
+        </div>
+      </section>
 
+      <main className="flex-1 py-16">
+        <div className="max-w-6xl mx-auto px-4 sm:px-6">
           {/* GEO / AEO Answer-First Definition Card */}
-          <section className="bg-white rounded-3xl p-8 sm:p-10 border border-slate-200/80 shadow-sm mb-16">
+          <section className="bg-white/80 backdrop-blur-xl rounded-3xl p-8 sm:p-10 border border-white/80 shadow-[0_8px_30px_rgb(0,0,0,0.02)] mb-16">
             <div className="border-l-4 border-emerald-600 pl-6 mb-6">
               <h2 className="text-xs font-bold uppercase tracking-widest text-emerald-600 mb-1">
                 Direct Definition (GEO / AI Summary)

@@ -85,13 +85,15 @@ export default function FAQ() {
 
       <Header />
 
-      <div className="relative z-10 pt-32 pb-20 min-h-[calc(100vh-6rem)]">
+      <div className="relative z-10 pt-36 sm:pt-40 lg:pt-44 pb-20 min-h-[calc(100vh-6rem)]">
         {/* Background mesh decoration */}
         <div className="absolute w-[500px] h-[500px] bg-gradient-to-tr from-indigo-500/10 via-purple-500/10 to-pink-500/10 rounded-full blur-[100px] top-12 left-1/4 -z-10 pointer-events-none" />
         <div className="absolute w-[500px] h-[500px] bg-gradient-to-br from-blue-500/10 via-sky-500/10 to-teal-500/10 rounded-full blur-[100px] bottom-12 right-1/4 -z-10 pointer-events-none" />
 
         <div className="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8">
-          <Breadcrumbs items={[{ name: "FAQ", url: "/faq" }]} />
+          <div className="mb-6">
+            <Breadcrumbs items={[{ name: "FAQ", url: "/faq" }]} />
+          </div>
           {/* Hero */}
           <motion.div
             initial={{ opacity: 0, y: 20 }}

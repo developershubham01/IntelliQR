@@ -89,10 +89,10 @@ export default function Profile() {
   };
 
   return (
-    <div className="min-h-screen bg-[#FAFAFA] text-foreground relative flex flex-col font-sans">
+    <div className="min-h-screen bg-slate-50 relative flex flex-col font-sans sarvam-gradient overflow-x-hidden">
       <Header />
 
-      <div className="relative flex-1 z-10 pt-32 pb-24 relative overflow-hidden">
+      <div className="relative flex-1 z-10 pt-36 sm:pt-40 lg:pt-44 pb-24 relative overflow-hidden">
         {/* Background mesh decoration */}
         <div className="absolute w-[500px] h-[500px] bg-gradient-to-tr from-indigo-500/10 via-purple-500/10 to-pink-500/10 rounded-full blur-[100px] top-12 left-1/4 -z-10 pointer-events-none" />
         <div className="absolute w-[500px] h-[500px] bg-gradient-to-br from-blue-500/10 via-sky-500/10 to-teal-500/10 rounded-full blur-[100px] bottom-12 right-1/4 -z-10 pointer-events-none" />
@@ -111,7 +111,7 @@ export default function Profile() {
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.4 }}
-            className="bg-white border border-slate-100 rounded-[32px] p-8 md:p-12 shadow-[0_8px_40px_rgb(0,0,0,0.02)]"
+            className="bg-white/80 backdrop-blur-xl border border-white/80 rounded-[32px] p-8 md:p-12 shadow-[0_12px_40px_rgba(0,0,0,0.03)]"
           >
             {/* Header info */}
             <div className="flex flex-col md:flex-row items-center gap-6 pb-8 border-b border-slate-100 mb-8">

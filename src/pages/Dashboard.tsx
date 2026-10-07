@@ -6,7 +6,6 @@ import { useAuth } from "@/hooks/useAuth";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 import DynamicQREditModal from "@/components/qr/DynamicQREditModal";
-import DynamicQRAnalyticsModal from "@/components/qr/DynamicQRAnalyticsModal";
 import { toast } from "sonner";
 import {
   Zap,
@@ -57,8 +56,6 @@ export default function Dashboard() {
     destinationUrl?: string | null;
     content?: string | null;
   } | null>(null);
-
-  const [analyticsQRId, setAnalyticsQRId] = useState<number | null>(null);
 
   // Confirmation dialogs state
   const [statusActionQR, setStatusActionQR] = useState<{
@@ -151,7 +148,7 @@ export default function Dashboard() {
     <div className="min-h-screen bg-slate-50 relative flex flex-col font-sans sarvam-gradient overflow-x-hidden">
       <Header />
 
-      <main className="relative z-10 pt-28 pb-20 flex-1 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 w-full">
+      <main className="relative z-10 pt-36 sm:pt-40 lg:pt-44 pb-20 flex-1 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 w-full">
         {/* Background mesh decoration */}
         <div className="absolute w-[500px] h-[500px] bg-gradient-to-tr from-indigo-500/10 via-purple-500/10 to-pink-500/10 rounded-full blur-[100px] top-12 left-1/4 -z-10 pointer-events-none" />
         <div className="absolute w-[500px] h-[500px] bg-gradient-to-br from-blue-500/10 via-sky-500/10 to-teal-500/10 rounded-full blur-[100px] bottom-12 right-1/4 -z-10 pointer-events-none" />
@@ -448,11 +445,11 @@ export default function Dashboard() {
                         )}
 
                         {/* Destination URL */}
-                        <div className="flex items-center gap-2 text-xs text-slate-500 font-medium truncate max-w-lg">
+                        <div className="flex items-center gap-2 text-xs text-slate-500 font-medium min-w-0 max-w-lg overflow-hidden">
                           <span className="text-[10px] font-bold uppercase tracking-wider text-slate-400 flex-shrink-0">
                             {isDynamic ? "Current Destination:" : "Content:"}
                           </span>
-                          <span className="truncate font-semibold text-slate-700">
+                          <span className="truncate min-w-0 font-semibold text-slate-700" title={qr.destinationUrl || qr.content || ""}>
                             {qr.destinationUrl || qr.content}
                           </span>
                         </div>
@@ -484,13 +481,13 @@ export default function Dashboard() {
                             Edit Destination
                           </button>
 
-                          <button
-                            onClick={() => setAnalyticsQRId(qr.id)}
+                          <Link
+                            to={`/dashboard/analytics/${qr.id}`}
                             className="px-3.5 py-2 rounded-xl text-xs font-bold uppercase tracking-wider bg-white border border-slate-200 hover:border-cyan-300 hover:text-cyan-700 hover:bg-cyan-50/30 text-slate-700 shadow-sm transition-all flex items-center gap-1.5"
                           >
                             <BarChart2 className="w-3.5 h-3.5" />
                             Analytics
-                          </button>
+                          </Link>
 
                           <button
                             onClick={() =>
@@ -551,13 +548,6 @@ export default function Dashboard() {
         isOpen={!!editQR}
         onClose={() => setEditQR(null)}
         onSuccess={() => utils.qr.list.invalidate()}
-      />
-
-      {/* Analytics Modal */}
-      <DynamicQRAnalyticsModal
-        qrId={analyticsQRId}
-        isOpen={!!analyticsQRId}
-        onClose={() => setAnalyticsQRId(null)}
       />
 
       {/* Confirm Pause / Resume Dialog */}

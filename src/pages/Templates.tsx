@@ -524,7 +524,7 @@ export default function Templates() {
       <Header />
 
       {/* Hero Section - Matching Home Page Sarvam Gradient & Fonts */}
-      <section className="sarvam-gradient pt-32 pb-20 border-b border-border overflow-hidden relative">
+      <section className="sarvam-gradient pt-36 sm:pt-40 lg:pt-44 pb-20 border-b border-border overflow-hidden relative">
         <div className="absolute inset-0 bg-grid-slate-100/[0.04] bg-[size:32px_32px]" />
         
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">

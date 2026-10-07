@@ -74,7 +74,7 @@ export default function BlogPost() {
   };
 
   return (
-    <div className="min-h-screen bg-[#FAFAFA] text-foreground flex flex-col font-sans">
+    <div className="min-h-screen bg-slate-50 relative flex flex-col font-sans sarvam-gradient overflow-x-hidden">
       <SEOHead
         title={article.metaTitle}
         description={article.metaDescription}
@@ -91,25 +91,32 @@ export default function BlogPost() {
 
       <Header />
 
-      <main className="flex-1 pt-32 pb-24">
-        <article className="max-w-4xl mx-auto px-4 sm:px-6">
-          <Breadcrumbs
-            items={[
-              { name: "Blog", url: "/blog" },
-              { name: article.title, url: `/blog/${article.slug}` },
-            ]}
-          />
+      {/* Article Hero Banner matching Home Page */}
+      <section className="sarvam-gradient pt-36 sm:pt-40 lg:pt-44 pb-16 border-b border-border overflow-hidden relative">
+        <div className="absolute inset-0 bg-grid-slate-100/[0.04] bg-[size:32px_32px]" />
+        <div className="max-w-4xl mx-auto px-4 sm:px-6 relative z-10">
+          <div className="mb-4">
+            <Breadcrumbs
+              items={[
+                { name: "Blog", url: "/blog" },
+                { name: article.title, url: `/blog/${article.slug}` },
+              ]}
+            />
+          </div>
 
-          {/* Article Header */}
-          <header className="mb-10">
-            <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-indigo-50 border border-indigo-100 text-indigo-700 text-xs font-bold uppercase tracking-wider mb-6">
+          <header>
+            <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-white/60 backdrop-blur-md border border-white/80 shadow-sm text-xs font-bold text-slate-800 uppercase tracking-widest mb-6">
               <Sparkles className="w-3.5 h-3.5 text-indigo-600" />
               {article.category}
             </div>
 
-            <h1 className="text-3xl sm:text-4xl lg:text-5xl font-serif font-bold text-slate-900 tracking-tight leading-[1.15] mb-6">
+            <h1 className="text-3xl sm:text-5xl lg:text-6xl font-serif font-bold text-slate-900 tracking-tight leading-[1.15] mb-6">
               {article.title}
             </h1>
+
+            <p className="text-lg sm:text-xl text-slate-700/80 leading-relaxed mb-8 font-medium">
+              {article.metaDescription}
+            </p>
 
             {/* Author and Metadata */}
             <div className="flex flex-wrap items-center justify-between gap-4 py-4 border-y border-slate-200/80 text-xs text-slate-500">
@@ -117,7 +124,7 @@ export default function BlogPost() {
                 <img
                   src={article.author.avatar}
                   alt={article.author.name}
-                  className="w-10 h-10 rounded-full object-cover border border-slate-200"
+                  className="w-10 h-10 rounded-full object-cover border border-slate-200 shadow-sm"
                 />
                 <div>
                   <p className="font-bold text-slate-900 text-sm">{article.author.name}</p>
@@ -138,6 +145,11 @@ export default function BlogPost() {
               </div>
             </div>
           </header>
+        </div>
+      </section>
+
+      <main className="flex-1 py-14">
+        <article className="max-w-4xl mx-auto px-4 sm:px-6">
 
           {/* Featured Image */}
           <div className="relative aspect-[21/9] rounded-3xl overflow-hidden mb-12 bg-slate-100 shadow-sm">

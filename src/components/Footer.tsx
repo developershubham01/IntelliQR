@@ -201,18 +201,19 @@ export default function Footer() {
             ))}
           </div>
         </div>
+      </div>
 
-        {/* Huge Giant Background Clipped Text */}
+      {/* Huge Giant Background Clipped Text - Full Width & Responsive */}
+      <div className="w-full overflow-hidden flex justify-center items-center select-none pointer-events-none px-4 sm:px-6 pt-6 pb-8 border-t border-slate-100/60">
         <div 
-          className="text-center font-black tracking-tighter select-none mt-4 text-transparent bg-clip-text bg-cover bg-center pointer-events-none select-none transition-all duration-700 ease-in-out"
+          className="text-center font-black tracking-tighter uppercase whitespace-nowrap text-transparent bg-clip-text bg-cover bg-center transition-all duration-700 ease-in-out select-none"
           style={{
-            fontSize: "14.5vw",
+            fontSize: "clamp(2.5rem, 10.5vw, 13.5rem)",
             fontWeight: 900,
-            lineHeight: "0.8",
+            lineHeight: "1.05",
             backgroundImage: `url('${themeImages[currentImageIndex]}')`,
             WebkitBackgroundClip: "text",
             WebkitTextFillColor: "transparent",
-            transform: "translateY(1.5vw)",
           }}
         >
           INTELLIQR

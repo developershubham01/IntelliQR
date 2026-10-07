@@ -59,13 +59,13 @@ export default function Generator() {
 
       <Header />
 
-      <div className="relative z-10 pt-24 pb-8 min-h-screen">
+      <div className="relative z-10 pt-36 sm:pt-40 lg:pt-44 pb-12 min-h-screen">
         {/* Background mesh decoration */}
         <div className="absolute w-[500px] h-[500px] bg-gradient-to-tr from-indigo-500/10 via-purple-500/10 to-pink-500/10 rounded-full blur-[100px] top-12 left-1/4 -z-10 pointer-events-none" />
         <div className="absolute w-[500px] h-[500px] bg-gradient-to-br from-blue-500/10 via-sky-500/10 to-teal-500/10 rounded-full blur-[100px] bottom-12 right-1/4 -z-10 pointer-events-none" />
 
-        <div className="max-w-[1400px] mx-auto px-4 sm:px-6 lg:px-8 lg:h-[calc(100vh-7rem)] min-h-screen lg:min-h-0 pb-20">
-          <div className="mb-4">
+        <div className="max-w-[1400px] mx-auto px-4 sm:px-6 lg:px-8 min-h-screen pb-20">
+          <div className="mb-6">
             <Breadcrumbs items={[{ name: "QR Generator", url: "/generator" }]} />
           </div>
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:h-full">

@@ -1,5 +1,6 @@
 import { useState, useMemo } from "react";
 import { Link } from "react-router";
+import { motion } from "framer-motion";
 import {
   BookOpen,
   ArrowRight,
@@ -72,7 +73,7 @@ export default function Blog() {
   };
 
   return (
-    <div className="min-h-screen bg-[#FAFAFA] text-foreground flex flex-col font-sans">
+    <div className="min-h-screen bg-slate-50 relative flex flex-col font-sans sarvam-gradient overflow-x-hidden">
       <SEOHead
         title="QR Code Knowledge Hub & Blog – Dynamic QR, Analytics & Best Practices"
         description="Master QR code technology with in-depth guides on dynamic QR codes, real-time scan analytics, print marketing attribution, security best practices, and developer APIs."
@@ -83,34 +84,45 @@ export default function Blog() {
 
       <Header />
 
-      <main className="flex-1 pt-32 pb-24">
-        <div className="max-w-6xl mx-auto px-4 sm:px-6">
-          <Breadcrumbs items={[{ name: "Blog & Knowledge Hub", url: "/blog" }]} />
+      {/* Hero Section matching Home Page */}
+      <section className="sarvam-gradient pt-36 sm:pt-40 lg:pt-44 pb-20 border-b border-border overflow-hidden relative">
+        <div className="absolute inset-0 bg-grid-slate-100/[0.04] bg-[size:32px_32px]" />
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10 text-center">
+          <div className="flex justify-start max-w-4xl mx-auto mb-4">
+            <Breadcrumbs items={[{ name: "Blog & Knowledge Hub", url: "/blog" }]} />
+          </div>
 
-          {/* Hero Section */}
-          <section className="text-center max-w-4xl mx-auto mb-14">
-            <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-indigo-50 border border-indigo-100 text-indigo-700 text-xs font-bold uppercase tracking-wider mb-6">
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.6 }}
+            className="max-w-4xl mx-auto"
+          >
+            <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-white/60 backdrop-blur-md border border-white/80 shadow-sm text-xs font-bold text-slate-800 uppercase tracking-widest mb-6">
               <BookOpen className="w-3.5 h-3.5 text-indigo-600" />
               IntelliQR Knowledge Hub & Research
             </div>
 
-            <h1 className="text-4xl sm:text-5xl lg:text-6xl font-serif font-bold text-slate-900 tracking-tight leading-[1.1] mb-6">
-              The Definitive Resource for Modern QR Code Technology
+            <h1 className="text-4xl sm:text-6xl lg:text-[70px] leading-[1.1] tracking-tight mb-6 text-slate-900 font-serif">
+              The Definitive Resource <br className="hidden sm:inline" />
+              <span className="text-transparent bg-clip-text bg-gradient-to-r from-orange-600 via-rose-600 to-purple-600">
+                for Modern QR Technology.
+              </span>
             </h1>
 
-            <p className="text-lg sm:text-xl text-slate-600 leading-relaxed max-w-3xl mx-auto mb-8 font-normal">
+            <p className="text-lg sm:text-xl text-slate-700/80 leading-relaxed max-w-3xl mx-auto mb-8 font-medium">
               Explore step-by-step tutorials, technical deep dives, print attribution strategies, and industry case studies designed for marketers, developers, and business owners.
             </p>
 
             {/* Search Bar */}
-            <div className="max-w-xl mx-auto relative mb-8">
+            <div className="max-w-xl mx-auto relative mb-6">
               <Search className="w-5 h-5 text-slate-400 absolute left-4 top-1/2 -translate-y-1/2" />
               <input
                 type="text"
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
-                placeholder="Search topics, questions, or keywords (e.g. dynamic qr, wifi, tracking)..."
-                className="w-full pl-12 pr-4 py-3.5 rounded-full bg-white border border-slate-200/90 shadow-sm text-sm text-slate-900 placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 transition-all"
+                placeholder="Search topics, questions, or keywords (e.g. dynamic qr, wifi)..."
+                className="w-full pl-12 pr-4 py-3.5 rounded-full bg-white/90 backdrop-blur-md border border-white/80 shadow-sm text-sm text-slate-900 placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-orange-500/20 focus:border-orange-500 transition-all"
               />
             </div>
 
@@ -123,14 +135,19 @@ export default function Blog() {
                   className={`px-4 py-1.5 rounded-full text-xs font-bold transition-all ${
                     selectedCategory === cat
                       ? "bg-slate-900 text-white shadow-sm"
-                      : "bg-white border border-slate-200/80 text-slate-600 hover:text-slate-900 hover:bg-slate-50"
+                      : "bg-white/70 backdrop-blur-sm border border-white/80 text-slate-600 hover:text-slate-900 hover:bg-white"
                   }`}
                 >
                   {cat}
                 </button>
               ))}
             </div>
-          </section>
+          </motion.div>
+        </div>
+      </section>
+
+      <main className="flex-1 py-16">
+        <div className="max-w-6xl mx-auto px-4 sm:px-6">
 
           {/* Featured Pillar Guides */}
           <section className="mb-20">

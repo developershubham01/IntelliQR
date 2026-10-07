@@ -290,6 +290,30 @@ export const handleRedirection = async (c: Context) => {
   // Determine destination URL
   let targetUrl = (qr.destinationUrl || qr.content || "").trim();
 
+  // Support Dynamic QR Load Balancer (traffic distribution across multiple target URLs)
+  const qrData = (qr.data as Record<string, unknown>) || {};
+  const lbConfig = qrData.loadBalancer as { enabled?: boolean; targets?: Array<{ url: string; weight?: number }> } | undefined;
+  if (lbConfig?.enabled && Array.isArray(lbConfig.targets) && lbConfig.targets.length > 0) {
+    const validTargets = lbConfig.targets.filter(
+      (t) => t && typeof t.url === "string" && t.url.trim().length > 0
+    );
+    if (validTargets.length > 0) {
+      const totalWeight = validTargets.reduce(
+        (sum, t) => sum + (Number(t.weight) || 1),
+        0
+      );
+      let rand = Math.random() * totalWeight;
+      for (const target of validTargets) {
+        const weight = Number(target.weight) || 1;
+        if (rand < weight) {
+          targetUrl = target.url.trim();
+          break;
+        }
+        rand -= weight;
+      }
+    }
+  }
+
   // Validate destination URL to prevent open redirect vulnerabilities
   if (!isValidRedirectUrl(targetUrl)) {
     // Check if it's a domain missing protocol (e.g. "example.com" or "www.example.com")

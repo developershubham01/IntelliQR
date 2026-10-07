@@ -1,11 +1,11 @@
 import { useState } from "react";
 import { Link } from "react-router";
+import { motion } from "framer-motion";
 import {
   ArrowRight,
   RefreshCw,
   BarChart3,
   ChevronDown,
-  Sparkles,
   Zap,
 } from "lucide-react";
 import Header from "@/components/Header";
@@ -65,7 +65,7 @@ export default function DynamicQR() {
   };
 
   return (
-    <div className="min-h-screen bg-[#FAFAFA] text-foreground flex flex-col font-sans">
+    <div className="min-h-screen bg-slate-50 relative flex flex-col font-sans sarvam-gradient overflow-x-hidden">
       <SEOHead
         title="Dynamic QR Code Generator – Track & Edit QR Codes Online"
         description="Create dynamic QR codes with editable destinations, real-time scan tracking, geolocation analytics, and vector SVG exports. Update links anytime without reprinting."
@@ -77,47 +77,62 @@ export default function DynamicQR() {
 
       <Header />
 
-      <main className="flex-1 pt-32 pb-24">
-        <div className="max-w-6xl mx-auto px-4 sm:px-6">
-          <Breadcrumbs items={[{ name: "Dynamic QR Codes", url: "/dynamic-qr-code" }]} />
+      {/* Hero Section matching Home Page */}
+      <section className="sarvam-gradient pt-36 sm:pt-40 lg:pt-44 pb-20 border-b border-border overflow-hidden relative">
+        <div className="absolute inset-0 bg-grid-slate-100/[0.04] bg-[size:32px_32px]" />
+        
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10 text-center">
+          <div className="flex justify-start max-w-4xl mx-auto mb-4">
+            <Breadcrumbs items={[{ name: "Dynamic QR Codes", url: "/dynamic-qr-code" }]} />
+          </div>
 
-          {/* Hero Section */}
-          <section className="text-center max-w-4xl mx-auto mb-16">
-            <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-indigo-50 border border-indigo-100 text-indigo-700 text-xs font-bold uppercase tracking-wider mb-6">
-              <Sparkles className="w-3.5 h-3.5 text-indigo-600" />
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.6 }}
+            className="max-w-4xl mx-auto"
+          >
+            <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-white/60 backdrop-blur-md border border-white/80 shadow-sm text-xs font-bold text-slate-800 uppercase tracking-widest mb-6">
+              <span className="w-2 h-2 rounded-full bg-orange-500 animate-pulse" />
               Editable • Trackable • Enterprise-Ready
             </div>
 
-            <h1 className="text-4xl sm:text-5xl lg:text-6xl font-serif font-bold text-slate-900 tracking-tight leading-[1.1] mb-6">
-              Dynamic QR Code Generator with Real-Time Edits & Analytics
+            <h1 className="text-4xl sm:text-6xl lg:text-[70px] leading-[1.1] tracking-tight mb-6 text-slate-900 font-serif">
+              Dynamic QR Codes, <br className="hidden sm:inline" />
+              <span className="text-transparent bg-clip-text bg-gradient-to-r from-orange-600 via-rose-600 to-purple-600">
+                editable and trackable in real time.
+              </span>
             </h1>
 
-            <p className="text-lg sm:text-xl text-slate-600 leading-relaxed max-w-3xl mx-auto mb-10 font-normal">
-              Change your QR code destination URL anytime without reprinting marketing collateral. 
-              Track every scan with live geolocation, device breakdowns, and conversion metrics.
+            <p className="text-lg sm:text-xl text-slate-700/80 leading-relaxed mb-10 max-w-3xl mx-auto font-medium">
+              Change your QR code destination URL anytime without reprinting. Track every scan with live geolocation, device breakdowns, and conversion analytics.
             </p>
 
             <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
               <Link
                 to="/generator?mode=dynamic"
-                className="w-full sm:w-auto px-8 py-4 rounded-full bg-slate-900 hover:bg-slate-800 text-white font-bold text-sm tracking-wider uppercase transition-all flex items-center justify-center gap-2 shadow-lg shadow-slate-950/15"
+                className="btn-primary text-base px-8 py-3.5 flex items-center justify-center gap-2 shadow-sm"
               >
                 Create Dynamic QR Code
                 <ArrowRight className="w-4 h-4" />
               </Link>
               <Link
                 to="/qr-code-analytics"
-                className="w-full sm:w-auto px-8 py-4 rounded-full bg-white border border-slate-200 text-slate-700 hover:bg-slate-50 font-bold text-sm tracking-wider uppercase transition-all flex items-center justify-center gap-2"
+                className="btn-secondary text-base px-8 py-3.5 flex items-center justify-center gap-2"
               >
-                <BarChart3 className="w-4 h-4 text-indigo-600" />
+                <BarChart3 className="w-4 h-4 text-orange-600" />
                 Explore QR Analytics
               </Link>
             </div>
-          </section>
+          </motion.div>
+        </div>
+      </section>
 
+      <main className="flex-1 py-16">
+        <div className="max-w-6xl mx-auto px-4 sm:px-6">
           {/* GEO / AEO Answer-First Definition Card */}
-          <section className="bg-white rounded-3xl p-8 sm:p-10 border border-slate-200/80 shadow-sm mb-16">
-            <div className="border-l-4 border-indigo-600 pl-6 mb-6">
+          <section className="bg-white/80 backdrop-blur-xl rounded-3xl p-8 sm:p-10 border border-white/80 shadow-[0_8px_30px_rgb(0,0,0,0.02)] mb-16">
+            <div className="border-l-4 border-orange-500 pl-6 mb-6">
               <h2 className="text-xs font-bold uppercase tracking-widest text-indigo-600 mb-1">
                 Direct Definition (GEO / AI Summary)
               </h2>

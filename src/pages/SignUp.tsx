@@ -68,10 +68,10 @@ export default function SignUp() {
   };
 
   return (
-    <div className="min-h-screen bg-[#FAFAFA] text-foreground relative flex flex-col font-sans">
+    <div className="min-h-screen bg-slate-50 relative flex flex-col font-sans sarvam-gradient overflow-x-hidden">
       <Header />
 
-      <div className="relative flex-1 z-10 pt-32 pb-24 flex items-center justify-center relative overflow-hidden">
+      <div className="relative flex-1 z-10 pt-36 sm:pt-40 lg:pt-44 pb-24 flex items-center justify-center relative overflow-hidden">
         {/* Background mesh decoration */}
         <div className="absolute w-[500px] h-[500px] bg-gradient-to-tr from-orange-400/10 via-rose-500/10 to-indigo-500/10 rounded-full blur-[100px] top-12 left-1/4 -z-10 pointer-events-none" />
         <div className="absolute w-[500px] h-[500px] bg-gradient-to-br from-blue-400/10 via-teal-500/10 to-emerald-500/10 rounded-full blur-[100px] bottom-12 right-1/4 -z-10 pointer-events-none" />
@@ -81,7 +81,7 @@ export default function SignUp() {
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.4 }}
-            className="bg-white border border-slate-100 rounded-[32px] p-8 shadow-[0_8px_40px_rgb(0,0,0,0.03)]"
+            className="bg-white/80 backdrop-blur-xl border border-white/80 rounded-[32px] p-8 shadow-[0_12px_40px_rgba(0,0,0,0.03)]"
           >
             {/* Header / Brand Logo */}
             <div className="text-center mb-8">

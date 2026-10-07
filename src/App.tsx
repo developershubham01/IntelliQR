@@ -4,6 +4,7 @@ import { ErrorBoundary } from "./components/ErrorBoundary";
 import { Loader2 } from "lucide-react";
 import { Toaster } from "sonner";
 import Chatbot from "./components/Chatbot";
+import ScrollToTop from "./components/ScrollToTop";
 
 // Lazy loaded pages for Code Splitting
 const Home = lazy(() => import("./pages/Home"));
@@ -27,6 +28,7 @@ const Solutions = lazy(() => import("./pages/Solutions"));
 const Blog = lazy(() => import("./pages/Blog"));
 const BlogPost = lazy(() => import("./pages/BlogPost"));
 const Dashboard = lazy(() => import("./pages/Dashboard"));
+const QRAnalyticsDetail = lazy(() => import("./pages/QRAnalyticsDetail"));
 const NotFound = lazy(() => import("./pages/NotFound"));
 
 // Global fallback loader
@@ -39,6 +41,7 @@ const PageLoader = () => (
 export default function App() {
   return (
     <ErrorBoundary>
+      <ScrollToTop />
       <Toaster position="bottom-right" richColors />
       <Chatbot />
       <Suspense fallback={<PageLoader />}>
@@ -73,6 +76,8 @@ export default function App() {
           <Route path="/signup" element={<SignUp />} />
           <Route path="/profile" element={<Profile />} />
           <Route path="/dashboard" element={<Dashboard />} />
+          <Route path="/dashboard/analytics/:id" element={<QRAnalyticsDetail />} />
+          <Route path="/analytics/:id" element={<QRAnalyticsDetail />} />
           <Route path="*" element={<NotFound />} />
         </Routes>
       </Suspense>

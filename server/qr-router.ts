@@ -215,6 +215,18 @@ export const qrRouter = createRouter({
       z.object({
         id: z.number(),
         destinationUrl: z.string().min(1),
+        loadBalancer: z
+          .object({
+            enabled: z.boolean(),
+            targets: z.array(
+              z.object({
+                url: z.string(),
+                weight: z.number().min(1).max(100).default(50),
+                label: z.string().optional(),
+              })
+            ),
+          })
+          .optional(),
       })
     )
     .mutation(async ({ ctx, input }) => {
@@ -246,11 +258,17 @@ export const qrRouter = createRouter({
         throw new Error("This is a Static QR Code. Destination cannot be changed without regenerating.");
       }
 
+      const currentData = (existing[0].data as Record<string, unknown>) || {};
+      const updatedData = input.loadBalancer !== undefined
+        ? { ...currentData, loadBalancer: input.loadBalancer }
+        : currentData;
+
       await db
         .update(qrCodes)
         .set({
           destinationUrl: targetUrl,
           content: targetUrl,
+          data: updatedData,
           updatedAt: new Date(),
         })
         .where(eq(qrCodes.id, input.id));
@@ -486,6 +504,8 @@ export const qrRouter = createRouter({
           type: qr.type,
           shortId: qr.shortId,
           destinationUrl: qr.destinationUrl || qr.content,
+          imageUrl: qr.imageUrl,
+          svgContent: qr.svgContent,
           status: qr.status,
           isDynamic: qr.isDynamic,
           createdAt: qr.createdAt,

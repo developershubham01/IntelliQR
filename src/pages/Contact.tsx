@@ -44,8 +44,8 @@ export default function Contact() {
 
       <Header />
 
-      <div className="relative z-10 pt-32 pb-20 min-h-[calc(100vh-6rem)]">
-        <div className="max-w-6xl mx-auto px-4 sm:px-6 mb-4">
+      <div className="relative z-10 pt-36 sm:pt-40 lg:pt-44 pb-20 min-h-[calc(100vh-6rem)]">
+        <div className="max-w-6xl mx-auto px-4 sm:px-6 mb-6">
           <Breadcrumbs items={[{ name: "Contact", url: "/contact" }]} />
         </div>
         {/* Background mesh decoration */}

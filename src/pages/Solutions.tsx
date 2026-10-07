@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { Link, useParams } from "react-router";
+import { motion } from "framer-motion";
 import {
   UtensilsCrossed,
   ShoppingBag,
@@ -319,7 +320,7 @@ export default function Solutions() {
   if (activeIndustry) {
     const Icon = activeIndustry.icon;
     return (
-      <div className="min-h-screen bg-[#FAFAFA] text-foreground flex flex-col font-sans">
+      <div className="min-h-screen bg-slate-50 relative flex flex-col font-sans sarvam-gradient overflow-x-hidden">
         <SEOHead
           title={activeIndustry.metaTitle}
           description={activeIndustry.metaDescription}
@@ -333,49 +334,61 @@ export default function Solutions() {
 
         <Header />
 
-        <main className="flex-1 pt-32 pb-24">
-          <div className="max-w-6xl mx-auto px-4 sm:px-6">
-            <Breadcrumbs
-              items={[
-                { name: "Industry Solutions", url: "/solutions" },
-                { name: activeIndustry.name, url: `/solutions/${activeIndustry.slug}` },
-              ]}
-            />
+        {/* Hero Section matching Home Page */}
+        <section className="sarvam-gradient pt-36 sm:pt-40 lg:pt-44 pb-20 border-b border-border overflow-hidden relative">
+          <div className="absolute inset-0 bg-grid-slate-100/[0.04] bg-[size:32px_32px]" />
+          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10 text-center">
+            <div className="flex justify-start max-w-4xl mx-auto mb-4">
+              <Breadcrumbs
+                items={[
+                  { name: "Industry Solutions", url: "/solutions" },
+                  { name: activeIndustry.name, url: `/solutions/${activeIndustry.slug}` },
+                ]}
+              />
+            </div>
 
-            {/* Hero */}
-            <section className="text-center max-w-4xl mx-auto mb-16">
-              <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-indigo-50 border border-indigo-100 text-indigo-700 text-xs font-bold uppercase tracking-wider mb-6">
-                <Icon className="w-3.5 h-3.5 text-indigo-600" />
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.6 }}
+              className="max-w-4xl mx-auto"
+            >
+              <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-white/60 backdrop-blur-md border border-white/80 shadow-sm text-xs font-bold text-slate-800 uppercase tracking-widest mb-6">
+                <Icon className="w-3.5 h-3.5 text-orange-600" />
                 Specialized Solution for {activeIndustry.name}
               </div>
 
-              <h1 className="text-3xl sm:text-4xl lg:text-5xl font-serif font-bold text-slate-900 tracking-tight leading-[1.15] mb-6">
+              <h1 className="text-3xl sm:text-5xl lg:text-6xl font-serif font-bold text-slate-900 tracking-tight leading-[1.15] mb-6">
                 {activeIndustry.h1}
               </h1>
 
-              <p className="text-base sm:text-lg text-slate-600 leading-relaxed max-w-3xl mx-auto mb-10 font-normal">
+              <p className="text-base sm:text-xl text-slate-700/80 leading-relaxed max-w-3xl mx-auto mb-10 font-medium">
                 {activeIndustry.metaDescription}
               </p>
 
               <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
                 <Link
                   to="/generator?mode=dynamic"
-                  className="w-full sm:w-auto px-8 py-4 rounded-full bg-slate-900 hover:bg-slate-800 text-white font-bold text-xs tracking-widest uppercase transition-all flex items-center justify-center gap-2 shadow-lg"
+                  className="btn-primary text-base px-8 py-3.5 flex items-center justify-center gap-2 shadow-sm"
                 >
                   Create {activeIndustry.name} QR Code
                   <ArrowRight className="w-4 h-4" />
                 </Link>
                 <Link
                   to="/qr-code-analytics"
-                  className="w-full sm:w-auto px-8 py-4 rounded-full bg-white border border-slate-200 text-slate-700 hover:bg-slate-50 font-bold text-xs tracking-widest uppercase transition-all"
+                  className="btn-secondary text-base px-8 py-3.5 flex items-center justify-center gap-2"
                 >
                   View Scan Analytics
                 </Link>
               </div>
-            </section>
+            </motion.div>
+          </div>
+        </section>
 
+        <main className="flex-1 py-16">
+          <div className="max-w-6xl mx-auto px-4 sm:px-6">
             {/* GEO Overview */}
-            <section className="bg-white rounded-3xl p-8 sm:p-10 border border-slate-200/80 shadow-sm mb-16">
+            <section className="bg-white/80 backdrop-blur-xl rounded-3xl p-8 sm:p-10 border border-white/80 shadow-[0_8px_30px_rgb(0,0,0,0.02)] mb-16">
               <div className="border-l-4 border-indigo-600 pl-6 mb-6">
                 <h2 className="text-xs font-bold uppercase tracking-widest text-indigo-600 mb-1">
                   Industry Overview (GEO Summary)
@@ -478,7 +491,7 @@ export default function Solutions() {
 
   // Directory view: /solutions
   return (
-    <div className="min-h-screen bg-[#FAFAFA] text-foreground flex flex-col font-sans">
+    <div className="min-h-screen bg-slate-50 relative flex flex-col font-sans sarvam-gradient overflow-x-hidden">
       <SEOHead
         title="Industry QR Code Solutions – Retail, Restaurants, Real Estate & Events"
         description="Discover how businesses in hospitality, retail, real estate, healthcare, and events leverage IntelliQR to boost engagement and customer lifetime value."
@@ -488,19 +501,41 @@ export default function Solutions() {
 
       <Header />
 
-      <main className="flex-1 pt-32 pb-24">
-        <div className="max-w-6xl mx-auto px-4 sm:px-6">
-          <Breadcrumbs items={[{ name: "Industry Solutions", url: "/solutions" }]} />
+      {/* Hero Section matching Home Page */}
+      <section className="sarvam-gradient pt-36 sm:pt-40 lg:pt-44 pb-20 border-b border-border overflow-hidden relative">
+        <div className="absolute inset-0 bg-grid-slate-100/[0.04] bg-[size:32px_32px]" />
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10 text-center">
+          <div className="flex justify-start max-w-4xl mx-auto mb-4">
+            <Breadcrumbs items={[{ name: "Industry Solutions", url: "/solutions" }]} />
+          </div>
 
-          <section className="text-center max-w-3xl mx-auto mb-16">
-            <h1 className="text-4xl sm:text-5xl font-serif font-bold text-slate-900 tracking-tight mb-4">
-              Tailored QR Code Solutions for Every Industry
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.6 }}
+            className="max-w-4xl mx-auto"
+          >
+            <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-white/60 backdrop-blur-md border border-white/80 shadow-sm text-xs font-bold text-slate-800 uppercase tracking-widest mb-6">
+              <span className="w-2 h-2 rounded-full bg-orange-500 animate-pulse" />
+              Cross-Industry Workflows
+            </div>
+
+            <h1 className="text-4xl sm:text-6xl font-serif font-bold text-slate-900 tracking-tight leading-[1.15] mb-6">
+              Tailored QR Code Solutions <br className="hidden sm:inline" />
+              <span className="text-transparent bg-clip-text bg-gradient-to-r from-orange-600 via-rose-600 to-purple-600">
+                for Every Industry
+              </span>
             </h1>
-            <p className="text-base sm:text-lg text-slate-600 leading-relaxed">
+
+            <p className="text-base sm:text-xl text-slate-700/80 leading-relaxed max-w-2xl mx-auto font-medium">
               Explore purpose-built workflows, proven use cases, and recommended QR formats designed specifically for your industry vertical.
             </p>
-          </section>
+          </motion.div>
+        </div>
+      </section>
 
+      <main className="flex-1 py-16">
+        <div className="max-w-6xl mx-auto px-4 sm:px-6">
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-20">
             {Object.values(INDUSTRY_DATA).map((ind) => {
               const Icon = ind.icon;

@@ -8,7 +8,7 @@ export default function Privacy() {
     <div className="min-h-screen bg-slate-50 relative flex flex-col font-sans sarvam-gradient overflow-x-hidden">
       <Header />
 
-      <div className="relative z-10 pt-32 pb-20 min-h-[calc(100vh-6rem)]">
+      <div className="relative z-10 pt-36 sm:pt-40 lg:pt-44 pb-20 min-h-[calc(100vh-6rem)]">
         {/* Background mesh decoration */}
         <div className="absolute w-[500px] h-[500px] bg-gradient-to-tr from-indigo-500/10 via-purple-500/10 to-pink-500/10 rounded-full blur-[100px] top-12 left-1/4 -z-10 pointer-events-none" />
         <div className="absolute w-[500px] h-[500px] bg-gradient-to-br from-blue-500/10 via-sky-500/10 to-teal-500/10 rounded-full blur-[100px] bottom-12 right-1/4 -z-10 pointer-events-none" />
