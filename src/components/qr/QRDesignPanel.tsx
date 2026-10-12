@@ -57,14 +57,44 @@ export default function QRDesignPanel() {
     const file = e.target.files?.[0];
     if (!file) return;
 
+    // Validate file type
+    const validTypes = ["image/png", "image/jpeg", "image/jpg", "image/svg+xml", "image/webp"];
+    if (!validTypes.includes(file.type)) {
+      import("sonner").then(({ toast }) => toast.error("Invalid file type. Please upload a PNG, JPG, WEBP, or SVG image."));
+      return;
+    }
+
+    // Validate size (max 2MB)
+    if (file.size > 2 * 1024 * 1024) {
+      import("sonner").then(({ toast }) => toast.error("Logo file too large. Maximum allowed size is 2 MB."));
+      return;
+    }
+
     const reader = new FileReader();
     reader.onload = (event) => {
       const result = event.target?.result as string;
-      updateStyle({ logoUrl: result });
+      // Auto-upgrade error correction to H (High 30%) to ensure scannability with embedded logo
+      updateStyle({ logoUrl: result, errorCorrectionLevel: "H" });
       setTimeout(() => generateQR(), 100);
+      import("sonner").then(({ toast }) => toast.success("Logo uploaded. Error correction set to High (30%) for maximum scannability."));
     };
     reader.readAsDataURL(file);
   };
+
+  // Contrast calculation
+  const getLuminance = (hex: string) => {
+    const cleanHex = hex.replace("#", "");
+    if (cleanHex.length !== 6) return 0.5;
+    const r = parseInt(cleanHex.substring(0, 2), 16) / 255;
+    const g = parseInt(cleanHex.substring(2, 4), 16) / 255;
+    const b = parseInt(cleanHex.substring(4, 6), 16) / 255;
+    return 0.2126 * r + 0.7152 * g + 0.0722 * b;
+  };
+
+  const lum1 = getLuminance(foregroundColor);
+  const lum2 = transparentBackground ? 1.0 : getLuminance(backgroundColor);
+  const contrastRatio = (Math.max(lum1, lum2) + 0.05) / (Math.min(lum1, lum2) + 0.05);
+  const isLowContrast = contrastRatio < 2.5;
 
   const applyPreset = (presetIndex: number) => {
     const preset = PRESETS[presetIndex];
@@ -88,6 +118,30 @@ export default function QRDesignPanel() {
               {preset.name}
             </button>
           ))}
+        </div>
+      </div>
+
+      {/* Scannability & Contrast Quality Badge */}
+      <div className={`p-3.5 rounded-2xl border text-xs flex items-start gap-2.5 transition-all ${
+        isLowContrast
+          ? "bg-amber-500/10 border-amber-500/30 text-amber-800"
+          : "bg-emerald-500/10 border-emerald-500/20 text-emerald-800"
+      }`}>
+        <div className={`w-2 h-2 rounded-full mt-1.5 shrink-0 ${
+          isLowContrast ? "bg-amber-500 animate-ping" : "bg-emerald-500"
+        }`} />
+        <div>
+          <div className="font-bold flex items-center gap-1.5">
+            {isLowContrast ? "Low Contrast Advisory" : "High Contrast • Verified Scannable"}
+            <span className="text-[10px] font-mono px-1.5 py-0.5 rounded bg-white/60">
+              {contrastRatio.toFixed(1)}:1
+            </span>
+          </div>
+          <p className="text-[11px] opacity-80 mt-0.5 leading-snug">
+            {isLowContrast
+              ? "Warning: Camera readers may struggle in dim lighting. Increase foreground/background color difference."
+              : `Optimal quiet-zone (${padding}) and error correction (${style?.errorCorrectionLevel || "M"}) active.`}
+          </p>
         </div>
       </div>
 

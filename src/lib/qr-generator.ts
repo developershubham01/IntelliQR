@@ -135,6 +135,37 @@ export function generateQRContent(type: QRType, data: QRData): string {
       ].join("\n");
     }
 
+    // Industry Solutions
+    case "restaurant_menu":
+      return data.menuUrl || (data.restaurantName ? `https://intelli-qr.vercel.app/solutions/restaurants?name=${encodeURIComponent(data.restaurantName)}` : "");
+
+    case "hotel_info":
+      return data.guestPortalUrl || (data.hotelName ? `https://intelli-qr.vercel.app/solutions/hotels?name=${encodeURIComponent(data.hotelName)}` : "");
+
+    case "product_catalog":
+      return data.specsUrl || data.warrantyUrl || data.authenticityCode || "";
+
+    case "real_estate":
+      return data.listingUrl || (data.agentPhone ? `https://wa.me/${(data.agentPhone || "").replace(/\D/g, "")}` : "");
+
+    case "event_ticket":
+      return data.ticketCode ? `https://intelli-qr.vercel.app/ticket/verify?code=${encodeURIComponent(data.ticketCode)}` : (data.eventName || "");
+
+    case "gym_membership":
+      return data.scheduleUrl || (data.memberId ? `MBR:${data.memberId};NAME:${data.memberName || ""};GYM:${data.gymName || ""}` : "");
+
+    case "salon_services":
+      return data.servicesUrl || (data.whatsappBooking ? `https://wa.me/${(data.whatsappBooking || "").replace(/\D/g, "")}?text=${encodeURIComponent("Hi! I would like to book an appointment.")}` : "");
+
+    case "student_id":
+      return data.portalUrl || (data.rollNumber ? `STU:${data.rollNumber};NAME:${data.studentName || ""};CAMPUS:${data.institutionName || ""}` : "");
+
+    case "feedback_survey":
+      return data.googleReviewUrl || data.surveyUrl || "";
+
+    case "landing_page":
+      return data.primaryUrl || (data.pageSlug ? `/p/${data.pageSlug}` : "");
+
     default:
       return "";
   }

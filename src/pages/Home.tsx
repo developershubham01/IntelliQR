@@ -3,6 +3,7 @@ import { motion } from "framer-motion";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 import SEOHead from "@/components/seo/SEOHead";
+import SplitText from "@/components/ui/SplitText";
 import {
   QrCode,
   Shield,
@@ -97,15 +98,34 @@ export default function Home() {
               Intelligent QR for developers
             </motion.div>
 
-            <motion.h1 
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.6, delay: 0.1 }}
-              className="text-6xl sm:text-[80px] leading-[1.1] tracking-tight mb-8 text-slate-900 font-serif"
-            >
-              Beautiful QR codes, <br/>
-              <span className="text-transparent bg-clip-text bg-gradient-to-r from-orange-600 via-rose-600 to-purple-600">generated instantly.</span>
-            </motion.h1>
+            <h1 className="text-6xl sm:text-[80px] leading-[1.1] tracking-tight mb-8 text-slate-900 font-serif">
+              <SplitText
+                text="Beautiful QR codes,"
+                tag="span"
+                splitType="chars"
+                delay={35}
+                duration={0.8}
+                ease="power3.out"
+                from={{ opacity: 0, y: 35 }}
+                to={{ opacity: 1, y: 0 }}
+                threshold={0}
+                rootMargin="0px"
+              />{" "}
+              <br/>
+              <SplitText
+                text="generated instantly."
+                tag="span"
+                className="text-orange-600"
+                splitType="chars"
+                delay={40}
+                duration={0.8}
+                ease="power3.out"
+                from={{ opacity: 0, y: 35 }}
+                to={{ opacity: 1, y: 0 }}
+                threshold={0}
+                rootMargin="0px"
+              />
+            </h1>
             
             <motion.p 
               initial={{ opacity: 0, y: 20 }}

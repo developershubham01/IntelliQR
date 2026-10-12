@@ -1,8 +1,9 @@
 import { useState, useRef, useMemo, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { Link } from "react-router";
+import { Link, useSearchParams } from "react-router";
 import { useQRStore } from "@/store/qrStore";
 import { useAuth } from "@/hooks/useAuth";
+import { trpc } from "@/providers/trpc";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 import { TEMPLATES_DATA } from "@/data/templates";
@@ -13,7 +14,8 @@ import {
   Palette, Search, Maximize, Heart, Eye, Star, 
   Grid, List, ChevronUp, X, Smartphone, 
   Monitor, Globe, BookOpen, 
-  Stethoscope, Landmark, Play, Dumbbell, Code, ShoppingBag, MapPin, HelpCircle
+  Stethoscope, Landmark, Play, Dumbbell, Code, ShoppingBag, MapPin, HelpCircle,
+  Camera, ShieldCheck, ExternalLink, QrCode, Plus
 } from "lucide-react";
 import { toPng, toJpeg, toSvg } from "html-to-image";
 import { jsPDF } from "jspdf";
@@ -24,9 +26,153 @@ type ExportFormat = "png" | "jpg" | "svg" | "pdf";
 export default function Templates() {
   // Auth Gate - Redirect to /login if unauthenticated
   const { user, isLoading: isAuthLoading } = useAuth({ redirectOnUnauthenticated: true });
-  
+  const [searchParams] = useSearchParams();
+  const urlQRId = searchParams.get("qrId");
+
   const { currentQR, history } = useQRStore();
+  const { data: serverQRsData } = trpc.qr.list.useQuery(
+    { limit: 50 },
+    { enabled: !!user }
+  );
+
+  // Consolidated available QR codes list (current session + history + server account QRs)
+  const availableQRs = useMemo(() => {
+    const list: Array<{
+      id: string;
+      name: string;
+      type: string;
+      content: string;
+      imageUrl?: string;
+      shortId?: string;
+      isDynamic?: boolean;
+    }> = [];
+    const seenIds = new Set<string>();
+
+    if (currentQR) {
+      list.push({
+        id: currentQR.id,
+        name: currentQR.name || "Generated QR",
+        type: currentQR.type || "website",
+        content: currentQR.destinationUrl || currentQR.content || "",
+        imageUrl: currentQR.imageUrl,
+        shortId: currentQR.shortId,
+        isDynamic: currentQR.isDynamic,
+      });
+      seenIds.add(currentQR.id);
+    }
+
+    for (const h of history) {
+      if (!seenIds.has(h.id)) {
+        list.push({
+          id: h.id,
+          name: h.name || "Recent QR",
+          type: h.type || "website",
+          content: h.destinationUrl || h.content || "",
+          imageUrl: h.imageUrl,
+          shortId: h.shortId,
+          isDynamic: h.isDynamic,
+        });
+        seenIds.add(h.id);
+      }
+    }
+
+    if (serverQRsData?.items) {
+      for (const s of serverQRsData.items) {
+        const sId = String(s.id);
+        if (!seenIds.has(sId)) {
+          list.push({
+            id: sId,
+            name: s.name,
+            type: s.type,
+            content: s.destinationUrl || s.content,
+            imageUrl: s.imageUrl || undefined,
+            shortId: s.shortId || undefined,
+            isDynamic: !!s.isDynamic,
+          });
+          seenIds.add(sId);
+        }
+      }
+    }
+
+    return list;
+  }, [currentQR, history, serverQRsData]);
+
+  const [selectedQRId, setSelectedQRId] = useState<string>("");
+  const [quickQRUrl, setQuickQRUrl] = useState("");
+  const [customLiveQRUrl, setCustomLiveQRUrl] = useState<string | null>(null);
+
+  useEffect(() => {
+    if (urlQRId && availableQRs.some((q) => q.id === urlQRId)) {
+      setSelectedQRId(urlQRId);
+    } else if (!selectedQRId && availableQRs.length > 0) {
+      setSelectedQRId(availableQRs[0].id);
+    }
+  }, [urlQRId, availableQRs]);
+
+  const activeSelectedQR = useMemo(() => {
+    if (selectedQRId) {
+      return availableQRs.find((q) => q.id === selectedQRId) || availableQRs[0];
+    }
+    return availableQRs[0] || null;
+  }, [selectedQRId, availableQRs]);
+
   const activeQR = currentQR || history[0];
+
+  const handleApplyQuickQR = (e?: React.FormEvent) => {
+    if (e) e.preventDefault();
+    if (!quickQRUrl.trim()) return;
+    const cleanUrl = quickQRUrl.trim().startsWith("http")
+      ? quickQRUrl.trim()
+      : `https://${quickQRUrl.trim()}`;
+    const generatedUrl = `https://api.qrserver.com/v1/create-qr-code/?size=300x300&data=${encodeURIComponent(
+      cleanUrl
+    )}`;
+    setCustomLiveQRUrl(generatedUrl);
+    const quickItem: any = {
+      id: `quick-${Date.now()}`,
+      name: `Custom QR (${quickQRUrl.trim()})`,
+      type: "website",
+      content: cleanUrl,
+      imageUrl: generatedUrl,
+      data: { url: cleanUrl },
+      style: {},
+      isFavorite: false,
+      isDynamic: false,
+      scanCount: 0,
+      downloadCount: 0,
+      createdAt: new Date(),
+      updatedAt: new Date(),
+    };
+    useQRStore.getState().setCurrentQR(quickItem);
+    useQRStore.getState().addToHistory(quickItem);
+    setSelectedQRId(quickItem.id);
+    toast.success("Applied custom QR code to all templates!");
+  };
+
+  const getActiveQREmbedUrl = () => {
+    if (customLiveQRUrl) return customLiveQRUrl;
+    if (
+      activeSelectedQR?.imageUrl &&
+      (activeSelectedQR.imageUrl.startsWith("data:") ||
+        activeSelectedQR.imageUrl.startsWith("http"))
+    ) {
+      return activeSelectedQR.imageUrl;
+    }
+    if (activeSelectedQR?.shortId) {
+      return `https://api.qrserver.com/v1/create-qr-code/?size=300x300&data=${encodeURIComponent(
+        `${window.location.origin}/q/${activeSelectedQR.shortId}`
+      )}`;
+    }
+    if (activeSelectedQR?.content) {
+      return `https://api.qrserver.com/v1/create-qr-code/?size=300x300&data=${encodeURIComponent(
+        activeSelectedQR.content
+      )}`;
+    }
+    if (activeQR?.imageUrl) {
+      return activeQR.imageUrl;
+    }
+    return "https://api.qrserver.com/v1/create-qr-code/?size=300x300&data=https://yourcompany.com";
+  };
 
   // Navigation states
   const [viewMode, setViewMode] = useState<"catalog" | "edit">("catalog");
@@ -130,7 +276,7 @@ export default function Templates() {
 
   // List of all categories
   const categoriesList = [
-    "all", "Restaurant", "Business", "Social Media", "Events", "Education", 
+    "all", "Scanner Displays", "Restaurant", "Business", "Social Media", "Events", "Education", 
     "Healthcare", "Retail", "Real Estate", "Travel", "Finance", 
     "Personal", "Entertainment", "Fitness", "Technology", "Others"
   ];
@@ -256,13 +402,25 @@ export default function Templates() {
     badgeStyle: string,
     isMini: boolean = false
   ) => {
-    const qrEmbedUrl = activeQR?.imageUrl || "https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=IntelliQR";
+    const qrEmbedUrl = getActiveQREmbedUrl();
+    const isDarkLayout = ["scanner_hud", "cyberpunk_neon", "luxury_foil", "rustic_wood"].includes(layoutType);
+    const getContainerBg = () => {
+      if (isMini) return `linear-gradient(135deg, ${themeColor}, ${secondaryColor})`;
+      if (layoutType === "scanner_hud") return "#0A0D14";
+      if (layoutType === "cyberpunk_neon") return "#08090E";
+      if (layoutType === "luxury_foil") return "#121212";
+      if (layoutType === "rustic_wood") return "linear-gradient(180deg, #3D2614, #1F1106)";
+      if (layoutType === "boho_arch") return "#FAF6F0";
+      if (layoutType === "scan_me_sticker") return "linear-gradient(180deg, #FDE047, #F59E0B)";
+      if (layoutType === "multi_social_stand") return `linear-gradient(135deg, ${themeColor}, ${secondaryColor})`;
+      return "white";
+    };
 
     return (
       <div 
-        style={{ background: isMini ? `linear-gradient(135deg, ${themeColor}, ${secondaryColor})` : "white" }}
+        style={{ background: getContainerBg() }}
         className={`w-full h-full rounded-[24px] overflow-hidden shadow-md flex flex-col relative transition-all duration-200 border border-slate-100 ${
-          isMini ? "text-white" : "text-slate-800"
+          isMini || isDarkLayout ? "text-white" : "text-slate-800"
         } ${borderClasses[borderStyle] || ""}`}
       >
         {/* Render Stamp badge overlay */}
@@ -302,15 +460,15 @@ export default function Templates() {
             <div className="flex-1 flex flex-col justify-between h-full text-left">
               <div>
                 <span className="text-[7px] font-extrabold text-indigo-600 tracking-wider uppercase block mb-1">
-                  {fields.company || "ABWcurious"}
+                  {fields.company || "Your Company Name"}
                 </span>
-                <h3 className={`font-extrabold text-xs leading-snug ${isMini ? "text-white" : "text-slate-900"}`}>{fields.name || "Shubham Sharma"}</h3>
+                <h3 className={`font-extrabold text-xs leading-snug ${isMini ? "text-white" : "text-slate-900"}`}>{fields.name || "Your Name"}</h3>
                 <p className="text-[8px] opacity-60 font-semibold uppercase">{fields.title || "Founder & CEO"}</p>
               </div>
 
               <div className="space-y-0.5 border-l-2 border-indigo-500/40 pl-2 text-[8px] opacity-70 font-bold">
-                <p>{fields.phone || "+91 99303 38504"}</p>
-                <p className="truncate max-w-[130px]">{fields.email || "info@abwcurious.com"}</p>
+                <p>{fields.phone || "+1 (555) 000-0000"}</p>
+                <p className="truncate max-w-[130px]">{fields.email || "contact@yourcompany.com"}</p>
               </div>
             </div>
 
@@ -460,6 +618,313 @@ export default function Templates() {
           </div>
         )}
 
+        {/* SCANNER 1: SCANNER HUD */}
+        {layoutType === "scanner_hud" && (
+          <div className="flex-1 p-4 flex flex-col justify-between h-full bg-[#0A0D14] text-slate-100 font-sans relative overflow-hidden select-none">
+            {/* Top Camera Status Bar */}
+            <div className="flex items-center justify-between text-[8px] font-mono tracking-wider opacity-80 border-b border-white/10 pb-1.5">
+              <div className="flex items-center gap-1.5 text-rose-500 font-bold">
+                <span className="w-1.5 h-1.5 rounded-full bg-rose-500 animate-pulse" />
+                <span>LIVE</span>
+              </div>
+              <div className="flex items-center gap-1.5 text-slate-300">
+                <Camera className="w-3 h-3 text-amber-400" />
+                <span>4K 60FPS</span>
+              </div>
+              <span className="text-emerald-400 font-bold text-[7px]">{fields.status || "AUTO-FOCUS"}</span>
+            </div>
+
+            {/* Detected URL Yellow Banner Pill */}
+            <div className="my-1 bg-amber-400 text-slate-950 px-2.5 py-1 rounded-full text-[8px] font-extrabold flex items-center justify-between shadow-md">
+              <span className="truncate max-w-[170px]">🔔 {fields.scanTarget || "QR CODE DETECTED"}</span>
+              <ExternalLink className="w-2.5 h-2.5 flex-shrink-0 ml-1" />
+            </div>
+
+            {/* Center Viewfinder with Brackets & Scanline */}
+            <div className="relative flex justify-center my-1 items-center">
+              <div className="relative p-2.5">
+                <div className="absolute top-0 left-0 w-3.5 h-3.5 border-t-2 border-l-2 border-amber-400" />
+                <div className="absolute top-0 right-0 w-3.5 h-3.5 border-t-2 border-r-2 border-amber-400" />
+                <div className="absolute bottom-0 left-0 w-3.5 h-3.5 border-b-2 border-l-2 border-amber-400" />
+                <div className="absolute bottom-0 right-0 w-3.5 h-3.5 border-b-2 border-r-2 border-amber-400" />
+
+                <div className="p-1.5 bg-white rounded-xl shadow-lg relative overflow-hidden">
+                  <img src={qrEmbedUrl} alt="QR" className={`${isMini ? "w-16 h-16" : "w-24 h-24"} object-contain`} />
+                  <div className="absolute left-0 right-0 h-0.5 bg-amber-400 shadow-[0_0_8px_#f59e0b] top-1/2 -translate-y-1/2 opacity-75" />
+                </div>
+              </div>
+            </div>
+
+            {/* Bottom Telemetry & Controls */}
+            <div className="text-center space-y-1">
+              <div className="inline-flex items-center gap-1.5 bg-white/10 px-2.5 py-0.5 rounded-full text-[7px] font-mono text-slate-300">
+                <span className="text-amber-400 font-bold">ZOOM</span>
+                <span>{fields.zoom || "1x • 2x • 3x"}</span>
+              </div>
+              <p className="text-[7px] text-slate-400 font-medium truncate max-w-[200px] mx-auto">
+                {fields.hint || "Point camera • Tap yellow link to open"}
+              </p>
+            </div>
+          </div>
+        )}
+
+        {/* SCANNER 2: FROSTED ACRYLIC STANDEE */}
+        {layoutType === "acrylic_standee" && (
+          <div className="flex-1 p-5 flex flex-col justify-between h-full bg-gradient-to-b from-white/95 to-slate-50/95 backdrop-blur-md relative border border-white/80 shadow-inner">
+            {/* 4 Metallic Brass / Chrome Standee Screws */}
+            <div className="absolute top-3 left-3 w-3 h-3 rounded-full bg-gradient-to-br from-amber-200 via-amber-400 to-amber-700 shadow border border-amber-300 flex items-center justify-center">
+              <div className="w-1 h-0.5 bg-amber-900/60" />
+            </div>
+            <div className="absolute top-3 right-3 w-3 h-3 rounded-full bg-gradient-to-br from-amber-200 via-amber-400 to-amber-700 shadow border border-amber-300 flex items-center justify-center">
+              <div className="w-1 h-0.5 bg-amber-900/60" />
+            </div>
+            <div className="absolute bottom-3 left-3 w-3 h-3 rounded-full bg-gradient-to-br from-amber-200 via-amber-400 to-amber-700 shadow border border-amber-300 flex items-center justify-center">
+              <div className="w-1 h-0.5 bg-amber-900/60" />
+            </div>
+            <div className="absolute bottom-3 right-3 w-3 h-3 rounded-full bg-gradient-to-br from-amber-200 via-amber-400 to-amber-700 shadow border border-amber-300 flex items-center justify-center">
+              <div className="w-1 h-0.5 bg-amber-900/60" />
+            </div>
+
+            {/* Standee Header */}
+            <div className="text-center px-4 pt-1">
+              <h3 className="font-serif font-black text-xs text-slate-900 tracking-widest uppercase">
+                {fields.brand || "YOUR BRAND NAME"}
+              </h3>
+              <p className="text-[7px] font-bold text-amber-600 tracking-widest uppercase mt-0.5">
+                {fields.subtitle || "EXCLUSIVE COLLECTION"}
+              </p>
+              <div className="w-10 h-0.5 bg-gradient-to-r from-transparent via-amber-400 to-transparent mx-auto mt-1.5" />
+            </div>
+
+            {/* Centered QR with Gold Accent Double Frame */}
+            <div className="flex justify-center my-1">
+              <div className="p-2.5 bg-white rounded-2xl shadow-md border-2 border-amber-400/40 relative">
+                <img src={qrEmbedUrl} alt="QR" className={`${isMini ? "w-16 h-16" : "w-24 h-24"} object-contain`} />
+              </div>
+            </div>
+
+            {/* Standee Footer CTA */}
+            <div className="text-center pb-1 space-y-1">
+              <span className="inline-block px-3 py-1 rounded-full bg-slate-900 text-amber-300 font-bold text-[7px] uppercase tracking-wider shadow-sm">
+                {fields.cta || "SCAN FOR PRIVATE CATALOG"}
+              </span>
+              <p className="text-[7px] text-slate-500 font-semibold">{fields.social || "@yourbrand"}</p>
+            </div>
+          </div>
+        )}
+
+        {/* SCANNER 3: MULTI-SOCIAL CONNECT STAND */}
+        {layoutType === "multi_social_stand" && (
+          <div className="flex-1 p-5 flex flex-col justify-between h-full bg-gradient-to-br from-purple-600 via-pink-500 to-amber-400 text-white relative">
+            <div className="text-center">
+              <span className="inline-block px-2.5 py-0.5 rounded-full bg-white/20 backdrop-blur-md text-[7px] font-extrabold uppercase tracking-widest text-white shadow-sm mb-1">
+                ✨ STAY CONNECTED
+              </span>
+              <h3 className="font-black text-xs uppercase tracking-tight text-white drop-shadow-sm">
+                {fields.title || "CONNECT WITH US"}
+              </h3>
+              <p className="text-[8px] font-bold text-white/90">{fields.handle || "@yourusername"}</p>
+            </div>
+
+            <div className="flex justify-center my-1">
+              <div className="p-2 bg-white rounded-2xl shadow-xl">
+                <img src={qrEmbedUrl} alt="QR" className={`${isMini ? "w-16 h-16" : "w-22 h-22"} object-contain`} />
+              </div>
+            </div>
+
+            <div className="space-y-1 bg-white/20 backdrop-blur-md p-2 rounded-xl text-center border border-white/30 text-[7px] font-bold">
+              <p className="truncate text-white">{fields.insta || "Instagram • TikTok • YouTube"}</p>
+              <p className="text-white/80 font-medium truncate text-[6px]">{fields.message || "Follow our daily updates & exclusive drops!"}</p>
+            </div>
+          </div>
+        )}
+
+        {/* SCANNER 4: PAYMENT STANDEE */}
+        {layoutType === "payment_standee" && (
+          <div className="flex-1 p-5 flex flex-col justify-between h-full bg-gradient-to-b from-emerald-50 via-white to-emerald-50 text-slate-800 border-2 border-emerald-500/20">
+            <div className="text-center">
+              <div className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full bg-emerald-600 text-white text-[7px] font-extrabold uppercase tracking-wider mb-1">
+                <ShieldCheck className="w-2.5 h-2.5" />
+                {fields.badge || "100% SECURE & ENCRYPTED"}
+              </div>
+              <h3 className="font-black text-xs uppercase tracking-tight text-slate-900">{fields.merchant || "YOUR BUSINESS NAME"}</h3>
+              <p className="text-[8px] font-bold text-emerald-700 uppercase tracking-widest">{fields.title || "CONTACTLESS PAYMENT"}</p>
+            </div>
+
+            <div className="flex justify-center my-1">
+              <div className="p-2.5 bg-white rounded-2xl shadow-md border border-emerald-100">
+                <img src={qrEmbedUrl} alt="QR" className={`${isMini ? "w-16 h-16" : "w-24 h-24"} object-contain`} />
+              </div>
+            </div>
+
+            <div className="text-center space-y-1">
+              <div className="inline-block px-2.5 py-1 rounded-lg bg-emerald-100 text-emerald-900 font-extrabold text-[7px] uppercase tracking-wider">
+                {fields.subtext || "GPay • Apple Pay • UPI • Cards"}
+              </div>
+              <p className="text-[7px] text-slate-500 font-semibold truncate max-w-[200px] mx-auto">
+                {fields.note || "Tips are greatly appreciated!"}
+              </p>
+            </div>
+          </div>
+        )}
+
+        {/* SCANNER 5: BOHO ARCH TABLE TENT */}
+        {layoutType === "boho_arch" && (
+          <div className="flex-1 p-5 flex flex-col justify-between h-full bg-[#FAF6F0] text-[#4A3E3D] relative border border-[#E8DEC8]">
+            <div className="text-center pt-2">
+              <span className="text-[7px] font-bold text-[#C27D56] uppercase tracking-widest block mb-0.5">✦ WELCOME ✦</span>
+              <h3 className="font-serif font-black text-xs text-[#2C2423] tracking-tight">{fields.title || "Your Cafe & Dining"}</h3>
+              <p className="text-[8px] font-bold text-[#C27D56] uppercase tracking-widest mt-0.5">{fields.subtitle || "TABLE 01"}</p>
+            </div>
+
+            <div className="flex justify-center my-1">
+              <div className="p-2.5 bg-white rounded-t-full rounded-b-2xl shadow-sm border border-[#E8DEC8]">
+                <img src={qrEmbedUrl} alt="QR" className={`${isMini ? "w-16 h-16" : "w-22 h-22"} object-contain`} />
+              </div>
+            </div>
+
+            <div className="text-center space-y-1">
+              <span className="inline-block px-3 py-1 rounded-full bg-[#C27D56]/15 text-[#C27D56] font-extrabold text-[7px] uppercase tracking-wider">
+                {fields.promo || "Scan for Seasonal Menu"}
+              </span>
+              <p className="text-[7px] text-[#7A6C69] font-medium">{fields.wifi || "Free Guest Wi-Fi"}</p>
+            </div>
+          </div>
+        )}
+
+        {/* SCANNER 6: CYBERPUNK NEON SCANNER */}
+        {layoutType === "cyberpunk_neon" && (
+          <div className="flex-1 p-4 flex flex-col justify-between h-full bg-[#08090E] text-[#00F0FF] font-mono relative overflow-hidden">
+            <div className="border-b border-[#00F0FF]/30 pb-1 flex justify-between items-center text-[7px]">
+              <span className="text-[#FF007F] font-black tracking-widest">⚡ MATRIX_HUD</span>
+              <span className="text-[#00F0FF]">{fields.sub || "FREQ 5.8GHZ"}</span>
+            </div>
+
+            <div className="text-center my-1">
+              <h3 className="font-black text-xs tracking-wider text-white uppercase">{fields.title || "CYBER_ID // PASS"}</h3>
+              <span className="text-[7px] text-[#FF007F] font-bold uppercase">{fields.code || "TOKEN: #77X-BETA"}</span>
+            </div>
+
+            <div className="flex justify-center my-1 relative">
+              <div className="p-2 bg-white rounded-lg shadow-[0_0_15px_rgba(0,240,255,0.4)] border border-[#00F0FF]">
+                <img src={qrEmbedUrl} alt="QR" className={`${isMini ? "w-16 h-16" : "w-22 h-22"} object-contain`} />
+              </div>
+            </div>
+
+            <div className="text-center space-y-1">
+              <div className="bg-[#00F0FF]/10 border border-[#00F0FF]/40 text-[#00F0FF] text-[7px] py-1 px-2 rounded uppercase font-bold tracking-wider">
+                {fields.cta || "SCAN TO INITIALIZE LINK"}
+              </div>
+              <p className="text-[6px] text-slate-400 truncate">{fields.sys || "SYS.VER 4.29 // QUANTUM ENCRYPTED"}</p>
+            </div>
+          </div>
+        )}
+
+        {/* SCANNER 7: DIE-CUT SCAN ME STICKER */}
+        {layoutType === "scan_me_sticker" && (
+          <div className="flex-1 p-5 flex flex-col justify-between items-center h-full bg-gradient-to-b from-amber-300 via-amber-400 to-amber-500 text-slate-900 relative">
+            <div className="w-full text-center">
+              <span className="inline-block px-3 py-0.5 rounded-full bg-slate-900 text-amber-300 text-[7px] font-black tracking-widest uppercase shadow">
+                {fields.badge || "SECRET PERK INSIDE!"}
+              </span>
+              <h3 className="font-black text-base tracking-tight uppercase mt-1 leading-none drop-shadow-sm">
+                {fields.title || "SCAN ME!"}
+              </h3>
+            </div>
+
+            <div className="relative my-1">
+              <div className="p-2 bg-white rounded-2xl shadow-xl border-2 border-slate-900">
+                <img src={qrEmbedUrl} alt="QR" className={`${isMini ? "w-16 h-16" : "w-24 h-24"} object-contain`} />
+              </div>
+            </div>
+
+            <div className="text-center space-y-0.5">
+              <p className="text-[8px] font-black uppercase text-slate-900">{fields.subtitle || "Unlock 20% Off Your Order"}</p>
+              <p className="text-[7px] font-bold text-slate-800/80">{fields.hint || "Point smartphone camera here"}</p>
+            </div>
+          </div>
+        )}
+
+        {/* SCANNER 8: ARTISAN OAK TIMBER STAND */}
+        {layoutType === "rustic_wood" && (
+          <div className="flex-1 p-5 flex flex-col justify-between h-full bg-gradient-to-b from-[#3D2614] via-[#2E1A0C] to-[#1F1106] text-[#FEF3C7] relative border border-[#52331B]">
+            <div className="text-center">
+              <span className="text-[7px] font-bold tracking-widest text-amber-400 uppercase block mb-0.5">EST. 2018</span>
+              <h3 className="font-serif font-black text-xs tracking-wider uppercase text-amber-100">{fields.establishment || "YOUR RESTAURANT / PUB"}</h3>
+              <p className="text-[7px] font-bold text-amber-400/80 uppercase tracking-widest mt-0.5">{fields.title || "FOOD & DRINK MENU"}</p>
+            </div>
+
+            <div className="flex justify-center my-1">
+              <div className="p-2 bg-[#FAF7F0] rounded-xl shadow-xl border-2 border-amber-600/50">
+                <img src={qrEmbedUrl} alt="QR" className={`${isMini ? "w-16 h-16" : "w-22 h-22"} object-contain`} />
+              </div>
+            </div>
+
+            <div className="text-center space-y-1">
+              <span className="inline-block px-2.5 py-0.5 rounded bg-amber-500/20 text-amber-300 font-serif font-bold text-[7px] uppercase tracking-wider">
+                {fields.table || "TABLE 01"}
+              </span>
+              <p className="text-[7px] text-amber-200/70 font-medium truncate max-w-[190px] mx-auto">
+                {fields.instruction || "Point phone camera to browse digital menu"}
+              </p>
+            </div>
+          </div>
+        )}
+
+        {/* SCANNER 9: OBSIDIAN & GOLD FOIL TAG */}
+        {layoutType === "luxury_foil" && (
+          <div className="flex-1 p-5 flex flex-col justify-between h-full bg-[#121212] text-amber-100 border-2 border-amber-500/60 relative">
+            <div className="text-center">
+              <div className="w-5 h-5 rounded-full border border-amber-400/80 flex items-center justify-center mx-auto mb-1 text-amber-400 text-[8px]">
+                ⚜
+              </div>
+              <h3 className="font-serif font-bold text-xs tracking-widest uppercase text-amber-200">{fields.brand || "YOUR BRAND NAME"}</h3>
+              <p className="text-[7px] font-bold text-amber-500 tracking-widest uppercase mt-0.5">{fields.title || "CERTIFICATE OF AUTHENTICITY"}</p>
+            </div>
+
+            <div className="flex justify-center my-1">
+              <div className="p-2 bg-black rounded-lg border-2 border-amber-400 shadow-[0_0_15px_rgba(212,175,55,0.25)]">
+                <img src={qrEmbedUrl} alt="QR" className={`${isMini ? "w-16 h-16" : "w-22 h-22"} object-contain invert brightness-150`} />
+              </div>
+            </div>
+
+            <div className="text-center space-y-0.5">
+              <span className="text-[7px] font-mono text-amber-400 font-bold tracking-wider block">{fields.serial || "SERIAL #VERIFIED-001"}</span>
+              <p className="text-[7px] text-stone-400 font-serif italic">{fields.action || "Scan to Verify Digital Certificate"}</p>
+            </div>
+          </div>
+        )}
+
+        {/* SCANNER 10: 5-STAR REVIEW PLACARD */}
+        {layoutType === "review_placard" && (
+          <div className="flex-1 p-5 flex flex-col justify-between h-full bg-white text-slate-800 border-2 border-slate-100 shadow-sm">
+            <div className="text-center">
+              <div className="text-amber-400 text-xs tracking-widest font-black mb-1">
+                ★★★★★
+              </div>
+              <h3 className="font-black text-xs uppercase tracking-tight text-slate-900">{fields.title || "LOVED YOUR VISIT?"}</h3>
+              <p className="text-[7px] font-extrabold text-blue-600 uppercase tracking-wider mt-0.5">{fields.subtitle || "LEAVE US A 5-STAR REVIEW!"}</p>
+            </div>
+
+            <div className="flex flex-col items-center justify-center my-1">
+              <div className="p-2 bg-white rounded-2xl shadow-md border border-slate-200">
+                <img src={qrEmbedUrl} alt="QR" className={`${isMini ? "w-16 h-16" : "w-24 h-24"} object-contain`} />
+              </div>
+              <div className="flex w-24 h-1 mt-1 rounded-full overflow-hidden">
+                <div className="flex-1 bg-[#4285F4]" />
+                <div className="flex-1 bg-[#EA4335]" />
+                <div className="flex-1 bg-[#FBBC05]" />
+                <div className="flex-1 bg-[#34A853]" />
+              </div>
+            </div>
+
+            <div className="text-center space-y-0.5">
+              <span className="text-[7px] text-slate-400 font-bold block">{fields.business || "Your Business Name"}</span>
+              <p className="text-[7px] font-extrabold text-slate-700">{fields.action || "Takes 10 seconds • Point camera & tap"}</p>
+            </div>
+          </div>
+        )}
+
         {/* 8. GENERAL CARD */}
         {(!layoutType || ["generic_card", "review_badge", "feedback_survey", "healthcare_appt", "education_course", "tech_software", "travel_guide", "finance_payment", "personal_portfolio", "entertainment_stream", "fitness_gym"].includes(layoutType)) && (
           <div className="flex-1 p-5 flex flex-col justify-between h-full">
@@ -489,6 +954,7 @@ export default function Templates() {
   // Helper category icons map
   const getCategoryIcon = (category: string) => {
     switch (category.toLowerCase()) {
+      case "pinterest trends": return <Sparkles className="w-3.5 h-3.5 text-rose-500" />;
       case "restaurant": return <ShoppingBag className="w-3.5 h-3.5" />;
       case "business": return <Briefcase className="w-3.5 h-3.5" />;
       case "social media": return <Globe className="w-3.5 h-3.5" />;
@@ -536,7 +1002,7 @@ export default function Templates() {
               className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-white/40 backdrop-blur-md border border-white/40 text-sm font-medium text-slate-800 mb-8 shadow-sm"
             >
               <span className="w-2 h-2 rounded-full bg-orange-500 animate-pulse" />
-              200+ Premium QR Templates
+              {TEMPLATES_DATA.length}+ Premium QR Templates
             </motion.div>
 
             <motion.h1 
@@ -557,7 +1023,7 @@ export default function Templates() {
               transition={{ duration: 0.6, delay: 0.2 }}
               className="text-xl sm:text-2xl text-slate-700/80 leading-relaxed mb-8 max-w-2xl mx-auto font-medium"
             >
-              Explore 200 high-performance QR templates across 15 industries. Customize text, colors, frame borders, and stamps live.
+              Explore {TEMPLATES_DATA.length} high-performance QR templates across 16 industries including Pinterest trending scanner frames & acrylic standees. Customize text, colors, frame borders, and stamps live.
             </motion.p>
           </div>
         </div>
@@ -570,7 +1036,67 @@ export default function Templates() {
           {/* VIEW A: CATALOG VIEW */}
           {viewMode === "catalog" && (
             <div className="space-y-8">
-              
+              {/* QR Source Selector & Live Embed Banner */}
+              <div className="bg-white border border-slate-100 rounded-[32px] p-6 shadow-[0_8px_30px_rgb(0,0,0,0.02)] flex flex-col lg:flex-row lg:items-center justify-between gap-6">
+                <div className="flex items-center gap-4">
+                  <div className="w-12 h-12 rounded-2xl bg-gradient-to-tr from-orange-500 to-rose-500 flex items-center justify-center text-white shadow-md shadow-orange-500/20 flex-shrink-0">
+                    <QrCode className="w-6 h-6" />
+                  </div>
+                  <div>
+                    <div className="flex items-center gap-2">
+                      <h3 className="text-sm font-bold text-slate-900">QR Code Source & Live Embed</h3>
+                      <span className="text-[10px] font-bold uppercase tracking-wider bg-emerald-50 text-emerald-600 px-2 py-0.5 rounded-full border border-emerald-200/50">
+                        {customLiveQRUrl ? "Custom Live URL" : activeSelectedQR ? "Connected" : "Demo Mode"}
+                      </span>
+                    </div>
+                    <p className="text-xs text-slate-500 mt-0.5">
+                      Select any QR from your account or enter a quick URL to preview your real code across all templates live.
+                    </p>
+                  </div>
+                </div>
+
+                <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-3">
+                  {availableQRs.length > 0 && (
+                    <div className="relative min-w-[200px]">
+                      <select
+                        value={selectedQRId}
+                        onChange={(e) => {
+                          setSelectedQRId(e.target.value);
+                          setCustomLiveQRUrl(null);
+                        }}
+                        className="w-full px-4 py-2.5 rounded-2xl border border-slate-200 bg-slate-50 text-xs font-bold text-slate-800 focus:outline-none focus:ring-2 focus:ring-slate-900/10 cursor-pointer"
+                      >
+                        {availableQRs.map((q) => (
+                          <option key={q.id} value={q.id}>
+                            {q.name} ({q.type})
+                          </option>
+                        ))}
+                      </select>
+                    </div>
+                  )}
+
+                  {/* Quick URL input */}
+                  <form onSubmit={handleApplyQuickQR} className="flex items-center gap-2">
+                    <div className="relative flex-1 sm:w-64">
+                      <input
+                        type="text"
+                        value={quickQRUrl}
+                        onChange={(e) => setQuickQRUrl(e.target.value)}
+                        placeholder="e.g. https://mybrand.com"
+                        className="w-full px-4 py-2.5 rounded-2xl border border-slate-200 bg-slate-50 text-xs font-semibold text-slate-800 placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-slate-900/10"
+                      />
+                    </div>
+                    <button
+                      type="submit"
+                      className="px-4 py-2.5 rounded-2xl bg-[#2A2C3C] hover:bg-slate-900 text-white text-xs font-bold flex items-center gap-1.5 transition-all shadow-sm flex-shrink-0"
+                    >
+                      <Plus className="w-3.5 h-3.5" />
+                      Apply
+                    </button>
+                  </form>
+                </div>
+              </div>
+
               {/* Filter System Panel - Matching Home Card Styling */}
               <div className="bg-white border border-slate-100 rounded-[32px] p-6 shadow-[0_8px_30px_rgb(0,0,0,0.02)] space-y-6">
                 
@@ -584,7 +1110,7 @@ export default function Templates() {
                       type="text"
                       value={searchQuery}
                       onChange={(e) => setSearchQuery(e.target.value)}
-                      placeholder="Search 200 templates by industry, tag, name..."
+                      placeholder={`Search ${TEMPLATES_DATA.length} templates by industry, tag, name...`}
                       className="bg-transparent border-none outline-none focus:ring-0 text-xs w-full text-slate-800 font-semibold placeholder:text-slate-400"
                     />
                     {searchQuery && (
@@ -646,7 +1172,7 @@ export default function Templates() {
 
                 {/* Categories Pills Swipe Bar */}
                 <div className="space-y-2">
-                  <span className="text-[10px] font-bold text-slate-400 uppercase tracking-widest block">Browse Industries (15 Categories)</span>
+                  <span className="text-[10px] font-bold text-slate-400 uppercase tracking-widest block">Browse Industries ({categoriesList.length - 1} Categories)</span>
                   <div className="flex gap-2 overflow-x-auto pb-2 scrollbar-thin">
                     {categoriesList.map((cat) => (
                       <button
@@ -725,7 +1251,7 @@ export default function Templates() {
               {/* Search Count status bar */}
               <div className="flex justify-between items-center px-2">
                 <span className="text-xs text-slate-500 font-semibold uppercase tracking-wider">
-                  Showing <span className="text-slate-900 font-extrabold">{filteredTemplates.length}</span> of 200 templates
+                  Showing <span className="text-slate-900 font-extrabold">{filteredTemplates.length}</span> of {TEMPLATES_DATA.length} templates
                 </span>
                 {favorites.length > 0 && (
                   <span className="text-xs text-slate-400 font-bold">

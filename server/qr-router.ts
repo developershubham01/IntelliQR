@@ -3,9 +3,10 @@ import { createRouter, authedQuery } from "./middleware.js";
 import { qrCodes, qrScans } from "../db/schema.js";
 import type { QRStyleConfig } from "../db/schema.js";
 import { getDb } from "./queries/connection.js";
-import { eq, desc, and, gte } from "drizzle-orm";
+import { eq, desc, and, gte, count } from "drizzle-orm";
 import crypto from "crypto";
 import { isValidRedirectUrl } from "./redirect-handler.js";
+import { getUserSubscriptionDetails } from "./queries/billing.js";
 
 // Cryptographically secure 8-character Base62 generator (URL-safe, unguessable)
 const BASE62_CHARS = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz";
@@ -28,6 +29,7 @@ export const qrRouter = createRouter({
           type: z.enum(["all", "dynamic", "static"]).default("all").optional(),
           status: z.enum(["all", "active", "paused", "expired"]).default("all").optional(),
           search: z.string().optional(),
+          folderId: z.number().nullable().optional(),
         })
         .optional()
     )
@@ -37,6 +39,15 @@ export const qrRouter = createRouter({
       const offset = input?.offset ?? 0;
 
       const conditions = [eq(qrCodes.userId, ctx.user.id)];
+
+      if (input?.folderId !== undefined) {
+        if (input.folderId === null) {
+          // null means uncategorized
+          // we will filter in query or handle below
+        } else {
+          conditions.push(eq(qrCodes.folderId, input.folderId));
+        }
+      }
 
       if (input?.type === "dynamic") {
         conditions.push(eq(qrCodes.isDynamic, true));
@@ -100,6 +111,7 @@ export const qrRouter = createRouter({
         imageUrl: z.string().optional(),
         svgContent: z.string().optional(),
         isDynamic: z.boolean().default(false),
+        folderId: z.number().optional(),
         expiresAt: z.string().datetime().optional().nullable(),
       })
     )
@@ -113,6 +125,22 @@ export const qrRouter = createRouter({
       console.log("[DYNAMIC QR] Payload:", { name: input.name, type: input.type, isDynamic: input.isDynamic, destinationUrl: input.destinationUrl });
 
       if (input.isDynamic) {
+        // Enforce subscription plan dynamic QR limits server-side
+        const userSub = await getUserSubscriptionDetails(ctx.user.id);
+        const maxDynamicQRs = userSub?.limits.maxDynamicQRs ?? 3;
+
+        const countRows = await db
+          .select({ total: count() })
+          .from(qrCodes)
+          .where(and(eq(qrCodes.userId, ctx.user.id), eq(qrCodes.isDynamic, true)));
+
+        const currentCount = Number(countRows[0]?.total || 0);
+        if (currentCount >= maxDynamicQRs) {
+          throw new Error(
+            `Dynamic QR limit reached (${currentCount}/${maxDynamicQRs}) for your ${userSub?.tier.toUpperCase() || "FREE"} plan. Upgrade your plan to create more dynamic QR codes.`
+          );
+        }
+
         // Validate destination URL security
         if (!isValidRedirectUrl(finalDestination)) {
           // If domain format without protocol, prepend https://
@@ -152,6 +180,7 @@ export const qrRouter = createRouter({
         .insert(qrCodes)
         .values({
           userId: ctx.user.id,
+          folderId: input.folderId ?? null,
           name: input.name,
           type: input.type,
           content: input.content,
@@ -355,6 +384,51 @@ export const qrRouter = createRouter({
         .where(eq(qrCodes.id, input.id));
 
       return { success: true, isFavorite: !existing[0].isFavorite };
+    }),
+
+  duplicate: authedQuery
+    .input(z.object({ id: z.number() }))
+    .mutation(async ({ ctx, input }) => {
+      const db = getDb();
+      const existing = await db
+        .select()
+        .from(qrCodes)
+        .where(and(eq(qrCodes.id, input.id), eq(qrCodes.userId, ctx.user.id)))
+        .limit(1);
+
+      if (existing.length === 0) {
+        throw new Error("QR Code not found or access denied.");
+      }
+
+      const item = existing[0];
+      let newShortId: string | null = null;
+      let finalContent = item.content;
+
+      if (item.isDynamic) {
+        newShortId = generateCryptographicShortCode(8);
+        finalContent = `${process.env.APP_URL || "https://intelli-qr.vercel.app"}/q/${newShortId}`;
+      }
+
+      const duplicated = await db
+        .insert(qrCodes)
+        .values({
+          userId: ctx.user.id,
+          folderId: item.folderId,
+          name: `${item.name} (Copy)`,
+          type: item.type,
+          content: finalContent,
+          destinationUrl: item.destinationUrl,
+          data: item.data,
+          style: item.style,
+          imageUrl: item.imageUrl,
+          svgContent: item.svgContent,
+          isDynamic: item.isDynamic,
+          shortId: newShortId,
+          status: "active",
+        })
+        .returning();
+
+      return duplicated[0];
     }),
 
   stats: authedQuery.query(async ({ ctx }) => {

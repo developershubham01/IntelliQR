@@ -6,7 +6,8 @@ import {
   MapPin, FileText, Image, Video, Instagram, Facebook,
   Linkedin, Youtube, Twitter, Send, Music, CreditCard,
   IndianRupee, Smartphone, Play, Calendar, CalendarDays,
-  Search, ChevronDown,
+  Search, ChevronDown, UtensilsCrossed, Hotel, ShoppingBag,
+  Building2, Ticket, Dumbbell, Scissors, GraduationCap, Star, Layout
 } from "lucide-react";
 
 const iconMap: Record<string, React.ElementType> = {
@@ -14,6 +15,8 @@ const iconMap: Record<string, React.ElementType> = {
   MapPin, FileText, Image, Video, Instagram, Facebook,
   Linkedin, Youtube, Twitter, Send, Music, CreditCard,
   IndianRupee, Smartphone, Play, Calendar, CalendarDays,
+  UtensilsCrossed, Hotel, ShoppingBag, Building2, Ticket,
+  Dumbbell, Scissors, GraduationCap, Star, Layout
 };
 
 const categories = [...new Set(QR_TYPES.map((t) => t.category))];

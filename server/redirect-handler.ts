@@ -54,12 +54,16 @@ export function isValidRedirectUrl(url: string): boolean {
     return false;
   }
 
-  // Allow standard web URLs or mailto/tel
+  // Allow standard web URLs, mailto, tel, or internal relative paths
   if (
     lower.startsWith("http://") ||
     lower.startsWith("https://") ||
     lower.startsWith("mailto:") ||
-    lower.startsWith("tel:")
+    lower.startsWith("tel:") ||
+    (lower.startsWith("/") &&
+      !lower.startsWith("//") &&
+      !lower.startsWith("/\\") &&
+      !lower.includes(".."))
   ) {
     return true;
   }

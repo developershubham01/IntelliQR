@@ -7,6 +7,8 @@ import { createContext } from "../server/context.js";
 import { env } from "../server/lib/env.js";
 import { handleRedirection } from "../server/redirect-handler.js";
 
+import { restBillingApp } from "../server/rest-billing.js";
+
 export const app = new Hono<{ Bindings: HttpBindings }>();
 
 app.use(bodyLimit({ maxSize: 50 * 1024 * 1024 }));
@@ -35,6 +37,10 @@ app.get("/sitemap.xml", async (c) => {
 
 app.get("/q/:shortId", handleRedirection);
 app.get("/r/:shortId", handleRedirection);
+
+// REST Billing & Razorpay Webhooks
+app.route("/api", restBillingApp);
+
 app.use("/api/trpc/*", async (c) => {
   return fetchRequestHandler({
     endpoint: "/api/trpc",

@@ -10,10 +10,15 @@ function required(name: string): string {
 }
 
 export const env = {
-  appId: process.env.APP_ID || process.env.GOOGLE_CLIENT_ID || "default-app-id",
-  appSecret: process.env.APP_SECRET || process.env.GOOGLE_CLIENT_SECRET || process.env.JWT_SECRET || "default-app-secret-for-jwt",
-  isProduction: process.env.NODE_ENV === "production",
-  databaseUrl: required("DATABASE_URL"),
-  googleClientId: process.env.GOOGLE_CLIENT_ID || "666347407890-jrk5jjrcqepf1gp2oimqtmmfcm6nfa49.apps.googleusercontent.com",
-  ownerUnionId: process.env.OWNER_UNION_ID ?? "",
+  get appId() { return process.env.APP_ID || process.env.GOOGLE_CLIENT_ID || "default-app-id"; },
+  get appSecret() { return process.env.APP_SECRET || process.env.GOOGLE_CLIENT_SECRET || process.env.JWT_SECRET || "default-app-secret-for-jwt"; },
+  get isProduction() { return process.env.NODE_ENV === "production"; },
+  get databaseUrl() { return required("DATABASE_URL"); },
+  get googleClientId() { return process.env.GOOGLE_CLIENT_ID || "666347407890-jrk5jjrcqepf1gp2oimqtmmfcm6nfa49.apps.googleusercontent.com"; },
+  get ownerUnionId() { return process.env.OWNER_UNION_ID ?? ""; },
+  get razorpayKeyId() { return process.env.RAZORPAY_KEY_ID || process.env.VITE_RAZORPAY_KEY_ID || process.env.NEXT_PUBLIC_RAZORPAY_KEY_ID || ""; },
+  get razorpayKeySecret() { return process.env.RAZORPAY_KEY_SECRET || ""; },
+  get razorpayWebhookSecret() { return process.env.RAZORPAY_WEBHOOK_SECRET || ""; },
+  get appUrl() { return process.env.APP_URL || process.env.NEXT_PUBLIC_APP_URL || "http://localhost:3000"; },
 };
+

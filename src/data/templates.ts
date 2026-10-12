@@ -35,11 +35,337 @@ export interface QRTemplate {
     | "coupon_pass"
     | "feedback_survey"
     | "review_badge"
-    | "generic_card";
+    | "generic_card"
+    | "scanner_hud"
+    | "acrylic_standee"
+    | "multi_social_stand"
+    | "payment_standee"
+    | "boho_arch"
+    | "cyberpunk_neon"
+    | "scan_me_sticker"
+    | "rustic_wood"
+    | "luxury_foil"
+    | "review_placard";
   fields: Record<string, string>;
 }
 
 export const TEMPLATES_DATA: QRTemplate[] = [
+  // ==================== SCANNER DISPLAYS & MODERN FRAMES (12) ====================
+  {
+    id: "tpl-pin-001",
+    name: "Viewfinder Mobile Scanner HUD",
+    slug: "viewfinder-mobile-scanner-hud",
+    category: "Scanner Displays",
+    subcategory: "Scanner HUD",
+    description: "Futuristic camera viewfinder HUD with corner crosshairs, active scanline, and tap-to-open banner.",
+    rating: 5.0,
+    downloads: 8420,
+    views: 24500,
+    premium: true,
+    popular: true,
+    new: true,
+    featured: true,
+    colors: ["#0F172A", "#F59E0B", "#10B981"],
+    tags: ["scanner", "viewfinder", "camera", "hud", "modern", "display"],
+    cta: "Scan with Camera",
+    layoutType: "scanner_hud",
+    fields: {
+      title: "CAMERA VIEWFINDER",
+      scanTarget: "QR CODE DETECTED",
+      linkUrl: "https://yourwebsite.com",
+      hint: "Point camera • Tap yellow link to open",
+      zoom: "1x • 2x • 3x",
+      status: "AUTO-FOCUS LOCKED"
+    }
+  },
+  {
+    id: "tpl-pin-002",
+    name: "Frosted Acrylic Boutique Standee",
+    slug: "frosted-acrylic-boutique-standee",
+    category: "Scanner Displays",
+    subcategory: "Acrylic Standee",
+    description: "Luxury frosted glassmorphism tabletop sign with brass standoff bolts and gold accents.",
+    rating: 4.9,
+    downloads: 6890,
+    views: 19200,
+    premium: true,
+    popular: true,
+    new: true,
+    featured: true,
+    colors: ["#D4AF37", "#F8FAFC", "#0F172A"],
+    tags: ["acrylic", "standee", "gold", "boutique", "luxury", "tabletop"],
+    cta: "Scan for Exclusive Lookbook",
+    layoutType: "acrylic_standee",
+    fields: {
+      brand: "YOUR BRAND NAME",
+      subtitle: "EXCLUSIVE COLLECTION",
+      cta: "SCAN FOR PRIVATE CATALOG",
+      social: "@yourbrand",
+      footer: "Touch-Free Shopping Experience"
+    }
+  },
+  {
+    id: "tpl-pin-003",
+    name: "Pastel Multi-Social Connect Stand",
+    slug: "pastel-multi-social-connect-stand",
+    category: "Scanner Displays",
+    subcategory: "Social Standee",
+    description: "Vibrant sunset mesh gradient follow standee featuring multi-platform social pills.",
+    rating: 4.9,
+    downloads: 7350,
+    views: 21800,
+    premium: false,
+    popular: true,
+    new: true,
+    featured: true,
+    colors: ["#EC4899", "#8B5CF6", "#F59E0B"],
+    tags: ["social", "instagram", "tiktok", "connect", "gradient", "standee"],
+    cta: "Connect on Social Media",
+    layoutType: "multi_social_stand",
+    fields: {
+      title: "CONNECT WITH US",
+      handle: "@yourusername",
+      insta: "Instagram: @yourusername",
+      tiktok: "TikTok: @yourusername",
+      web: "yourwebsite.com",
+      message: "Follow our daily updates & exclusive drops!"
+    }
+  },
+  {
+    id: "tpl-pin-004",
+    name: "Touchless Pay & Tip Counter Standee",
+    slug: "touchless-pay-tip-counter-standee",
+    category: "Scanner Displays",
+    subcategory: "Payment Standee",
+    description: "Clean fintech counter display for contactless payments, digital tips, and instant checkout.",
+    rating: 4.8,
+    downloads: 5920,
+    views: 16400,
+    premium: false,
+    popular: true,
+    new: true,
+    featured: false,
+    colors: ["#059669", "#10B981", "#064E3B"],
+    tags: ["payment", "tip", "gpay", "applepay", "upi", "checkout"],
+    cta: "Scan to Pay or Tip",
+    layoutType: "payment_standee",
+    fields: {
+      merchant: "YOUR BUSINESS NAME",
+      title: "CONTACTLESS PAYMENT",
+      subtext: "GPay • Apple Pay • UPI • Cards",
+      note: "Tips are shared equally among our team!",
+      badge: "100% ENCRYPTED & SECURE"
+    }
+  },
+  {
+    id: "tpl-pin-005",
+    name: "Boho Arch Cafe & Table Tent",
+    slug: "boho-arch-cafe-table-tent",
+    category: "Scanner Displays",
+    subcategory: "Boho Arch",
+    description: "Aesthetic arched top silhouette with terracotta and sage tones for cozy cafes and weddings.",
+    rating: 4.9,
+    downloads: 6410,
+    views: 18100,
+    premium: true,
+    popular: true,
+    new: true,
+    featured: true,
+    colors: ["#C27D56", "#EFE9E0", "#4A3E3D"],
+    tags: ["boho", "arch", "cafe", "aesthetic", "tabletop", "wedding"],
+    cta: "Scan Table Tent",
+    layoutType: "boho_arch",
+    fields: {
+      title: "Your Cafe & Dining",
+      subtitle: "TABLE NUMBER 01",
+      promo: "Scan for Menu & Daily Specials",
+      wifi: "Free Guest Wi-Fi: Guest_Network",
+      hours: "Open Daily 8:00 AM - 10:00 PM"
+    }
+  },
+  {
+    id: "tpl-pin-006",
+    name: "Cyberpunk Neon Matrix Scanner",
+    slug: "cyberpunk-neon-matrix-scanner",
+    category: "Scanner Displays",
+    subcategory: "Cyber Neon",
+    description: "Sci-fi holographic HUD frame with neon cyan and magenta scanline telemetry.",
+    rating: 4.8,
+    downloads: 5120,
+    views: 14900,
+    premium: false,
+    popular: true,
+    new: true,
+    featured: false,
+    colors: ["#00F0FF", "#FF007F", "#0A0B10"],
+    tags: ["cyberpunk", "neon", "matrix", "hud", "hologram", "gaming"],
+    cta: "Scan to Authenticate",
+    layoutType: "cyberpunk_neon",
+    fields: {
+      title: "DIGITAL PASS // ACCESS",
+      sub: "FREQ 5.8GHZ • SECURE LINK",
+      code: "PASS_ID: #001-ALPHA",
+      cta: "SCAN TO ACCESS PORTAL",
+      sys: "SYS.VER 4.29 // QUANTUM ENCRYPTED"
+    }
+  },
+  {
+    id: "tpl-pin-007",
+    name: "Aesthetic Die-Cut 'Scan Me!' Sticker",
+    slug: "aesthetic-die-cut-scan-me-sticker",
+    category: "Scanner Displays",
+    subcategory: "Sticker Badge",
+    description: "Die-cut curved sticker badge with playful pointer arrow for packages, bottles, and boxes.",
+    rating: 4.9,
+    downloads: 7890,
+    views: 22100,
+    premium: false,
+    popular: true,
+    new: true,
+    featured: true,
+    colors: ["#FBBF24", "#F59E0B", "#1E293B"],
+    tags: ["sticker", "scanme", "packaging", "unboxing", "arrow", "playful"],
+    cta: "Scan Me Sticker",
+    layoutType: "scan_me_sticker",
+    fields: {
+      badge: "SPECIAL OFFER INSIDE!",
+      title: "SCAN ME!",
+      subtitle: "Claim 20% Off Your Purchase",
+      hint: "Point smartphone camera here",
+      store: "Your Brand Store"
+    }
+  },
+  {
+    id: "tpl-pin-008",
+    name: "Artisan Oak Timber Counter Stand",
+    slug: "artisan-oak-timber-counter-stand",
+    category: "Scanner Displays",
+    subcategory: "Rustic Wood",
+    description: "Warm oak timber grain texture with brass corner studs for craft breweries and gastro pubs.",
+    rating: 4.7,
+    downloads: 4320,
+    views: 12500,
+    premium: true,
+    popular: false,
+    new: true,
+    featured: false,
+    colors: ["#78350F", "#D97706", "#FEF3C7"],
+    tags: ["wood", "rustic", "brewery", "pub", "counter", "artisan"],
+    cta: "Scan Bar Counter Stand",
+    layoutType: "rustic_wood",
+    fields: {
+      establishment: "YOUR RESTAURANT / PUB",
+      title: "FOOD & DRINK MENU",
+      tagline: "Fresh Seasonal Flavors",
+      instruction: "Point phone camera to browse digital menu",
+      table: "TABLE 01"
+    }
+  },
+  {
+    id: "tpl-pin-009",
+    name: "Obsidian & Gold Foil Certificate Tag",
+    slug: "obsidian-gold-foil-certificate-tag",
+    category: "Scanner Displays",
+    subcategory: "Luxury Foil",
+    description: "Matte black obsidian card with double gold foil geometric frame and authenticity seal.",
+    rating: 4.9,
+    downloads: 4980,
+    views: 15300,
+    premium: true,
+    popular: true,
+    new: true,
+    featured: true,
+    colors: ["#D4AF37", "#171717", "#F5F5F4"],
+    tags: ["luxury", "goldfoil", "jewelry", "certificate", "authenticity", "vip"],
+    cta: "Scan Certificate",
+    layoutType: "luxury_foil",
+    fields: {
+      brand: "YOUR LUXURY BRAND",
+      title: "CERTIFICATE OF AUTHENTICITY",
+      item: "Authentic Original Piece",
+      serial: "SERIAL #VERIFIED-001",
+      action: "Scan to Verify Digital Certificate"
+    }
+  },
+  {
+    id: "tpl-pin-010",
+    name: "Google 5-Star Review Placard",
+    slug: "google-5-star-review-placard",
+    category: "Scanner Displays",
+    subcategory: "Review Placard",
+    description: "High-converting Google review standee with golden rating stars and CTA.",
+    rating: 5.0,
+    downloads: 8710,
+    views: 25400,
+    premium: false,
+    popular: true,
+    new: true,
+    featured: true,
+    colors: ["#4285F4", "#EA4335", "#FBBC05"],
+    tags: ["google", "review", "5star", "feedback", "rating", "placard"],
+    cta: "Leave a 5-Star Review",
+    layoutType: "review_placard",
+    fields: {
+      title: "LOVED YOUR VISIT?",
+      subtitle: "LEAVE US A 5-STAR REVIEW!",
+      ratingText: "★★★★★ 5-Star Customer Rating",
+      action: "Takes 10 seconds • Point camera & tap",
+      business: "Your Business Name"
+    }
+  },
+  {
+    id: "tpl-pin-011",
+    name: "Minimalist Unboxing Thank You Card",
+    slug: "minimalist-unboxing-thank-you-card",
+    category: "Scanner Displays",
+    subcategory: "Packaging Card",
+    description: "Chic aesthetic package insert card with warranty registration and social tags.",
+    rating: 4.8,
+    downloads: 5630,
+    views: 16200,
+    premium: false,
+    popular: false,
+    new: true,
+    featured: false,
+    colors: ["#0284C7", "#F0F9FF", "#0C4A6E"],
+    tags: ["unboxing", "thankyou", "packaging", "warranty", "aesthetic", "insert"],
+    cta: "Scan for Warranty & Rewards",
+    layoutType: "multi_social_stand",
+    fields: {
+      title: "THANK YOU FOR YOUR ORDER!",
+      handle: "@yourbrand",
+      insta: "Tag @yourbrand to be featured",
+      tiktok: "Share your unboxing with us",
+      web: "yourwebsite.com/support",
+      message: "Scan code to register your product warranty!"
+    }
+  },
+  {
+    id: "tpl-pin-012",
+    name: "Holographic Glass Wi-Fi Tent",
+    slug: "holographic-glass-wifi-tent",
+    category: "Scanner Displays",
+    subcategory: "Wi-Fi Standee",
+    description: "Iridescent glass aesthetic table tent allowing instant Wi-Fi login without typing passwords.",
+    rating: 4.9,
+    downloads: 6200,
+    views: 17800,
+    premium: true,
+    popular: true,
+    new: true,
+    featured: true,
+    colors: ["#06B6D4", "#3B82F6", "#8B5CF6"],
+    tags: ["wifi", "holographic", "glass", "tent", "tabletop", "cafe"],
+    cta: "Scan for Instant Wi-Fi",
+    layoutType: "acrylic_standee",
+    fields: {
+      brand: "YOUR ESTABLISHMENT",
+      subtitle: "HIGH SPEED GUEST WI-FI",
+      cta: "SCAN TO AUTO-CONNECT",
+      social: "Network: Guest_WiFi (No Pass Required)",
+      footer: "Instant zero-configuration connection"
+    }
+  },
   // ==================== RESTAURANT (8) ====================
   {
     id: "tpl-001",
@@ -60,7 +386,7 @@ export const TEMPLATES_DATA: QRTemplate[] = [
     cta: "Scan to View Menu",
     layoutType: "restaurant_menu",
     fields: {
-      title: "The Golden Bistro",
+      title: "Your Restaurant Name",
       subtitle: "EXQUISITE FINE DINING",
       promo: "Get a complimentary dessert on orders above $100",
       hours: "5:00 PM - 11:00 PM",
@@ -87,7 +413,7 @@ export const TEMPLATES_DATA: QRTemplate[] = [
     cta: "Order at Table",
     layoutType: "restaurant_menu",
     fields: {
-      title: "Cozy Grind Café",
+      title: "Your Cafe Name",
       subtitle: "FRESH BREWED EVERYDAY",
       promo: "10% Off Your First Coffee Scan!",
       hours: "7:00 AM - 8:00 PM",
@@ -114,7 +440,7 @@ export const TEMPLATES_DATA: QRTemplate[] = [
     cta: "Reorder Pizza",
     layoutType: "restaurant_menu",
     fields: {
-      title: "Slice & Dice Pizza",
+      title: "Your Pizzeria Name",
       subtitle: "HOT & FRESH TO YOUR DOOR",
       promo: "Order online to get Free Delivery",
       hours: "11:00 AM - Midnight",
@@ -141,7 +467,7 @@ export const TEMPLATES_DATA: QRTemplate[] = [
     cta: "Scan for Menu & Wine List",
     layoutType: "restaurant_menu",
     fields: {
-      title: "L'Etoile Restaurant",
+      title: "Your Bistro Name",
       subtitle: "SEASONAL TASTING MENU",
       promo: "Sommelier wine pairing available tonight",
       hours: "6:00 PM - 10:00 PM",
@@ -168,7 +494,7 @@ export const TEMPLATES_DATA: QRTemplate[] = [
     cta: "View Today's Specials",
     layoutType: "restaurant_menu",
     fields: {
-      title: "Tacos El Primo",
+      title: "Your Food Truck",
       subtitle: "AUTHENTIC STREET FLAVORS",
       promo: "Buy 3 Tacos, Get 1 Jarrito Free!",
       hours: "12:00 PM - 9:00 PM",
@@ -195,7 +521,7 @@ export const TEMPLATES_DATA: QRTemplate[] = [
     cta: "Order Room Service",
     layoutType: "restaurant_menu",
     fields: {
-      title: "The Regal Pavilion",
+      title: "Your Grand Hotel",
       subtitle: "IN-ROOM DINING COMPANION",
       promo: "24/7 Room Service. Dial 9 for Assistant",
       hours: "All Day Dining",
@@ -222,7 +548,7 @@ export const TEMPLATES_DATA: QRTemplate[] = [
     cta: "Order Drinks Online",
     layoutType: "restaurant_menu",
     fields: {
-      title: "Aura Skyline Bar",
+      title: "Your Lounge & Bar",
       subtitle: "CRAFT COCKTAILS & VIEWS",
       promo: "Happy Hour: 2-for-1 on signature gin list",
       hours: "4:00 PM - 2:00 AM",
@@ -249,7 +575,7 @@ export const TEMPLATES_DATA: QRTemplate[] = [
     cta: "View Baking Schedule",
     layoutType: "restaurant_menu",
     fields: {
-      title: "Wildflour Bakery",
+      title: "Your Artisan Bakery",
       subtitle: "100% ORGANIC SOURDOUGH",
       promo: "Scan to learn about our heirloom grains",
       hours: "6:00 AM - 3:00 PM",
@@ -278,13 +604,13 @@ export const TEMPLATES_DATA: QRTemplate[] = [
     cta: "Save Business Card",
     layoutType: "business_card",
     fields: {
-      company: "ABWcurious Pvt.Ltd",
-      name: "Shubham Sharma",
+      company: "Your Company Name",
+      name: "Your Name",
       title: "Chief Executive Officer",
-      phone: "+91 99303 38504",
-      email: "info@abwcurious.com",
-      website: "https://abwcurious.com",
-      address: "Navi Mumbai, India"
+      phone: "+1 (555) 012-3456",
+      email: "contact@yourcompany.com",
+      website: "https://yourwebsite.com",
+      address: "123 Business Avenue, Suite 100, City"
     }
   },
   {
@@ -306,13 +632,13 @@ export const TEMPLATES_DATA: QRTemplate[] = [
     cta: "View Github & Contact",
     layoutType: "business_card",
     fields: {
-      company: "IntelliQR Software",
-      name: "Alex Rivera",
-      title: "Lead DevOps Engineer",
-      phone: "+1 (555) 438-9921",
-      email: "alex@intelli-qr.com",
-      website: "https://intelli-qr.com",
-      address: "San Francisco, CA"
+      company: "Your Startup Name",
+      name: "Your Name",
+      title: "Lead Systems Architect",
+      phone: "+1 (555) 012-3456",
+      email: "team@yourstartup.com",
+      website: "https://yourstartup.com",
+      address: "Innovation District, Suite 400"
     }
   },
   {
@@ -334,13 +660,13 @@ export const TEMPLATES_DATA: QRTemplate[] = [
     cta: "View Design Portfolio",
     layoutType: "business_card",
     fields: {
-      company: "Studio Bloom Design",
-      name: "Maya Lin",
+      company: "Your Design Studio",
+      name: "Your Name",
       title: "Principal Brand Designer",
-      phone: "+1 (555) 883-9201",
-      email: "hello@studiobloom.co",
-      website: "https://studiobloom.co",
-      address: "Brooklyn, NY"
+      phone: "+1 (555) 012-3456",
+      email: "hello@yourstudio.com",
+      website: "https://yourstudio.com",
+      address: "Creative Arts Center, Suite 12"
     }
   },
   {
@@ -362,13 +688,13 @@ export const TEMPLATES_DATA: QRTemplate[] = [
     cta: "Schedule Legal Consultation",
     layoutType: "business_card",
     fields: {
-      company: "Veritas Legal Associates",
-      name: "Marcus Vance, Esq.",
+      company: "Your Law Practice",
+      name: "Your Name, Esq.",
       title: "Senior Legal Counsel",
-      phone: "+1 (555) 700-1288",
-      email: "m.vance@veritaslegal.org",
-      website: "https://veritaslegal.org",
-      address: "100 Wall St, New York"
+      phone: "+1 (555) 012-3456",
+      email: "counsel@yourlawfirm.com",
+      website: "https://yourlawfirm.com",
+      address: "100 Financial Square, Suite 800"
     }
   },
   {
@@ -390,13 +716,13 @@ export const TEMPLATES_DATA: QRTemplate[] = [
     cta: "Hire Copywriter",
     layoutType: "business_card",
     fields: {
-      company: "The Inkwell Writes",
-      name: "Clara Bennett",
-      title: "Conversion Copywriter",
-      phone: "+1 (555) 492-3810",
-      email: "clara@inkwellwrites.com",
-      website: "https://inkwellwrites.com",
-      address: "Remote Freelancer"
+      company: "Your Agency Name",
+      name: "Your Name",
+      title: "Conversion Copywriter & Strategist",
+      phone: "+1 (555) 012-3456",
+      email: "writer@yourdomain.com",
+      website: "https://yourportfolio.com",
+      address: "Remote / Worldwide"
     }
   },
   {
@@ -418,13 +744,13 @@ export const TEMPLATES_DATA: QRTemplate[] = [
     cta: "Browse Property Listings",
     layoutType: "business_card",
     fields: {
-      company: "Apex Premium Living",
-      name: "David Sterling",
-      title: "Senior Estate Broker",
-      phone: "+1 (555) 923-4554",
-      email: "sterling@apexliving.com",
-      website: "https://apexliving.com",
-      address: "Beverly Hills, CA"
+      company: "Your Realty Group",
+      name: "Your Name",
+      title: "Licensed Real Estate Broker",
+      phone: "+1 (555) 012-3456",
+      email: "realtor@yourproperties.com",
+      website: "https://yourproperties.com",
+      address: "450 Luxury Boulevard, Suite 20"
     }
   },
 
@@ -449,10 +775,10 @@ export const TEMPLATES_DATA: QRTemplate[] = [
     layoutType: "social_profile",
     fields: {
       platform: "INSTAGRAM",
-      handle: "@shubham_creative",
+      handle: "@yourusername",
       subscribers: "120K Followers",
-      bio: "Tech entrepreneur | UI/UX visual artist. Sharing daily designs and website coding ideas.",
-      link: "https://instagram.com/shubham_creative"
+      bio: "Creator & visual designer. Sharing daily creative inspiration and digital tips.",
+      link: "https://instagram.com/yourusername"
     }
   },
   {
@@ -475,10 +801,10 @@ export const TEMPLATES_DATA: QRTemplate[] = [
     layoutType: "social_profile",
     fields: {
       platform: "YOUTUBE",
-      handle: "IntelliQR Tech Lab",
+      handle: "Your Channel Name",
       subscribers: "450K Subscribers",
-      bio: "Weekly deep dives into React, web design hacks, and AI agent automation systems.",
-      link: "https://youtube.com/intelliqr"
+      bio: "Weekly deep dives into tech, design hacks, and modern creative workflows.",
+      link: "https://youtube.com/@yourchannel"
     }
   },
   {
@@ -501,10 +827,10 @@ export const TEMPLATES_DATA: QRTemplate[] = [
     layoutType: "social_profile",
     fields: {
       platform: "LINKEDIN",
-      handle: "Shubham Sharma",
+      handle: "Your Name",
       subscribers: "10K+ Connections",
-      bio: "Founder of ABWcurious. Specialized in Full-Stack development and enterprise AI setups.",
-      link: "https://linkedin.com/in/shubham-sharma"
+      bio: "Founder & Technology Leader. Passionate about software architecture and team scaling.",
+      link: "https://linkedin.com/in/yourprofile"
     }
   },
   {
@@ -579,19 +905,19 @@ export const TEMPLATES_DATA: QRTemplate[] = [
     layoutType: "social_profile",
     fields: {
       platform: "FACEBOOK",
-      handle: "ABWcurious Tech Hub",
+      handle: "Your Company Page",
       subscribers: "50K Likes",
-      bio: "Official updates, community events, and product guides from the ABWcurious Dev team.",
-      link: "https://facebook.com/abwcurious"
+      bio: "Official updates, community events, and product guides from the team.",
+      link: "https://facebook.com/yourcompany"
     }
   },
   {
     id: "tpl-021",
-    name: "Pinterest Design Board Card",
-    slug: "pinterest-design-board-card",
+    name: "Creative Showcase Card",
+    slug: "creative-showcase-card",
     category: "Social Media",
-    subcategory: "Pinterest",
-    description: "Pinterest themed crimson red template card for visual designers and pinners.",
+    subcategory: "Showcase",
+    description: "Crimson red aesthetic template card for designers, portfolios, and creative studios.",
     rating: 4.6,
     downloads: 1980,
     views: 4800,
@@ -600,15 +926,15 @@ export const TEMPLATES_DATA: QRTemplate[] = [
     new: true,
     featured: false,
     colors: ["#BD081C", "#FFF0F1", "#1E1E24"],
-    tags: ["pinterest", "design", "pin", "red"],
-    cta: "Browse Boards on Pinterest",
+    tags: ["portfolio", "design", "creative", "showcase"],
+    cta: "View Creative Showcase",
     layoutType: "social_profile",
     fields: {
-      platform: "PINTEREST",
-      handle: "@design_matrix",
+      platform: "CREATIVE SHOWCASE",
+      handle: "@yourusername",
       subscribers: "10K+ Monthly Views",
       bio: "Inspiration boards for interior design, brand mockups, typography, and web UI layout.",
-      link: "https://pinterest.com/design_matrix"
+      link: "https://yourwebsite.com/showcase"
     }
   },
 
@@ -633,7 +959,7 @@ export const TEMPLATES_DATA: QRTemplate[] = [
     layoutType: "event_ticket",
     fields: {
       title: "CELEBRATING THE WEDDING OF",
-      name: "Rohan & Ananya",
+      name: "Your Name & Partner's Name",
       details: "Join us for an evening of love, laughter, and celebration.",
       date: "December 18, 2026",
       time: "07:00 PM IST",
@@ -664,7 +990,7 @@ export const TEMPLATES_DATA: QRTemplate[] = [
       details: "36 hours of non-stop building, coding, and dynamic workshops.",
       date: "August 14-16, 2026",
       time: "10:00 AM Onward",
-      location: "ABWcurious Labs & Online"
+      location: "Tech Innovation Hub & Online"
     }
   },
   {
@@ -687,7 +1013,7 @@ export const TEMPLATES_DATA: QRTemplate[] = [
     layoutType: "event_ticket",
     fields: {
       title: "10TH YEAR ANNIVERSARY CELEBRATION",
-      name: "ABWcurious Pvt.Ltd Gala",
+      name: "Your Company Name Gala",
       details: "Honoring a decade of engineering solutions and building trust.",
       date: "September 30, 2026",
       time: "06:30 PM Onward",
@@ -741,7 +1067,7 @@ export const TEMPLATES_DATA: QRTemplate[] = [
     layoutType: "event_ticket",
     fields: {
       title: "LEVEL 25 UNLOCKED!",
-      name: "Sid's Retro Gaming Night",
+      name: "Your Birthday Gaming Night",
       details: "Pacman, pinball, pizza, and pixelated fun. Bring your high scores!",
       date: "July 12, 2026",
       time: "08:00 PM Onward",
@@ -1562,8 +1888,8 @@ export const TEMPLATES_DATA: QRTemplate[] = [
     cta: "Pay with Any UPI App",
     layoutType: "finance_payment",
     fields: {
-      merchant: "ABWcurious Retail Store",
-      upiId: "abwcurious@okhdfcbank",
+      merchant: "Your Company Store",
+      upiId: "yourcompany@bank",
       bank: "HDFC Merchant Account",
       invoiceNo: "Direct Shop Counter Billing",
       note: "Enter billing amount and verify merchant name before confirming payment."
@@ -1588,8 +1914,8 @@ export const TEMPLATES_DATA: QRTemplate[] = [
     cta: "Download Invoice PDF",
     layoutType: "finance_payment",
     fields: {
-      merchant: "ABWcurious Pvt.Ltd Services",
-      upiId: "payments@abwcurious.com",
+      merchant: "Your Company Name",
+      upiId: "payments@yourcompany.com",
       bank: "Ref No: INV-2026-8893",
       invoiceNo: "Total Due: $1,450.00",
       note: "Payment terms: Net 15. Please contact finance for queries."
@@ -1694,12 +2020,12 @@ export const TEMPLATES_DATA: QRTemplate[] = [
     cta: "Scan to View CV",
     layoutType: "personal_portfolio",
     fields: {
-      name: "Shubham Sharma",
+      name: "Your Name",
       title: "Senior Full-Stack Architect",
       skills: "React, Next.js, Hono, Node, Drizzle, Postgres, AWS",
-      website: "https://developershubham01.github.io",
-      github: "github.com/developershubham01",
-      email: "info@abwcurious.com"
+      website: "https://yourwebsite.com",
+      github: "github.com/yourusername",
+      email: "contact@yourcompany.com"
     }
   },
   {
@@ -1805,9 +2131,9 @@ export const TEMPLATES_DATA: QRTemplate[] = [
     layoutType: "entertainment_stream",
     fields: {
       title: "MIDNIGHT SUNRISE LOFI",
-      creator: "Produced by DJ Lunar Project",
+      creator: "Produced by Your Artist Name",
       genre: "Genre: Chill Lofi Beats (120 bpm)",
-      channel: "Available on Spotify & Apple Music",
+      channel: "Available on All Streaming Platforms",
       release: "Released June 2026. Code: LNR-MID-X"
     }
   },
@@ -1883,9 +2209,9 @@ export const TEMPLATES_DATA: QRTemplate[] = [
     layoutType: "entertainment_stream",
     fields: {
       title: "FOUNDER TALKS PODCAST",
-      creator: "Host: Shubham Sharma",
+      creator: "Host: Your Name",
       genre: "Episode: AI Bootstrapping Secrets",
-      channel: "Streamed on YouTube & Spotify Podcast",
+      channel: "Available on Major Podcast Channels",
       release: "Subscribe to receive weekly notification alerts"
     }
   },
@@ -2020,11 +2346,11 @@ export const TEMPLATES_DATA: QRTemplate[] = [
     cta: "Download Mobile App",
     layoutType: "tech_software",
     fields: {
-      product: "IntelliQR Mobile Compositor",
+      product: "Your App Name",
       version: "Version 2.4.1 Release Stable",
       platform: "Compatible with iOS 16+ & Android 12+",
       stats: "Downloads: 1M+ | File Size: 24MB",
-      devEmail: "info@abwcurious.com",
+      devEmail: "contact@yourcompany.com",
       license: "Free Trial with premium features available"
     }
   },
@@ -2047,11 +2373,11 @@ export const TEMPLATES_DATA: QRTemplate[] = [
     cta: "Read API Documentation",
     layoutType: "tech_software",
     fields: {
-      product: "INTELLIQR CORE API LAYER",
+      product: "CORE API SERVICE",
       version: "Endpoint: GET /v1/generator/embed",
       platform: "Header Authorization: Bearer <API_KEY>",
       stats: "Response Format: application/json",
-      devEmail: "api-support@intelli-qr.com",
+      devEmail: "api@yourcompany.com",
       license: "Open Source GNU General License v3"
     }
   },
@@ -2074,11 +2400,11 @@ export const TEMPLATES_DATA: QRTemplate[] = [
     cta: "Clone GitHub Repository",
     layoutType: "tech_software",
     fields: {
-      product: "IntelliQR Next-Gen Engine",
+      product: "Open Source Project Engine",
       version: "Branch: main | Commit: e7c8a99",
-      platform: "git clone https://github.com/developershubham01/IntelliQR.git",
+      platform: "git clone https://github.com/yourusername/IntelliQR.git",
       stats: "Stars: 1.2K | Forks: 380",
-      devEmail: "open-source@abwcurious.com",
+      devEmail: "opensource@yourcompany.com",
       license: "MIT License Open Workspace Standard"
     }
   },
@@ -2128,11 +2454,11 @@ export const TEMPLATES_DATA: QRTemplate[] = [
     cta: "Verify SSL Public Key",
     layoutType: "tech_software",
     fields: {
-      product: "IntelliQR Crypto Signature Shield",
+      product: "Security Verification Shield",
       version: "SHA-256 Authority Seal Verified",
       platform: "RSA-4096 Secure Socket Layer Link",
       stats: "Compliance: SOC2 Certified Facility",
-      devEmail: "security@abwcurious.com",
+      devEmail: "security@yourcompany.com",
       license: "Internal Security Admin Auditing"
     }
   },
@@ -2209,7 +2535,7 @@ export const TEMPLATES_DATA: QRTemplate[] = [
     cta: "Download Annual Report PDF",
     layoutType: "generic_card",
     fields: {
-      title: "ABWcurious Financial Year 2026",
+      title: "Annual Financial Year 2026",
       subtitle: "Annual Audited Profit & Loss Report",
       details: "Audit verified by GEC Agency. Scans fetch secure pdf download.",
       footer: "Confidentiality Grade: Internal Shareholder Use Only"
@@ -2314,7 +2640,7 @@ export const TEMPLATES_DATA: QRTemplate[] = [
       couponCode: "FESTIVE-GOLD-30",
       discount: "30% OFF ALL ITEMS",
       validity: "Valid till Jan 5th, 2027",
-      store: "ABWcurious Premium Store Outlet",
+      store: "Your Store Outlet",
       instructions: "Present this active QR scan code to checkout manager to claim discount."
     }
   },
@@ -2340,7 +2666,7 @@ export const TEMPLATES_DATA: QRTemplate[] = [
       couponCode: "BLACK-FRIDAY-50",
       discount: "FLAT 50% ONLINE REBATE",
       validity: "Expires: Nov 28th (Midnight)",
-      store: "IntelliQR Online Subscriptions",
+      store: "Your Online Store",
       instructions: "Apply promo voucher during step-3 checkout to save half price."
     }
   },
@@ -2367,7 +2693,7 @@ export const TEMPLATES_DATA: QRTemplate[] = [
       title: "HELP US SERVE YOU BETTER!",
       subtitle: "Quick 2-Minute Service Feedback",
       offer: "Complete survey to get a free coffee coupon code!",
-      support: "For complaints, contact: help@abwcurious.com",
+      support: "For complaints, contact: support@yourcompany.com",
       disclaimer: "Your response is highly valued and kept strictly confidential."
     }
   },
@@ -2444,10 +2770,10 @@ export const TEMPLATES_DATA: QRTemplate[] = [
     layoutType: "social_profile",
     fields: {
       platform: "EMAIL INBOX",
-      handle: "info@abwcurious.com",
+      handle: "contact@yourcompany.com",
       subscribers: "Avg Response Time: 2 Hours",
       bio: "Send us a query. Our customer success representatives will assist you with order invoices, payments, and bugs.",
-      link: "mailto:info@abwcurious.com"
+      link: "mailto:contact@yourcompany.com"
     }
   },
   {
@@ -2496,7 +2822,7 @@ export const TEMPLATES_DATA: QRTemplate[] = [
     cta: "Review Us on Google",
     layoutType: "review_badge",
     fields: {
-      businessName: "ABWcurious Pvt.Ltd Services",
+      businessName: "Your Company Name",
       currentRating: "★ ★ ★ ★ ★ (4.9 / 5.0)",
       reviewOffer: "Share your experience to help us improve!",
       note: "Scanning directly launches the review submission form for this shop."
@@ -2521,7 +2847,7 @@ export const TEMPLATES_DATA: QRTemplate[] = [
     cta: "Rate App on App Store",
     layoutType: "review_badge",
     fields: {
-      businessName: "IntelliQR iOS Designer App",
+      businessName: "Your App Name",
       currentRating: "★ ★ ★ ★ ☆ (4.7 / 5.0)",
       reviewOffer: "Enjoying the editor? Rate us in the App Store!",
       note: "Your feedback helps our team publish weekly core updates."
@@ -2550,7 +2876,7 @@ export const TEMPLATES_DATA: QRTemplate[] = [
       product: "Corporate Services Pamphlet",
       price: "FREE DOWNLOAD",
       sku: "DOC-CORP-BR-26",
-      footer: "ABWcurious Pvt.Ltd Publications"
+      footer: "Your Company Publications"
     }
   },
   {
@@ -2730,7 +3056,7 @@ export const TEMPLATES_DATA: QRTemplate[] = [
       title: "RATE YOUR COMPOSITOR EXPERIENCE!",
       subtitle: "IntelliQR Mobile App Feedback Form",
       offer: "Complete survey to get a 1-month premium code!",
-      support: "Developer inbox: apps@abwcurious.com",
+      support: "Developer inbox: feedback@yourcompany.com",
       disclaimer: "Takes less than 60 seconds to complete. Your email will be verified."
     }
   },
@@ -3175,7 +3501,7 @@ export const TEMPLATES_DATA: QRTemplate[] = [
     layoutType: "social_profile",
     fields: {
           "platform": "LinkedIn",
-          "handle": "in/shubham-sharma-tech",
+          "handle": "in/yourname",
           "subscribers": "15K Connections",
           "bio": "Building scalable AI tools and full-stack web applications."
     }
@@ -4677,7 +5003,7 @@ export const TEMPLATES_DATA: QRTemplate[] = [
     layoutType: "entertainment_stream",
     fields: {
           "title": "Midnight Echoes - New Single",
-          "creator": "The Electric Dreamers",
+          "creator": "Your Music Band",
           "subtitle": "AVAILABLE ON ALL STREAMING PLATFORMS",
           "details": "Scan to listen on Spotify, Apple Music & YouTube Music."
     }
@@ -4982,7 +5308,7 @@ export const TEMPLATES_DATA: QRTemplate[] = [
     cta: "Scan for Open Source GitHub Repo QR",
     layoutType: "tech_software",
     fields: {
-          "title": "intelliqr-core-engine",
+          "title": "your-project-repository",
           "creator": "GitHub Repository",
           "subtitle": "OPEN SOURCE QR GENERATOR",
           "details": "Scan to star repo, read docs & contribute pull requests.",
@@ -5008,7 +5334,7 @@ export const TEMPLATES_DATA: QRTemplate[] = [
     cta: "Scan for API Documentation Developer Portal",
     layoutType: "tech_software",
     fields: {
-          "title": "IntelliQR Cloud API v2.0",
+          "title": "Cloud API Service v2.0",
           "creator": "Developer Portal",
           "subtitle": "REST & GRAPHQL ENDPOINTS",
           "details": "Scan to read API reference docs, generate API keys & test webhooks.",
@@ -5034,7 +5360,7 @@ export const TEMPLATES_DATA: QRTemplate[] = [
     cta: "Scan for SaaS App Mobile Download Link",
     layoutType: "tech_software",
     fields: {
-          "title": "Download IntelliQR App",
+          "title": "Download Your App",
           "creator": "Universal Smart Link",
           "subtitle": "AVAILABLE ON IOS & ANDROID",
           "details": "Scan to automatically open your device's native app store.",
@@ -5165,8 +5491,8 @@ export const TEMPLATES_DATA: QRTemplate[] = [
     layoutType: "wifi_card",
     fields: {
           "title": "Lounge Guest Wi-Fi",
-          "ssid": "IntelliQR_Guest_5G",
-          "password": "connect_fast_2026",
+          "ssid": "Guest_WiFi_5G",
+          "password": "YourPassword123",
           "note": "Scan with smartphone camera to connect instantly without typing."
     }
   },

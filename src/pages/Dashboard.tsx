@@ -25,7 +25,12 @@ import {
   Loader2,
   QrCode,
   Layers,
-  Sparkles
+  Sparkles,
+  Folder,
+  FolderPlus,
+  CopyPlus,
+  Ticket,
+  FileSpreadsheet
 } from "lucide-react";
 import {
   Dialog,
@@ -45,8 +50,15 @@ export default function Dashboard() {
   // Filters & Search
   const [filterType, setFilterType] = useState<"all" | "dynamic" | "static">("all");
   const [filterStatus, setFilterStatus] = useState<"all" | "active" | "paused" | "expired">("all");
+  const [filterIndustry, setFilterIndustry] = useState<string>("all");
+  const [selectedFolderId, setSelectedFolderId] = useState<number | "all">("all");
+  const [sortBy, setSortBy] = useState<"newest" | "oldest" | "scans" | "name">("newest");
   const [searchQuery, setSearchQuery] = useState("");
   const [copiedId, setCopiedId] = useState<string | null>(null);
+
+  // Folder modal state
+  const [isFolderModalOpen, setIsFolderModalOpen] = useState(false);
+  const [newFolderName, setNewFolderName] = useState("");
 
   // Modals state
   const [editQR, setEditQR] = useState<{
@@ -80,11 +92,52 @@ export default function Dashboard() {
     { enabled: isAuthenticated }
   );
 
+  const { data: foldersData } = trpc.folder.list.useQuery(undefined, {
+    enabled: isAuthenticated,
+  });
+
   const { data: statsData } = trpc.qr.stats.useQuery(undefined, {
     enabled: isAuthenticated,
   });
 
+  const { data: subscriptionData } = trpc.billing.getMySubscription.useQuery(undefined, {
+    enabled: isAuthenticated,
+  });
+
   // Mutations
+  const duplicateMutation = trpc.qr.duplicate.useMutation({
+    onSuccess: () => {
+      toast.success("QR Code duplicated successfully!");
+      utils.qr.list.invalidate();
+      utils.qr.stats.invalidate();
+    },
+    onError: (err) => {
+      toast.error(err.message || "Failed to duplicate QR Code.");
+    },
+  });
+
+  const createFolderMutation = trpc.folder.create.useMutation({
+    onSuccess: () => {
+      toast.success("Folder created successfully!");
+      utils.folder.list.invalidate();
+      setNewFolderName("");
+      setIsFolderModalOpen(false);
+    },
+    onError: (err) => {
+      toast.error(err.message || "Failed to create folder.");
+    },
+  });
+
+  const moveToFolderMutation = trpc.folder.moveToFolder.useMutation({
+    onSuccess: () => {
+      toast.success("QR Code moved to folder.");
+      utils.qr.list.invalidate();
+    },
+    onError: (err) => {
+      toast.error(err.message || "Failed to move QR Code.");
+    },
+  });
+
   const updateStatusMutation = trpc.qr.updateStatus.useMutation({
     onSuccess: (data) => {
       toast.success(
@@ -142,7 +195,28 @@ export default function Dashboard() {
     );
   }
 
-  const items = qrData?.items || [];
+  const rawItems = qrData?.items || [];
+  const folders = foldersData || [];
+
+  const displayedItems = rawItems.filter((item) => {
+    if (selectedFolderId !== "all") {
+      if (item.folderId !== selectedFolderId) return false;
+    }
+    if (filterIndustry !== "all") {
+      if (item.type !== filterIndustry) return false;
+    }
+    return true;
+  });
+
+  if (sortBy === "scans") {
+    displayedItems.sort((a, b) => (b.scanCount || 0) - (a.scanCount || 0));
+  } else if (sortBy === "oldest") {
+    displayedItems.sort((a, b) => new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime());
+  } else if (sortBy === "name") {
+    displayedItems.sort((a, b) => a.name.localeCompare(b.name));
+  } else {
+    displayedItems.sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime());
+  }
 
   return (
     <div className="min-h-screen bg-slate-50 relative flex flex-col font-sans sarvam-gradient overflow-x-hidden">
@@ -160,27 +234,49 @@ export default function Dashboard() {
               <div className="flex items-center gap-2 mb-1.5">
                 <span className="px-3 py-1 rounded-full text-[10px] font-bold uppercase tracking-wider bg-indigo-50 text-indigo-600 border border-indigo-200/50 flex items-center gap-1.5">
                   <Sparkles className="w-3 h-3 text-indigo-500" />
-                  Management Hub
+                  SaaS Control Center
                 </span>
                 <span className="text-xs text-slate-400 font-semibold">
                   {user?.name}'s Workspace
                 </span>
+                <Link
+                  to="/billing"
+                  className="px-2.5 py-0.5 rounded-full text-[10px] font-extrabold uppercase tracking-wider bg-slate-900 text-white hover:bg-indigo-600 transition-colors ml-1 shadow-sm"
+                >
+                  {subscriptionData?.tier ? `${subscriptionData.tier.toUpperCase()} PLAN` : "FREE PLAN"}
+                </Link>
               </div>
               <h1 className="text-3xl sm:text-4xl font-serif font-bold text-slate-900 tracking-tight">
-                Dynamic QR Dashboard
+                QR SaaS Dashboard
               </h1>
               <p className="text-sm text-slate-500 font-medium mt-1">
-                Monitor real-time scan analytics and change destination URLs on the fly without reprinting.
+                Monitor live scan analytics, organize campaigns in folders, and batch-generate codes at scale.
               </p>
             </div>
 
-            <Link
-              to="/generator"
-              className="inline-flex items-center justify-center gap-2 px-6 py-3.5 rounded-full bg-slate-900 hover:bg-slate-800 text-white text-xs font-bold tracking-widest uppercase shadow-lg shadow-slate-950/10 transition-all hover:scale-[1.02] active:scale-[0.98] self-start sm:self-auto"
-            >
-              <Plus className="w-4 h-4" />
-              Create QR Code
-            </Link>
+            <div className="flex flex-wrap items-center gap-2.5 self-start sm:self-auto">
+              <Link
+                to="/dashboard/bulk"
+                className="inline-flex items-center justify-center gap-1.5 px-4 py-3 rounded-full bg-white hover:bg-slate-100 text-slate-800 text-xs font-bold tracking-wider uppercase border border-slate-200/80 shadow-sm transition-all"
+              >
+                <FileSpreadsheet className="w-3.5 h-3.5 text-indigo-600" />
+                Bulk CSV
+              </Link>
+              <Link
+                to="/ticket/verify"
+                className="inline-flex items-center justify-center gap-1.5 px-4 py-3 rounded-full bg-white hover:bg-slate-100 text-slate-800 text-xs font-bold tracking-wider uppercase border border-slate-200/80 shadow-sm transition-all"
+              >
+                <Ticket className="w-3.5 h-3.5 text-emerald-600" />
+                Gate Scanner
+              </Link>
+              <Link
+                to="/generator"
+                className="inline-flex items-center justify-center gap-2 px-6 py-3 rounded-full bg-slate-900 hover:bg-slate-800 text-white text-xs font-bold tracking-widest uppercase shadow-lg shadow-slate-950/10 transition-all hover:scale-[1.02] active:scale-[0.98]"
+              >
+                <Plus className="w-4 h-4" />
+                Create QR Code
+              </Link>
+            </div>
           </div>
 
           {/* Stats Bar */}
@@ -301,6 +397,81 @@ export default function Dashboard() {
             </div>
           </div>
 
+          {/* Folder & Category Pills */}
+          <div className="flex flex-wrap items-center justify-between gap-3 pt-3 border-t border-slate-100">
+            <div className="flex items-center gap-1.5 overflow-x-auto pb-1 max-w-full">
+              <span className="text-[10px] font-bold text-slate-400 uppercase tracking-widest flex items-center gap-1 mr-1">
+                <Folder className="w-3 h-3" /> Folders:
+              </span>
+              <button
+                onClick={() => setSelectedFolderId("all")}
+                className={`px-3 py-1 rounded-xl text-[11px] font-bold uppercase tracking-wider transition-colors ${
+                  selectedFolderId === "all"
+                    ? "bg-indigo-600 text-white"
+                    : "bg-slate-100 text-slate-600 hover:bg-slate-200"
+                }`}
+              >
+                All Folders
+              </button>
+              {folders.map((f) => (
+                <button
+                  key={f.id}
+                  onClick={() => setSelectedFolderId(f.id)}
+                  className={`px-3 py-1 rounded-xl text-[11px] font-bold uppercase tracking-wider transition-colors flex items-center gap-1.5 ${
+                    selectedFolderId === f.id
+                      ? "bg-indigo-600 text-white"
+                      : "bg-slate-100 text-slate-600 hover:bg-slate-200"
+                  }`}
+                >
+                  <span className="w-2 h-2 rounded-full" style={{ backgroundColor: f.color || "#4F46E5" }} />
+                  {f.name}
+                </button>
+              ))}
+              <button
+                onClick={() => setIsFolderModalOpen(true)}
+                className="px-2.5 py-1 rounded-xl text-[11px] font-bold text-indigo-600 bg-indigo-50 hover:bg-indigo-100 transition-colors flex items-center gap-1"
+                title="Create New Folder"
+              >
+                <FolderPlus className="w-3 h-3" /> + Folder
+              </button>
+            </div>
+
+            {/* Industry Filter & Sort Controls */}
+            <div className="flex items-center gap-2">
+              {/* Industry Filter */}
+              <select
+                value={filterIndustry}
+                onChange={(e) => setFilterIndustry(e.target.value)}
+                className="px-3 py-1.5 rounded-xl border border-slate-200 bg-white text-xs font-semibold text-slate-700 focus:outline-none focus:border-indigo-600"
+              >
+                <option value="all">All Industries & Types</option>
+                <option value="restaurant_menu">Restaurants & Cafes</option>
+                <option value="hotel_info">Hotels & Hospitality</option>
+                <option value="product_catalog">Retail & Packaging</option>
+                <option value="real_estate">Real Estate</option>
+                <option value="event_ticket">Events & Badges</option>
+                <option value="gym_membership">Gyms & Fitness</option>
+                <option value="salon_services">Salons & Spas</option>
+                <option value="student_id">Education & Campuses</option>
+                <option value="website">Website URL</option>
+                <option value="vcard">vCard Business Card</option>
+                <option value="wifi">Wi-Fi</option>
+              </select>
+
+              {/* Sort By */}
+              <select
+                value={sortBy}
+                onChange={(e) => setSortBy(e.target.value as any)}
+                className="px-3 py-1.5 rounded-xl border border-slate-200 bg-white text-xs font-semibold text-slate-700 focus:outline-none focus:border-indigo-600"
+              >
+                <option value="newest">Newest First</option>
+                <option value="oldest">Oldest First</option>
+                <option value="scans">Most Scanned</option>
+                <option value="name">Alphabetical</option>
+              </select>
+            </div>
+          </div>
+
           {/* Search Bar */}
           <div className="relative">
             <Search className="w-4 h-4 text-slate-400 absolute left-4 top-1/2 -translate-y-1/2" />
@@ -322,15 +493,15 @@ export default function Dashboard() {
               Loading QR campaign repository...
             </p>
           </div>
-        ) : items.length === 0 ? (
+        ) : displayedItems.length === 0 ? (
           <div className="bg-white/80 backdrop-blur-xl border border-white/60 shadow-[0_12px_40px_rgba(0,0,0,0.03)] rounded-[32px] p-12 text-center space-y-4">
             <div className="w-16 h-16 rounded-3xl bg-indigo-50 border border-indigo-100/60 flex items-center justify-center mx-auto text-indigo-600">
               <QrCode className="w-8 h-8" />
             </div>
             <h3 className="text-xl font-serif font-bold text-slate-900">No QR Codes Found</h3>
             <p className="text-xs text-slate-500 max-w-sm mx-auto font-medium">
-              {searchQuery
-                ? `No QR codes matching "${searchQuery}". Try clearing your search.`
+              {searchQuery || filterIndustry !== "all" || selectedFolderId !== "all"
+                ? "No QR codes match the current filter criteria. Try adjusting or clearing filters."
                 : "You haven't created any dynamic QR codes yet. Create one now to start tracking scans and updating destinations in real-time."}
             </p>
             <Link
@@ -338,12 +509,12 @@ export default function Dashboard() {
               className="inline-flex items-center gap-2 px-6 py-3 rounded-full bg-slate-900 hover:bg-slate-800 text-white text-xs font-bold tracking-widest uppercase shadow-md transition-all"
             >
               <Plus className="w-4 h-4" />
-              Create First Dynamic QR
+              Create First QR Code
             </Link>
           </div>
         ) : (
           <div className="space-y-4">
-            {items.map((qr) => {
+            {displayedItems.map((qr) => {
               const shortUrl = qr.shortId ? `${window.location.origin}/q/${qr.shortId}` : "";
               const isDynamic = qr.isDynamic;
               const isPaused = qr.status === "paused";
@@ -454,8 +625,8 @@ export default function Dashboard() {
                           </span>
                         </div>
 
-                        {/* Metrics Bar */}
-                        <div className="flex items-center gap-4 text-xs font-semibold text-slate-500 pt-0.5">
+                        {/* Metrics Bar & Folder assignment */}
+                        <div className="flex flex-wrap items-center gap-4 text-xs font-semibold text-slate-500 pt-0.5">
                           {isDynamic && (
                             <span className="flex items-center gap-1 text-indigo-600 font-bold">
                               <Activity className="w-3.5 h-3.5" />
@@ -465,6 +636,27 @@ export default function Dashboard() {
                           <span className="text-slate-400 font-normal">
                             Created {new Date(qr.createdAt).toLocaleDateString()}
                           </span>
+
+                          {/* Folder Selector */}
+                          <div className="flex items-center gap-1.5 px-2 py-0.5 rounded-lg bg-slate-100/80 border border-slate-200/50">
+                            <Folder className="w-3 h-3 text-slate-400" />
+                            <select
+                              value={qr.folderId || ""}
+                              onChange={(e) => {
+                                const folderId = e.target.value ? Number(e.target.value) : null;
+                                moveToFolderMutation.mutate({ qrCodeId: qr.id, folderId });
+                              }}
+                              className="bg-transparent text-[11px] font-semibold text-slate-600 hover:text-indigo-600 focus:outline-none cursor-pointer"
+                              title="Assign to folder"
+                            >
+                              <option value="">No Folder</option>
+                              {folders.map((f) => (
+                                <option key={f.id} value={f.id}>
+                                  {f.name}
+                                </option>
+                              ))}
+                            </select>
+                          </div>
                         </div>
                       </div>
                     </div>
@@ -517,6 +709,16 @@ export default function Dashboard() {
                           </button>
                         </>
                       )}
+
+                      {/* Duplicate button */}
+                      <button
+                        onClick={() => duplicateMutation.mutate({ id: qr.id })}
+                        disabled={duplicateMutation.isPending}
+                        className="p-2.5 rounded-xl bg-white border border-slate-200 hover:border-indigo-200 hover:bg-indigo-50 text-slate-500 hover:text-indigo-600 transition-colors shadow-sm disabled:opacity-50"
+                        title="Duplicate QR Code"
+                      >
+                        <CopyPlus className="w-4 h-4" />
+                      </button>
 
                       <button
                         onClick={() => handleDownload(qr.imageUrl, qr.name)}
@@ -630,6 +832,61 @@ export default function Dashboard() {
               {deleteMutation.isPending ? "Deleting..." : "Delete Permanently"}
             </button>
           </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
+      {/* New Folder Modal */}
+      <Dialog open={isFolderModalOpen} onOpenChange={setIsFolderModalOpen}>
+        <DialogContent className="sm:max-w-[420px] rounded-3xl p-6 bg-white border-slate-100 shadow-2xl">
+          <DialogHeader className="space-y-2 text-left">
+            <div className="w-10 h-10 rounded-2xl bg-indigo-50 flex items-center justify-center text-indigo-600 mb-1">
+              <FolderPlus className="w-5 h-5" />
+            </div>
+            <DialogTitle className="text-lg font-serif font-bold text-slate-900">
+              Create New Folder
+            </DialogTitle>
+            <DialogDescription className="text-xs text-slate-500 font-medium leading-relaxed">
+              Organize your QR campaigns by client, department, branch, or event series.
+            </DialogDescription>
+          </DialogHeader>
+          <form
+            onSubmit={(e) => {
+              e.preventDefault();
+              if (!newFolderName.trim()) return;
+              createFolderMutation.mutate({ name: newFolderName.trim() });
+            }}
+            className="space-y-4 mt-2"
+          >
+            <div>
+              <label className="text-xs font-bold uppercase tracking-wider text-slate-600 block mb-1.5">
+                Folder Name
+              </label>
+              <input
+                type="text"
+                value={newFolderName}
+                onChange={(e) => setNewFolderName(e.target.value)}
+                placeholder="e.g. Summer Festival 2026, Dine-In Menus"
+                className="w-full px-4 py-2.5 rounded-xl border border-slate-200 text-xs font-semibold text-slate-800 placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 transition-all shadow-sm"
+                autoFocus
+              />
+            </div>
+            <DialogFooter className="gap-2 mt-4">
+              <button
+                type="button"
+                onClick={() => setIsFolderModalOpen(false)}
+                className="px-4 py-2 rounded-full text-xs font-bold uppercase tracking-wider text-slate-600 hover:bg-slate-100"
+              >
+                Cancel
+              </button>
+              <button
+                type="submit"
+                disabled={!newFolderName.trim() || createFolderMutation.isPending}
+                className="px-5 py-2 rounded-full text-xs font-bold uppercase tracking-wider bg-slate-900 hover:bg-slate-800 text-white shadow-md disabled:opacity-50"
+              >
+                {createFolderMutation.isPending ? "Creating..." : "Create Folder"}
+              </button>
+            </DialogFooter>
+          </form>
         </DialogContent>
       </Dialog>
 

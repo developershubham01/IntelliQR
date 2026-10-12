@@ -170,6 +170,18 @@ export default function Header() {
                       </Link>
                     </DropdownMenuItem>
                     <DropdownMenuItem
+                      asChild
+                      className="rounded-xl px-3 py-2 cursor-pointer focus:bg-slate-50 transition-colors"
+                    >
+                      <Link
+                        to="/billing"
+                        className="flex items-center text-slate-700 hover:text-slate-900 text-xs font-medium"
+                      >
+                        <CreditCard className="mr-2 h-4 w-4 text-emerald-500" />
+                        Billing & Plan
+                      </Link>
+                    </DropdownMenuItem>
+                    <DropdownMenuItem
                       onClick={logout}
                       className="rounded-xl px-3 py-2 cursor-pointer text-destructive focus:text-destructive focus:bg-rose-50/50 transition-colors flex items-center text-xs font-medium"
                     >

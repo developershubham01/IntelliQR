@@ -23,6 +23,7 @@ interface QRStore {
   isAuthenticated: boolean;
 
   // Actions
+  setCurrentQR: (qr: QRCodeItem | null) => void;
   setStoreAuth: (auth: boolean) => void;
   setSelectedType: (type: QRType) => void;
   setFormData: (data: QRData) => void;
@@ -63,10 +64,12 @@ export const useQRStore = create<QRStore>()(
       anonymousGenerations: [],
       isAuthenticated: false,
 
+      setCurrentQR: (currentQR) => set({ currentQR }),
+
       setStoreAuth: (isAuthenticated) => set({ isAuthenticated }),
 
       setSelectedType: (type) =>
-        set({ selectedType: type, formData: {}, currentQR: null, generatedAt: null }),
+        set({ selectedType: type, formData: {}, generatedAt: null }),
 
       setFormData: (data) => set({ formData: data }),
 
@@ -336,7 +339,8 @@ export const useQRStore = create<QRStore>()(
     {
       name: "qrify-store",
       partialize: (state) => ({
-        history: state.history,
+        currentQR: state.currentQR,
+        history: (state.history || []).slice(0, 20),
         style: state.style,
         anonymousGenerations: state.anonymousGenerations,
       }),

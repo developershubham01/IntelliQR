@@ -15,6 +15,7 @@ import {
   ArrowRight,
   CheckCircle2,
   ChevronDown,
+  Sparkles,
 } from "lucide-react";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
@@ -304,8 +305,35 @@ const INDUSTRY_DATA: Record<string, IndustryMetadata> = {
     ],
     faqs: [
       {
-        question: "Can agencies generate QR codes programmatically via API?",
-        answer: "Yes, IntelliQR provides developer-grade REST APIs to generate and update thousands of QR codes via code.",
+        question: "Can agencies invite clients or manage separate brand workspaces?",
+        answer: "Yes, IntelliQR supports folder isolation, client-specific exports, and team seats on Pro and Enterprise tiers.",
+      },
+    ],
+  },
+  "all-industries": {
+    slug: "all-industries",
+    name: "All Industry Solutions",
+    h1: "Universal QR Code Solutions for Every Enterprise & Small Business",
+    metaTitle: "Universal Enterprise QR Solutions – IntelliQR for Any Business Vertical",
+    metaDescription: "Scalable dynamic QR codes, digital business cards, multi-channel review cards, and landing pages designed for any business vertical.",
+    icon: Sparkles,
+    overview:
+      "Whatever your business vertical, IntelliQR provides high-resolution custom vector codes, secure permanent short URL redirections, real-time scan analytics, and automated batch generation.",
+    problemsSolved: [
+      "Eliminates static print lock-in with editable destination URLs",
+      "Tracks real-world print campaign performance with precise scan analytics",
+      "Protects brand consistency with custom colors, quiet-zone validation, and logo badges",
+      "Integrates with company workflows via CSV batch imports and developer REST APIs",
+    ],
+    recommendedTypes: [
+      { name: "Dynamic URL QR", url: "/generator?mode=dynamic", reason: "Point printed assets to any web page and update anytime" },
+      { name: "Digital Business Card", url: "/generator?type=vcard", reason: "Share executive and sales team contact details seamlessly" },
+      { name: "Custom Landing Page", url: "/generator?type=landing_page&mode=dynamic", reason: "Host mobile-friendly promotions with zero web hosting required" },
+    ],
+    faqs: [
+      {
+        question: "Can I use IntelliQR for an industry not explicitly listed?",
+        answer: "Absolutely. Our universal QR creation engine supports all standard and specialized formats, enabling any company to deploy branded dynamic QR codes immediately.",
       },
     ],
   },
@@ -539,35 +567,61 @@ export default function Solutions() {
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-20">
             {Object.values(INDUSTRY_DATA).map((ind) => {
               const Icon = ind.icon;
+              const typeMap: Record<string, string> = {
+                restaurants: "restaurant_menu",
+                hotels: "hotel_info",
+                retail: "product_catalog",
+                "real-estate": "real_estate",
+                events: "event_ticket",
+                gyms: "gym_membership",
+                salons: "salon_services",
+                education: "student_id",
+                "all-industries": "landing_page",
+              };
+              const targetType = typeMap[ind.slug] || "website";
+
               return (
                 <div
                   key={ind.slug}
-                  className="bg-white rounded-3xl p-7 border border-slate-200/80 shadow-sm hover:shadow-md transition-shadow flex flex-col justify-between"
+                  className="bg-white rounded-3xl p-7 border border-slate-200/80 shadow-sm hover:shadow-md transition-all flex flex-col justify-between group"
                 >
                   <div>
-                    <div className="w-12 h-12 rounded-2xl bg-indigo-50 flex items-center justify-center mb-5">
+                    <div className="w-12 h-12 rounded-2xl bg-indigo-50 border border-indigo-100/60 flex items-center justify-center mb-5 group-hover:scale-105 transition-transform">
                       <Icon className="w-6 h-6 text-indigo-600" />
                     </div>
                     <h2 className="text-xl font-serif font-bold text-slate-900 mb-2">
                       {ind.name}
                     </h2>
-                    <p className="text-xs text-slate-500 leading-relaxed mb-6 line-clamp-3">
+                    <p className="text-xs text-slate-500 leading-relaxed mb-5 line-clamp-3">
                       {ind.overview}
                     </p>
+
+                    {/* Main Use Cases */}
+                    <div className="space-y-1.5 mb-6 pt-3 border-t border-slate-100">
+                      <span className="text-[10px] font-bold uppercase tracking-wider text-slate-400 block mb-1">
+                        Main Use Cases
+                      </span>
+                      {ind.problemsSolved.slice(0, 3).map((prob, pIdx) => (
+                        <div key={pIdx} className="flex items-start gap-1.5 text-[11px] text-slate-600">
+                          <CheckCircle2 className="w-3.5 h-3.5 text-emerald-600 shrink-0 mt-0.5" />
+                          <span className="line-clamp-1">{prob}</span>
+                        </div>
+                      ))}
+                    </div>
                   </div>
 
-                  <div className="flex items-center justify-between pt-4 border-t border-slate-100">
+                  <div className="flex items-center justify-between pt-4 border-t border-slate-100 gap-2">
                     <Link
                       to={`/solutions/${ind.slug}`}
-                      className="text-xs font-bold text-indigo-600 hover:text-indigo-800 transition-colors inline-flex items-center gap-1"
+                      className="text-xs font-bold text-indigo-600 hover:text-indigo-800 transition-colors inline-flex items-center gap-1 shrink-0"
                     >
-                      View Solutions <ArrowRight className="w-3.5 h-3.5" />
+                      Explore Solutions <ArrowRight className="w-3.5 h-3.5" />
                     </Link>
                     <Link
-                      to="/generator?mode=dynamic"
-                      className="px-4 py-2 rounded-full bg-slate-900 hover:bg-slate-800 text-white text-xs font-bold uppercase tracking-wider transition-colors"
+                      to={`/generator?type=${targetType}&mode=dynamic`}
+                      className="px-3.5 py-2 rounded-full bg-slate-900 hover:bg-slate-800 text-white text-[11px] font-bold uppercase tracking-wider transition-colors shrink-0 shadow-sm text-center"
                     >
-                      Start Free
+                      Create QR
                     </Link>
                   </div>
                 </div>
