@@ -53,6 +53,7 @@ const footerLinks = {
     { label: "About Us", href: "/about" },
     { label: "Knowledge Hub / Blog", href: "/blog" },
     { label: "Contact Us", href: "/contact" },
+    { label: "XML Sitemap", href: "/sitemap.xml" },
     { label: "Privacy Policy", href: "/privacy" },
     { label: "Terms of Service", href: "/terms" },
   ],

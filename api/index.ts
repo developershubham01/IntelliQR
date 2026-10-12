@@ -20,7 +20,7 @@ app.get("/robots.txt", async (c) => {
     const content = await fs.readFile(path.join(process.cwd(), "public", "robots.txt"), "utf-8");
     return c.text(content, 200, { "Content-Type": "text/plain; charset=utf-8" });
   } catch {
-    return c.text("User-agent: *\nAllow: /\nSitemap: https://intelli-qr.vercel.app/sitemap.xml", 200);
+    return c.text("User-agent: *\nAllow: /\nSitemap: https://intelliqr.abwcurious.com/sitemap.xml\nSitemap: https://intelli-qr.vercel.app/sitemap.xml", 200, { "Content-Type": "text/plain; charset=utf-8" });
   }
 });
 
@@ -28,10 +28,17 @@ app.get("/sitemap.xml", async (c) => {
   try {
     const fs = await import("fs/promises");
     const path = await import("path");
-    const content = await fs.readFile(path.join(process.cwd(), "public", "sitemap.xml"), "utf-8");
+    let content = await fs.readFile(path.join(process.cwd(), "public", "sitemap.xml"), "utf-8");
+
+    // Seamlessly adapt base domain based on current request host
+    const host = c.req.header("host") || "";
+    if (host.includes("intelli-qr.vercel.app")) {
+      content = content.replace(/https:\/\/intelliqr\.abwcurious\.com/g, "https://intelli-qr.vercel.app");
+    }
+
     return c.body(content, 200, { "Content-Type": "application/xml; charset=utf-8" });
   } catch {
-    return c.text("<?xml version=\"1.0\" encoding=\"UTF-8\"?><urlset xmlns=\"http://www.sitemaps.org/schemas/sitemap/0.9\"><url><loc>https://intelli-qr.vercel.app/</loc></url></urlset>", 200, { "Content-Type": "application/xml" });
+    return c.text("<?xml version=\"1.0\" encoding=\"UTF-8\"?><urlset xmlns=\"http://www.sitemaps.org/schemas/sitemap/0.9\"><url><loc>https://intelliqr.abwcurious.com/</loc></url></urlset>", 200, { "Content-Type": "application/xml" });
   }
 });
 

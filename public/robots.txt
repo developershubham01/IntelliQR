@@ -1,10 +1,11 @@
 # IntelliQR Robots Configuration
-# https://intelli-qr.vercel.app/robots.txt
+# https://intelliqr.abwcurious.com/robots.txt
 
 User-agent: *
 Allow: /
 Allow: /generator
 Allow: /qr-code-generator
+Allow: /qr-code-generator/
 Allow: /dynamic-qr-code
 Allow: /qr-code-analytics
 Allow: /qr-code-types
@@ -25,16 +26,20 @@ Allow: /blog/
 Allow: /qr-code-tracking
 Allow: /dynamic-qr-analytics
 Allow: /qr-campaign-tracking
+Allow: /ticket/verify
+Allow: /p/
 Allow: /privacy
 Allow: /terms
 
-# Disallow private authenticated paths
+# Disallow private authenticated paths & internal APIs
 Disallow: /dashboard
+Disallow: /dashboard/
 Disallow: /profile
+Disallow: /billing
 Disallow: /api/private/
 Disallow: /api/trpc/
 
-# AI Search Engine Crawlers (AEO / GEO)
+# AI Search Engine Crawlers (AEO / GEO / Perplexity / ChatGPT)
 User-agent: GPTBot
 Allow: /
 
@@ -56,4 +61,6 @@ Allow: /
 User-agent: Bingbot
 Allow: /
 
+# XML Sitemaps
+Sitemap: https://intelliqr.abwcurious.com/sitemap.xml
 Sitemap: https://intelli-qr.vercel.app/sitemap.xml
