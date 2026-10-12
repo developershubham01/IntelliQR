@@ -19,6 +19,8 @@ export const usersRelations = relations(users, ({ many }) => ({
   landingPages: many(landingPages),
   tickets: many(eventTickets),
   bulkJobs: many(bulkJobs),
+  gymMemberships: many(gymMemberships),
+  attendanceRecords: many(attendanceRecords),
   payments: many(payments),
   subscriptions: many(subscriptions),
 }));
@@ -61,3 +63,18 @@ export const landingPagesRelations = relations(landingPages, ({ one }) => ({
     references: [qrCodes.id],
   }),
 }));
+
+export const gymMembershipsRelations = relations(gymMemberships, ({ one }) => ({
+  user: one(users, {
+    fields: [gymMemberships.userId],
+    references: [users.id],
+  }),
+}));
+
+export const attendanceRecordsRelations = relations(attendanceRecords, ({ one }) => ({
+  user: one(users, {
+    fields: [attendanceRecords.userId],
+    references: [users.id],
+  }),
+}));
+
