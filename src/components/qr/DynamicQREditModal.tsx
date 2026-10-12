@@ -299,14 +299,14 @@ function EditModalBody({
                   </div>
 
                   <div className="relative w-full min-w-0">
-                    <Globe className="w-3.5 h-3.5 text-slate-400 absolute left-3 top-1/2 -translate-y-1/2 pointer-events-none" />
+                    <Globe className="w-3.5 h-3.5 text-slate-400 absolute left-3.5 top-1/2 -translate-y-1/2 pointer-events-none" />
                     <input
                       type="text"
                       value={target.url}
                       onChange={(e) => updateLBTarget(idx, "url", e.target.value)}
                       placeholder={`https://example.com/split-${idx + 1}`}
                       required
-                      className="w-full pl-8.5 pr-3 py-2 rounded-xl border border-slate-200 bg-white text-xs font-medium text-slate-800 placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-orange-500/20 focus:border-orange-500"
+                      className="w-full pl-10 pr-3 py-2 rounded-xl border border-slate-200 bg-white text-xs font-medium text-slate-800 placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-orange-500/20 focus:border-orange-500 transition-all shadow-sm"
                     />
                   </div>
                 </div>
