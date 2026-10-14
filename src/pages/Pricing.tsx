@@ -14,6 +14,14 @@ import {
   Check, Zap, Building2, Crown, ArrowRight, Sparkles, Loader2, ShieldCheck, CheckCircle2
 } from "lucide-react";
 import SplitText from "@/components/ui/SplitText";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogDescription,
+  DialogFooter,
+} from "@/components/ui/dialog";
 
 interface PlanConfig {
   id: string;
@@ -127,6 +135,14 @@ export default function Pricing() {
     planName: string;
     expiresAt: string;
   } | null>(null);
+  const [sandboxModal, setSandboxModal] = useState<{
+    orderId: string;
+    planName: string;
+    amount: number;
+    currency: string;
+    errorReason?: string;
+  } | null>(null);
+  const [isSimulating, setIsSimulating] = useState(false);
 
   // Queries
   const { data: subscriptionData, refetch: refetchSubscription } =
@@ -178,6 +194,20 @@ export default function Pricing() {
       const orderData = await createOrderMutation.mutateAsync({
         planId: planKey,
       });
+
+      // If in sandbox mock mode (e.g. invalid keys or local dev fallback), use in-app simulation modal
+      // rather than calling window.Razorpay (which would crash on fake order IDs)
+      if (orderData.isMock || orderData.orderId.startsWith("order_test_")) {
+        setSandboxModal({
+          orderId: orderData.orderId,
+          planName: orderData.planName,
+          amount: orderData.amount,
+          currency: orderData.currency,
+          errorReason: orderData.errorReason,
+        });
+        setCheckoutLoadingPlan(null);
+        return;
+      }
 
       // 3. Configure Razorpay Standard Checkout
       const activeKey = orderData.keyId || (import.meta as any).env?.VITE_RAZORPAY_KEY_ID || "";
@@ -238,6 +268,36 @@ export default function Pricing() {
       console.error("[Checkout] Error:", err);
       toast.error(err.message || "Unable to initialize checkout. Please try again.");
       setCheckoutLoadingPlan(null);
+    }
+  };
+
+  const handleSimulateSuccess = async () => {
+    if (!sandboxModal) return;
+    setIsSimulating(true);
+    try {
+      toast.loading("Activating sandbox subscription...", { id: "payment-verify" });
+      const mockPaymentId = `pay_sim_${Date.now()}`;
+      const mockSignature = `sig_test_${Date.now()}`;
+      const verification = await verifyPaymentMutation.mutateAsync({
+        orderId: sandboxModal.orderId,
+        paymentId: mockPaymentId,
+        signature: mockSignature,
+      });
+      toast.dismiss("payment-verify");
+      toast.success("Payment verified! Your subscription is now active.");
+      await refetchSubscription();
+      const planName = verification.plan?.name || sandboxModal.planName;
+      const expiresAt = new Date(verification.expiresAt).toLocaleDateString();
+      setSandboxModal(null);
+      setPaymentSuccessModal({
+        planName,
+        expiresAt,
+      });
+    } catch (err: any) {
+      toast.dismiss("payment-verify");
+      toast.error(err.message || "Payment simulation failed.");
+    } finally {
+      setIsSimulating(false);
     }
   };
 
@@ -527,6 +587,105 @@ export default function Pricing() {
           </div>
         </div>
       </div>
+
+      {/* Razorpay Dev Sandbox Modal */}
+      <Dialog open={!!sandboxModal} onOpenChange={(o) => !o && setSandboxModal(null)}>
+        <DialogContent className="sm:max-w-[480px] rounded-3xl p-6 bg-white border-slate-100 shadow-2xl">
+          <DialogHeader className="space-y-2 text-left">
+            <div className="w-12 h-12 rounded-2xl bg-amber-50 border border-amber-200/60 flex items-center justify-center text-amber-600 mb-1">
+              <Sparkles className="w-6 h-6" />
+            </div>
+            <DialogTitle className="text-xl font-serif font-bold text-slate-900">
+              Razorpay Sandbox Simulation
+            </DialogTitle>
+            <DialogDescription className="text-xs text-slate-600 font-medium leading-relaxed">
+              {sandboxModal?.errorReason && (
+                <span className="text-rose-700 bg-rose-50 border border-rose-200/80 p-3 rounded-2xl block mb-3 text-xs font-semibold leading-normal">
+                  ⚠️ {sandboxModal.errorReason}
+                </span>
+              )}
+              You are running in development mode. You can instantly simulate payment completion to test Pro/Business features, or update your active Razorpay keys in <code className="bg-slate-100 px-1.5 py-0.5 rounded text-slate-800 font-mono text-[11px]">.env</code> for real checkout.
+            </DialogDescription>
+          </DialogHeader>
+
+          <div className="my-4 p-4 rounded-2xl bg-slate-50 border border-slate-100 space-y-2.5">
+            <div className="flex justify-between items-center text-xs">
+              <span className="text-slate-500 font-medium">Subscription Tier</span>
+              <span className="font-bold text-slate-900">{sandboxModal?.planName}</span>
+            </div>
+            <div className="flex justify-between items-center text-xs">
+              <span className="text-slate-500 font-medium">Test Price</span>
+              <span className="font-bold text-slate-900">
+                ₹{((sandboxModal?.amount || 0) / 100).toFixed(2)}
+              </span>
+            </div>
+            <div className="flex justify-between items-center text-xs">
+              <span className="text-slate-500 font-medium">Mock Order ID</span>
+              <span className="font-mono text-[11px] text-slate-700">{sandboxModal?.orderId}</span>
+            </div>
+          </div>
+
+          <DialogFooter className="gap-2 sm:gap-2">
+            <button
+              type="button"
+              onClick={() => setSandboxModal(null)}
+              className="px-4 py-2.5 rounded-full text-xs font-bold uppercase tracking-wider text-slate-600 hover:bg-slate-100 transition-colors"
+            >
+              Cancel
+            </button>
+            <button
+              type="button"
+              onClick={handleSimulateSuccess}
+              disabled={isSimulating}
+              className="px-6 py-2.5 rounded-full text-xs font-bold uppercase tracking-wider bg-indigo-600 hover:bg-indigo-700 text-white shadow-lg shadow-indigo-600/20 flex items-center justify-center gap-1.5 transition-all"
+            >
+              {isSimulating ? (
+                <>
+                  <Loader2 className="w-4 h-4 animate-spin" />
+                  Activating...
+                </>
+              ) : (
+                <>
+                  <CheckCircle2 className="w-4 h-4" />
+                  Simulate Payment Success
+                </>
+              )}
+            </button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
+      {/* Payment Success Modal */}
+      <Dialog open={!!paymentSuccessModal} onOpenChange={(o) => !o && setPaymentSuccessModal(null)}>
+        <DialogContent className="sm:max-w-[440px] rounded-3xl p-6 bg-white border-slate-100 shadow-2xl text-center">
+          <div className="w-14 h-14 rounded-3xl bg-emerald-50 border border-emerald-100 mx-auto flex items-center justify-center text-emerald-600 mb-4">
+            <CheckCircle2 className="w-8 h-8" />
+          </div>
+          <DialogTitle className="text-2xl font-serif font-bold text-slate-900 mb-2">
+            Subscription Activated!
+          </DialogTitle>
+          <DialogDescription className="text-sm text-slate-600 font-medium mb-6">
+            Congratulations! You have successfully upgraded to the{" "}
+            <strong className="text-slate-900 font-bold">{paymentSuccessModal?.planName}</strong> plan.
+            Your plan is active until {paymentSuccessModal?.expiresAt}.
+          </DialogDescription>
+          <div className="flex flex-col gap-2">
+            <Link
+              to="/dashboard"
+              className="w-full py-3 rounded-full text-xs font-bold uppercase tracking-wider bg-slate-900 hover:bg-slate-800 text-white transition-colors"
+            >
+              Go to Dashboard
+            </Link>
+            <button
+              type="button"
+              onClick={() => setPaymentSuccessModal(null)}
+              className="w-full py-2.5 rounded-full text-xs font-bold uppercase tracking-wider text-slate-500 hover:bg-slate-50 transition-colors"
+            >
+              Dismiss
+            </button>
+          </div>
+        </DialogContent>
+      </Dialog>
 
       <Footer />
     </div>

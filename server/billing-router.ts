@@ -86,6 +86,8 @@ export const billingRouter = createRouter({
         currency: plan.currency,
         planName: plan.name,
         keyId: env.razorpayKeyId,
+        isMock: razorpayOrder.isMock,
+        errorReason: razorpayOrder.errorReason,
         user: {
           name: ctx.user.name || "",
           email: ctx.user.email || "",
