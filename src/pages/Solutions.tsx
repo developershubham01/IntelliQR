@@ -386,25 +386,25 @@ export default function Solutions() {
                 Specialized Solution for {activeIndustry.name}
               </div>
 
-              <h1 className="text-3xl sm:text-5xl lg:text-6xl font-serif font-bold text-slate-900 tracking-tight leading-[1.15] mb-6">
+              <h1 className="text-3xl sm:text-5xl lg:text-6xl font-serif font-bold text-slate-900 tracking-tight leading-[1.15] mb-6 break-words">
                 {activeIndustry.h1}
               </h1>
 
-              <p className="text-base sm:text-xl text-slate-700/80 leading-relaxed max-w-3xl mx-auto mb-10 font-medium">
+              <p className="text-base sm:text-xl text-slate-700/80 leading-relaxed max-w-3xl mx-auto mb-10 font-medium px-2">
                 {activeIndustry.metaDescription}
               </p>
 
-              <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
+              <div className="flex flex-col sm:flex-row items-center justify-center gap-3 sm:gap-4 w-full sm:w-auto px-4 sm:px-0">
                 <Link
                   to="/generator?mode=dynamic"
-                  className="btn-primary text-base px-8 py-3.5 flex items-center justify-center gap-2 shadow-sm"
+                  className="btn-primary text-sm sm:text-base px-6 sm:px-8 py-3.5 flex items-center justify-center gap-2 shadow-sm w-full sm:w-auto text-center"
                 >
                   Create {activeIndustry.name} QR Code
-                  <ArrowRight className="w-4 h-4" />
+                  <ArrowRight className="w-4 h-4 shrink-0" />
                 </Link>
                 <Link
                   to="/qr-code-analytics"
-                  className="btn-secondary text-base px-8 py-3.5 flex items-center justify-center gap-2"
+                  className="btn-secondary text-sm sm:text-base px-6 sm:px-8 py-3.5 flex items-center justify-center gap-2 w-full sm:w-auto text-center"
                 >
                   View Scan Analytics
                 </Link>
@@ -450,11 +450,11 @@ export default function Solutions() {
                 </p>
               </div>
 
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
                 {activeIndustry.recommendedTypes.map((rec, idx) => (
-                  <div key={idx} className="bg-white p-7 rounded-3xl border border-slate-100 shadow-sm flex flex-col justify-between">
+                  <div key={idx} className="bg-white p-6 sm:p-7 rounded-3xl border border-slate-100 shadow-sm flex flex-col justify-between">
                     <div>
-                      <h3 className="text-lg font-bold text-slate-900 mb-2">{rec.name}</h3>
+                      <h3 className="text-base sm:text-lg font-bold text-slate-900 mb-2">{rec.name}</h3>
                       <p className="text-xs text-slate-600 leading-relaxed mb-6">{rec.reason}</p>
                     </div>
                     <Link
@@ -548,14 +548,14 @@ export default function Solutions() {
               Cross-Industry Workflows
             </div>
 
-            <h1 className="text-4xl sm:text-6xl font-serif font-bold text-slate-900 tracking-tight leading-[1.15] mb-6">
+            <h1 className="text-3xl sm:text-5xl lg:text-6xl font-serif font-bold text-slate-900 tracking-tight leading-[1.15] mb-6 break-words">
               Tailored QR Code Solutions <br className="hidden sm:inline" />
               <span className="text-transparent bg-clip-text bg-gradient-to-r from-orange-600 via-rose-600 to-purple-600">
                 for Every Industry
               </span>
             </h1>
 
-            <p className="text-base sm:text-xl text-slate-700/80 leading-relaxed max-w-2xl mx-auto font-medium">
+            <p className="text-base sm:text-xl text-slate-700/80 leading-relaxed max-w-2xl mx-auto font-medium px-2">
               Explore purpose-built workflows, proven use cases, and recommended QR formats designed specifically for your industry vertical.
             </p>
           </motion.div>
@@ -564,7 +564,7 @@ export default function Solutions() {
 
       <main className="flex-1 py-16">
         <div className="max-w-6xl mx-auto px-4 sm:px-6">
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-20">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 mb-20">
             {Object.values(INDUSTRY_DATA).map((ind) => {
               const Icon = ind.icon;
               const typeMap: Record<string, string> = {
@@ -583,13 +583,13 @@ export default function Solutions() {
               return (
                 <div
                   key={ind.slug}
-                  className="bg-white rounded-3xl p-7 border border-slate-200/80 shadow-sm hover:shadow-md transition-all flex flex-col justify-between group"
+                  className="bg-white rounded-3xl p-5 sm:p-7 border border-slate-200/80 shadow-sm hover:shadow-md transition-all flex flex-col justify-between group"
                 >
                   <div>
                     <div className="w-12 h-12 rounded-2xl bg-indigo-50 border border-indigo-100/60 flex items-center justify-center mb-5 group-hover:scale-105 transition-transform">
                       <Icon className="w-6 h-6 text-indigo-600" />
                     </div>
-                    <h2 className="text-xl font-serif font-bold text-slate-900 mb-2">
+                    <h2 className="text-lg sm:text-xl font-serif font-bold text-slate-900 mb-2">
                       {ind.name}
                     </h2>
                     <p className="text-xs text-slate-500 leading-relaxed mb-5 line-clamp-3">
@@ -610,7 +610,7 @@ export default function Solutions() {
                     </div>
                   </div>
 
-                  <div className="flex items-center justify-between pt-4 border-t border-slate-100 gap-2">
+                  <div className="flex flex-wrap sm:flex-nowrap items-center justify-between pt-4 border-t border-slate-100 gap-2.5">
                     <Link
                       to={`/solutions/${ind.slug}`}
                       className="text-xs font-bold text-indigo-600 hover:text-indigo-800 transition-colors inline-flex items-center gap-1 shrink-0"
@@ -619,7 +619,7 @@ export default function Solutions() {
                     </Link>
                     <Link
                       to={`/generator?type=${targetType}&mode=dynamic`}
-                      className="px-3.5 py-2 rounded-full bg-slate-900 hover:bg-slate-800 text-white text-[11px] font-bold uppercase tracking-wider transition-colors shrink-0 shadow-sm text-center"
+                      className="px-3.5 py-2 rounded-full bg-slate-900 hover:bg-slate-800 text-white text-[11px] font-bold uppercase tracking-wider transition-colors shrink-0 shadow-sm text-center ml-auto sm:ml-0"
                     >
                       Create QR
                     </Link>

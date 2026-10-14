@@ -128,7 +128,7 @@ export const authRouter = createRouter({
       const email = input.email.toLowerCase();
       const unionId = `email_${email}`;
 
-      let existingUser = await findUserByUnionId(unionId);
+      const existingUser = await findUserByUnionId(unionId);
       if (existingUser) {
         throw new Error("A user with this email already exists.");
       }

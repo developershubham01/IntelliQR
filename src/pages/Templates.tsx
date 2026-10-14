@@ -101,20 +101,14 @@ export default function Templates() {
   const [quickQRUrl, setQuickQRUrl] = useState("");
   const [customLiveQRUrl, setCustomLiveQRUrl] = useState<string | null>(null);
 
-  useEffect(() => {
-    if (urlQRId && availableQRs.some((q) => q.id === urlQRId)) {
-      setSelectedQRId(urlQRId);
-    } else if (!selectedQRId && availableQRs.length > 0) {
-      setSelectedQRId(availableQRs[0].id);
-    }
-  }, [urlQRId, availableQRs]);
+  const effectiveQRId = selectedQRId || (urlQRId && availableQRs.some((q) => q.id === urlQRId) ? urlQRId : availableQRs[0]?.id || "");
 
   const activeSelectedQR = useMemo(() => {
-    if (selectedQRId) {
-      return availableQRs.find((q) => q.id === selectedQRId) || availableQRs[0];
+    if (effectiveQRId) {
+      return availableQRs.find((q) => q.id === effectiveQRId) || availableQRs[0];
     }
     return availableQRs[0] || null;
-  }, [selectedQRId, availableQRs]);
+  }, [effectiveQRId, availableQRs]);
 
   const activeQR = currentQR || history[0];
 

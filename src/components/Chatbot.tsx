@@ -197,8 +197,6 @@ export default function Chatbot() {
                     >
                       {/* Bold Text formatting helper */}
                       {msg.text.split("\n").map((line, idx) => {
-                        // Very simple markdown formatting helper
-                        let formattedLine = line;
                         const boldRegex = /\*\*(.*?)\*\*/g;
                         const parts = [];
                         let lastIndex = 0;
@@ -218,7 +216,7 @@ export default function Chatbot() {
 
                         return (
                           <p key={idx} className={idx > 0 ? "mt-2" : ""}>
-                            {parts.length > 0 ? parts : formattedLine}
+                            {parts.length > 0 ? parts : line}
                           </p>
                         );
                       })}

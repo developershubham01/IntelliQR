@@ -81,6 +81,11 @@ export default function Dashboard() {
     name: string;
   } | null>(null);
 
+  const [deleteFolder, setDeleteFolder] = useState<{
+    id: number;
+    name: string;
+  } | null>(null);
+
   // Queries
   const { data: qrData, isLoading: qrLoading } = trpc.qr.list.useQuery(
     {
@@ -135,6 +140,21 @@ export default function Dashboard() {
     },
     onError: (err) => {
       toast.error(err.message || "Failed to move QR Code.");
+    },
+  });
+
+  const deleteFolderMutation = trpc.folder.delete.useMutation({
+    onSuccess: () => {
+      toast.success("Folder deleted successfully!");
+      utils.folder.list.invalidate();
+      utils.qr.list.invalidate();
+      if (deleteFolder && selectedFolderId === deleteFolder.id) {
+        setSelectedFolderId("all");
+      }
+      setDeleteFolder(null);
+    },
+    onError: (err) => {
+      toast.error(err.message || "Failed to delete folder.");
     },
   });
 
@@ -413,20 +433,46 @@ export default function Dashboard() {
               >
                 All Folders
               </button>
-              {folders.map((f) => (
-                <button
-                  key={f.id}
-                  onClick={() => setSelectedFolderId(f.id)}
-                  className={`px-3 py-1 rounded-xl text-[11px] font-bold uppercase tracking-wider transition-colors flex items-center gap-1.5 ${
-                    selectedFolderId === f.id
-                      ? "bg-indigo-600 text-white"
-                      : "bg-slate-100 text-slate-600 hover:bg-slate-200"
-                  }`}
-                >
-                  <span className="w-2 h-2 rounded-full" style={{ backgroundColor: f.color || "#4F46E5" }} />
-                  {f.name}
-                </button>
-              ))}
+              {folders.map((f) => {
+                const isSelected = selectedFolderId === f.id;
+                return (
+                  <div
+                    key={f.id}
+                    className={`group inline-flex items-center rounded-xl transition-all ${
+                      isSelected
+                        ? "bg-indigo-600 text-white shadow-sm"
+                        : "bg-slate-100 text-slate-600 hover:bg-slate-200"
+                    }`}
+                  >
+                    <button
+                      onClick={() => setSelectedFolderId(f.id)}
+                      className="pl-3 pr-1.5 py-1 text-[11px] font-bold uppercase tracking-wider flex items-center gap-1.5 focus:outline-none"
+                    >
+                      <span
+                        className="w-2 h-2 rounded-full"
+                        style={{ backgroundColor: isSelected ? "#ffffff" : f.color || "#4F46E5" }}
+                      />
+                      <span>{f.name}</span>
+                    </button>
+                    <button
+                      type="button"
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        setDeleteFolder({ id: f.id, name: f.name });
+                      }}
+                      className={`pr-2.5 pl-1 py-1 transition-colors rounded-r-xl opacity-60 hover:opacity-100 ${
+                        isSelected
+                          ? "text-indigo-200 hover:text-white"
+                          : "text-slate-400 hover:text-rose-600"
+                      }`}
+                      title={`Delete folder "${f.name}"`}
+                      aria-label={`Delete folder "${f.name}"`}
+                    >
+                      <Trash2 className="w-3 h-3" />
+                    </button>
+                  </div>
+                );
+              })}
               <button
                 onClick={() => setIsFolderModalOpen(true)}
                 className="px-2.5 py-1 rounded-xl text-[11px] font-bold text-indigo-600 bg-indigo-50 hover:bg-indigo-100 transition-colors flex items-center gap-1"
@@ -887,6 +933,82 @@ export default function Dashboard() {
               </button>
             </DialogFooter>
           </form>
+
+          {/* Existing Folders Management List */}
+          {folders.length > 0 && (
+            <div className="pt-4 mt-2 border-t border-slate-100 space-y-2.5">
+              <span className="text-[10px] font-bold uppercase tracking-wider text-slate-400 block">
+                Existing Folders ({folders.length})
+              </span>
+              <div className="max-h-44 overflow-y-auto space-y-1.5 pr-1">
+                {folders.map((f) => (
+                  <div
+                    key={f.id}
+                    className="flex items-center justify-between p-2.5 rounded-2xl bg-slate-50 border border-slate-100 hover:border-slate-200 transition-colors"
+                  >
+                    <div className="flex items-center gap-2 min-w-0">
+                      <span
+                        className="w-2.5 h-2.5 rounded-full flex-shrink-0"
+                        style={{ backgroundColor: f.color || "#4F46E5" }}
+                      />
+                      <span className="text-xs font-semibold text-slate-800 truncate">
+                        {f.name}
+                      </span>
+                    </div>
+                    <button
+                      type="button"
+                      onClick={() => {
+                        setDeleteFolder({ id: f.id, name: f.name });
+                      }}
+                      className="p-1.5 text-slate-400 hover:text-rose-600 hover:bg-rose-50 rounded-lg transition-colors"
+                      title={`Delete folder "${f.name}"`}
+                      aria-label={`Delete folder "${f.name}"`}
+                    >
+                      <Trash2 className="w-3.5 h-3.5" />
+                    </button>
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
+        </DialogContent>
+      </Dialog>
+
+      {/* Confirm Delete Folder Dialog */}
+      <Dialog open={!!deleteFolder} onOpenChange={(o) => !o && setDeleteFolder(null)}>
+        <DialogContent className="sm:max-w-[420px] rounded-3xl p-6 bg-white border-slate-100 shadow-2xl">
+          <DialogHeader className="space-y-2 text-left">
+            <div className="w-10 h-10 rounded-2xl bg-rose-50 flex items-center justify-center text-rose-600 mb-1">
+              <Trash2 className="w-5 h-5" />
+            </div>
+            <DialogTitle className="text-lg font-serif font-bold text-slate-900">
+              Delete Folder?
+            </DialogTitle>
+            <DialogDescription className="text-xs text-slate-500 font-medium leading-relaxed">
+              Are you sure you want to delete the folder "{deleteFolder?.name}"? Your QR codes will not be deleted; they will simply be moved out of this folder.
+            </DialogDescription>
+          </DialogHeader>
+          <DialogFooter className="mt-4 gap-2">
+            <button
+              type="button"
+              onClick={() => setDeleteFolder(null)}
+              className="px-4 py-2 rounded-full text-xs font-bold uppercase tracking-wider text-slate-600 hover:bg-slate-100"
+            >
+              Cancel
+            </button>
+            <button
+              type="button"
+              onClick={() => {
+                if (deleteFolder) {
+                  deleteFolderMutation.mutate({ id: deleteFolder.id });
+                }
+              }}
+              disabled={deleteFolderMutation.isPending}
+              className="px-5 py-2 rounded-full text-xs font-bold uppercase tracking-wider bg-rose-600 hover:bg-rose-700 text-white shadow-md shadow-rose-600/10"
+            >
+              {deleteFolderMutation.isPending ? "Deleting..." : "Delete Folder"}
+            </button>
+          </DialogFooter>
         </DialogContent>
       </Dialog>
 

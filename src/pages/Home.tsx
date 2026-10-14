@@ -98,7 +98,7 @@ export default function Home() {
               Intelligent QR for developers
             </motion.div>
 
-            <h1 className="text-6xl sm:text-[80px] leading-[1.1] tracking-tight mb-8 text-slate-900 font-serif">
+            <h1 className="text-4xl sm:text-6xl md:text-7xl lg:text-[80px] leading-[1.15] sm:leading-[1.1] tracking-tight mb-8 text-slate-900 font-serif break-words">
               <SplitText
                 text="Beautiful QR codes,"
                 tag="span"
@@ -131,7 +131,7 @@ export default function Home() {
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.6, delay: 0.2 }}
-              className="text-xl sm:text-2xl text-slate-700/80 leading-relaxed mb-10 max-w-2xl mx-auto font-medium"
+              className="text-base sm:text-xl lg:text-2xl text-slate-700/80 leading-relaxed mb-10 max-w-2xl mx-auto font-medium px-2"
             >
               Create dynamic, customizable, and trackable QR codes in seconds. Elevate your brand with intelligent redirection.
             </motion.p>
@@ -140,12 +140,12 @@ export default function Home() {
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.6, delay: 0.3 }}
-              className="flex flex-col sm:flex-row items-center justify-center gap-4"
+              className="flex flex-col sm:flex-row items-center justify-center gap-3 sm:gap-4 w-full sm:w-auto px-4 sm:px-0"
             >
-              <Link to="/generator" className="btn-primary text-lg px-8 py-4">
+              <Link to="/generator" className="btn-primary text-base sm:text-lg px-6 sm:px-8 py-3.5 sm:py-4 w-full sm:w-auto text-center">
                 Start Generating
               </Link>
-              <Link to="/features" className="btn-secondary text-lg px-8 py-4">
+              <Link to="/features" className="btn-secondary text-base sm:text-lg px-6 sm:px-8 py-3.5 sm:py-4 w-full sm:w-auto text-center">
                 Explore Features
               </Link>
             </motion.div>

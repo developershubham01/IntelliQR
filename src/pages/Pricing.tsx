@@ -508,14 +508,14 @@ export default function Pricing() {
           </div>
 
           {/* Secure Payment Badges */}
-          <div className="mt-16 text-center space-y-2">
-            <div className="inline-flex items-center gap-4 text-xs text-slate-500 font-semibold bg-white border border-slate-200/60 rounded-full px-6 py-2 shadow-sm">
+          <div className="mt-16 text-center space-y-2 px-2">
+            <div className="inline-flex flex-wrap items-center justify-center gap-2 sm:gap-4 text-xs text-slate-500 font-semibold bg-white border border-slate-200/60 rounded-2xl sm:rounded-full px-4 sm:px-6 py-2.5 shadow-sm max-w-full">
               <span>UPI (Google Pay, PhonePe, Paytm)</span>
-              <span>•</span>
+              <span className="hidden sm:inline text-slate-300">•</span>
               <span>Credit & Debit Cards</span>
-              <span>•</span>
+              <span className="hidden sm:inline text-slate-300">•</span>
               <span>NetBanking (50+ Banks)</span>
-              <span>•</span>
+              <span className="hidden sm:inline text-slate-300">•</span>
               <span>256-Bit SSL Encrypted</span>
             </div>
             <p className="text-xs text-slate-400">
